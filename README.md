@@ -11,7 +11,6 @@
 
 # Lattice
 
-
 # Installation
 To install using Swift Package Manager, add this to the `dependencies:` section in your Package.swift file:
 
@@ -29,11 +28,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 # Implementation
 
-
 # Examples
-[Regolith](https://github.com/zilmarinen/Regolith/) makes use of the concepts introduced by Deltille / Lattice to generate meshes for predefined tessellations of a triangle interior using [Ortho-Tiling](https://www.boristhebrave.com/2023/05/31/ortho-tiles/).
-
-[Verdure](https://github.com/zilmarinen/Verdure/) implements additional mesh generation on top of Deltille / Lattice to create stylised foliage canopies constrained to a triangular grid.
 
 # Credits
 
