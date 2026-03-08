@@ -8,8 +8,8 @@
 import Deltille
 import RealityKit
 
-public class HexagonalChunkDataStore<V: Codable>: HexagonalEntity,
-                                                  HasDataStore {
+internal class HexagonalChunkDataStore<V: Codable>: HexagonalEntity,
+                                                    HasDataStore {
     
     internal enum CodingKeys: CodingKey {
         
@@ -43,7 +43,7 @@ public class HexagonalChunkDataStore<V: Codable>: HexagonalEntity,
         components.set(store)
     }
     
-    public override func encode(to encoder: any Encoder) throws {
+    internal override func encode(to encoder: any Encoder) throws {
         
         try super.encode(to: encoder)
         
@@ -54,10 +54,10 @@ public class HexagonalChunkDataStore<V: Codable>: HexagonalEntity,
     }
 }
 
-extension HexagonalChunkDataStore {
+internal extension HexagonalChunkDataStore {
     
-    internal func set(_ value: V?,
-                      for key: K) {
+    func set(_ value: V?,
+             for key: K) {
         
         guard let value,
               Hexagon(key.position(.tile),

@@ -8,9 +8,9 @@
 import Deltille
 import RealityKit
 
-public class TriangularRegionDataStore<C: TriangularChunkDataStore<V>,
-                                       V: Codable>: TriangularRegion<C>,
-                                                    RegionDataStore {
+internal class TriangularRegionDataStore<C: TriangularChunkDataStore<V>,
+                                         V: Codable>: TriangularRegion<C>,
+                                                      RegionDataStore {
     
     internal func merge(_ chunk: C) {
         

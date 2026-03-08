@@ -22,19 +22,19 @@ internal protocol DataStoreSlice {
     func tile(for key: Triangle.Vertex) -> V?
 }
 
-extension DataStoreSlice {
+internal extension DataStoreSlice {
     
-    internal var isEmpty: Bool {
+    var isEmpty: Bool {
         
         data.isEmpty
     }
     
-    internal var tiles: [V] {
+    var tiles: [V] {
      
         Array(data.values)
     }
  
-    internal func tile(for key: Triangle.Vertex) -> V? {
+    func tile(for key: Triangle.Vertex) -> V? {
         
         data[key]
     }

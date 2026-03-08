@@ -28,9 +28,9 @@ internal protocol GridDataStore: Entity {
     func slice(for sieve: Triangle.Sieve) -> S
 }
 
-extension GridDataStore {
+internal extension GridDataStore {
     
-    internal func remove(values keys: [K]) {
+    func remove(values keys: [K]) {
      
         keys.forEach {
             

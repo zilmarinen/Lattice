@@ -68,7 +68,7 @@ public class TriangularEntity: Entity,
 
 extension TriangularEntity {
     
-    private func updatePosition() {
+    internal func updatePosition() {
         
         switch scale {
             

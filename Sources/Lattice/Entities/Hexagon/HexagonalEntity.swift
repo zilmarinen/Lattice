@@ -67,7 +67,7 @@ public class HexagonalEntity: Entity,
 
 extension HexagonalEntity {
     
-    private func updatePosition() {
+    internal func updatePosition() {
         
         switch scale {
             

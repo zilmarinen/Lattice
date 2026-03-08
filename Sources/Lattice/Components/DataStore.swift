@@ -39,32 +39,32 @@ internal protocol HasDataStore: Entity {
     func remove(values keys: [K])
 }
 
-extension HasDataStore {
+internal extension HasDataStore {
     
-    internal var data: [K : V] {
+    var data: [K : V] {
         
         store.data
     }
     
-    internal var isEmpty: Bool {
+    var isEmpty: Bool {
         
         store.isEmpty
     }
 }
 
-extension HasDataStore {
+internal extension HasDataStore {
     
-    internal func merge(_ other: DataStore<K, V>) {
+    func merge(_ other: DataStore<K, V>) {
         
         store.data.merge(other.data) { (current, _) in current }
     }
     
-    internal func value(for key: K) -> V? {
+    func value(for key: K) -> V? {
         
         data[key]
     }
     
-    internal func remove(values keys: [K]) {
+    func remove(values keys: [K]) {
         
         keys.forEach {
             

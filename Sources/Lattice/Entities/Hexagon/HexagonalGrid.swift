@@ -11,14 +11,14 @@ import RealityKit
 public class HexagonalGrid<R: HexagonalRegion<C>,
                            C: HexagonalEntity>: Entity {}
 
-extension HexagonalGrid {
+public extension HexagonalGrid {
     
-    internal var isEmpty: Bool {
+    var isEmpty: Bool {
         
         regions.isEmpty
     }
     
-    internal var regions: [R] {
+    var regions: [R] {
         
         children.compactMap {
             
@@ -27,9 +27,9 @@ extension HexagonalGrid {
     }
 }
 
-extension HexagonalGrid {
+public extension HexagonalGrid {
     
-    internal func region(for region: Hexagon) -> R? {
+    func region(for region: Hexagon) -> R? {
         
         regions.first {
             
@@ -37,14 +37,14 @@ extension HexagonalGrid {
         }
     }
     
-    internal func chunk(for chunk: Hexagon) -> C? {
+    func chunk(for chunk: Hexagon) -> C? {
         
         guard let region = region(for: chunk.parent()) else { return nil }
         
         return region.chunk(for: chunk)
     }
     
-    internal func chunks(intersecting triangle: Triangle) -> [C] {
+    func chunks(intersecting triangle: Triangle) -> [C] {
         
         regions.flatMap {
          

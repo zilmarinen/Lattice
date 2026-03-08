@@ -19,9 +19,9 @@ internal protocol HasSoilableComponent: Entity {
     func becomeDirty()
 }
 
-extension HasSoilableComponent {
+internal extension HasSoilableComponent {
     
-    internal var soilableComponent: SoilableComponent {
+    var soilableComponent: SoilableComponent {
         
         get {
             
@@ -41,7 +41,7 @@ extension HasSoilableComponent {
         }
     }
     
-    internal var isDirty: Bool {
+    var isDirty: Bool {
         
         get {
             
@@ -54,7 +54,7 @@ extension HasSoilableComponent {
         }
     }
     
-    internal func becomeDirty() {
+    func becomeDirty() {
         
         guard !isDirty else { return }
         

@@ -30,14 +30,14 @@ public class TriangularGrid<R: TriangularRegion<C>,
     }
 }
 
-extension TriangularGrid {
+public extension TriangularGrid {
     
-    internal var isEmpty: Bool {
+    var isEmpty: Bool {
         
         regions.isEmpty
     }
     
-    internal var regions: [R] {
+    var regions: [R] {
         
         children.compactMap {
             
@@ -45,7 +45,7 @@ extension TriangularGrid {
         }
     }
     
-    internal var dirtyRegions: [R] {
+    var dirtyRegions: [R] {
         
         regions.filter {
             
@@ -54,9 +54,9 @@ extension TriangularGrid {
     }
 }
 
-extension TriangularGrid {
+public extension TriangularGrid {
     
-    internal func region(for tile: Triangle) -> R? {
+    func region(for tile: Triangle) -> R? {
         
         let region = tile.transpose(.tile,
                                     .region)
@@ -67,14 +67,14 @@ extension TriangularGrid {
         }
     }
     
-    internal func chunk(for tile: Triangle) -> C? {
+    func chunk(for tile: Triangle) -> C? {
         
         guard let region = region(for: tile) else { return nil }
         
         return region.chunk(for: tile)
     }
     
-    internal func chunks(intersecting region: Triangle) -> [C] {
+    func chunks(intersecting region: Triangle) -> [C] {
         
         regions.flatMap {
             
@@ -83,9 +83,9 @@ extension TriangularGrid {
     }
 }
 
-extension TriangularGrid {
+internal extension TriangularGrid {
     
-    internal func propagate(triangle tile: Triangle) {
+    func propagate(triangle tile: Triangle) {
         
         let region = region(for: tile) ?? .init(tile.transpose(.tile,
                                                                .region))
@@ -98,7 +98,7 @@ extension TriangularGrid {
         region.propagate(triangle: tile)
     }
     
-    internal func propagate(vertex: Triangle.Vertex) {
+    func propagate(vertex: Triangle.Vertex) {
         
         for triangle in vertex.tiles {
             

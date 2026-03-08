@@ -8,8 +8,8 @@
 import Deltille
 import RealityKit
 
-public class TriangularChunkDataStore<V: Codable>: TriangularChunk,
-                                                   HasDataStore {
+internal class TriangularChunkDataStore<V: Codable>: TriangularChunk,
+                                                     HasDataStore {
     
     internal enum CodingKeys: CodingKey {
         
@@ -42,7 +42,7 @@ public class TriangularChunkDataStore<V: Codable>: TriangularChunk,
         components.set(store)
     }
     
-    public override func encode(to encoder: any Encoder) throws {
+    internal override func encode(to encoder: any Encoder) throws {
         
         try super.encode(to: encoder)
         
@@ -53,10 +53,10 @@ public class TriangularChunkDataStore<V: Codable>: TriangularChunk,
     }
 }
 
-extension TriangularChunkDataStore {
+internal extension TriangularChunkDataStore {
     
-    internal func set(_ value: V?,
-                      for key: K) {
+    func set(_ value: V?,
+             for key: K) {
         
         guard let value,
               Triangle(key.position(.tile),

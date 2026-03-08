@@ -63,9 +63,9 @@ extension HexagonalRegion {
     }
 }
 
-extension HexagonalRegion {
+public extension HexagonalRegion {
     
-    internal func chunk(for chunk: Hexagon) -> C? {
+    func chunk(for chunk: Hexagon) -> C? {
         
         chunks.first {
             
@@ -73,7 +73,7 @@ extension HexagonalRegion {
         }
     }
     
-    internal func chunks(intersecting region: Triangle) -> [C] {
+    func chunks(intersecting region: Triangle) -> [C] {
         
         chunks.filter {
             
