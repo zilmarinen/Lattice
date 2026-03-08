@@ -1,5 +1,5 @@
 //
-//  DataStore.swift
+//  DataStoreComponent.swift
 //  Lattice
 //
 //  Created by Zack Brown on 07/03/2026.
@@ -8,9 +8,9 @@
 import Deltille
 import RealityKit
 
-internal class DataStore<K: Codable & Hashable,
-                         V: Codable>: Component,
-                                      Codable {
+internal class DataStoreComponent<K: Vertex,
+                                  V: Codable>: Component,
+                                               Codable {
     
     internal var data: [K : V] = [:]
     
@@ -22,14 +22,14 @@ internal class DataStore<K: Codable & Hashable,
 
 internal protocol HasDataStore: Entity {
     
-    associatedtype K: Codable & Hashable
+    associatedtype K: Vertex
     associatedtype V: Codable
     
-    var store: DataStore<K, V> { get }
+    var store: DataStoreComponent<K, V> { get }
     
     var data: [K : V] { get }
     
-    func merge(_ other: DataStore<K, V>)
+    func merge(_ other: DataStoreComponent<K, V>)
     
     func value(for key: K) -> V?
     
@@ -54,7 +54,7 @@ internal extension HasDataStore {
 
 internal extension HasDataStore {
     
-    func merge(_ other: DataStore<K, V>) {
+    func merge(_ other: DataStoreComponent<K, V>) {
         
         store.data.merge(other.data) { (current, _) in current }
     }

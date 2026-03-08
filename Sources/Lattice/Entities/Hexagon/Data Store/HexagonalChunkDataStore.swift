@@ -16,7 +16,7 @@ internal class HexagonalChunkDataStore<V: Codable>: HexagonalEntity,
         case store
     }
     
-    internal let store: DataStore<Triangle.Vertex, V>
+    internal let store: DataStoreComponent<Triangle.Vertex, V>
     
     required internal init(_ hexagon: Hexagon) {
         
@@ -35,7 +35,7 @@ internal class HexagonalChunkDataStore<V: Codable>: HexagonalEntity,
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.store = try container.decode(DataStore<Triangle.Vertex, V>.self,
+        self.store = try container.decode(DataStoreComponent<Triangle.Vertex, V>.self,
                                           forKey: .store)
         
         try super.init(from: decoder)
