@@ -7,7 +7,7 @@
 
 import Deltille
 
-internal protocol DataStoreSlice {
+public protocol DataStoreSlice {
     
     associatedtype V: Codable
     
@@ -22,7 +22,7 @@ internal protocol DataStoreSlice {
     func tile(for key: Triangle.Vertex) -> V?
 }
 
-internal extension DataStoreSlice {
+public extension DataStoreSlice {
     
     var isEmpty: Bool {
         

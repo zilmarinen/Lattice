@@ -9,8 +9,8 @@ import Deltille
 import Euclid
 import RealityKit
 
-public class TriangularEntity: Entity,
-                               @preconcurrency Codable {
+open class TriangularEntity: Entity,
+                             @preconcurrency Codable {
     
     internal enum CodingKeys: CodingKey {
         
@@ -54,7 +54,7 @@ public class TriangularEntity: Entity,
         updatePosition()
     }
     
-    public func encode(to encoder: any Encoder) throws {
+    open func encode(to encoder: any Encoder) throws {
     
         var container = encoder.container(keyedBy: CodingKeys.self)
         

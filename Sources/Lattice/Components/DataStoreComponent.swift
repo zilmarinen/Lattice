@@ -8,9 +8,9 @@
 import Deltille
 import RealityKit
 
-internal class DataStoreComponent<K: Vertex,
-                                  V: Codable>: Component,
-                                               Codable {
+public class DataStoreComponent<K: Vertex,
+                                V: Codable>: Component,
+                                             Codable {
     
     internal var data: [K : V] = [:]
     

@@ -36,7 +36,7 @@ public class HexagonalRegion<C: HexagonalEntity>: HexagonalEntity {
         children.forEach { addChild($0) }
     }
     
-    public override func encode(to encoder: any Encoder) throws {
+    override public func encode(to encoder: any Encoder) throws {
     
         try super.encode(to: encoder)
         

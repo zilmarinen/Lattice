@@ -10,8 +10,8 @@ import RealityKit
 
 internal class TriangularGridDataStore<R: TriangularRegionDataStore<C, V>,
                                        C: TriangularChunkDataStore<V>,
-                                       V: Codable>: TriangularGrid<R, C>,
-                                                    GridDataStore {
+                                       V: HasFootprint>: TriangularGrid<R, C>,
+                                                         GridDataStore {
     
     internal func merge(_ chunks: [C]) {
         

@@ -7,12 +7,12 @@
 
 import Deltille
 
-internal struct HexagonalDataStoreSlice<V: Codable>: DataStoreSlice {
+public struct HexagonalDataStoreSlice<V: Codable>: DataStoreSlice {
     
-    internal typealias Tiles = [Triangle.Vertex : HexagonalGridDataStoreTile<V>]
+    public typealias Tiles = [Triangle.Vertex : HexagonalDataStoreTile<V>]
     internal typealias Vertices = [Triangle.Vertex : V]
     
-    internal let data: Tiles
+    public let data: Tiles
     
     internal init(sieve: Triangle.Sieve,
                   vertices: Vertices) {

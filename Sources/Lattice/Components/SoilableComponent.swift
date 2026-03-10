@@ -7,19 +7,19 @@
 
 import RealityKit
 
-internal struct SoilableComponent: Component {
+public struct SoilableComponent: Component {
     
     internal var isDirty: Bool = false
 }
 
-internal protocol HasSoilableComponent: Entity {
+public protocol HasSoilableComponent: Entity {
     
     var soilableComponent: SoilableComponent { get set }
     
     func becomeDirty()
 }
 
-internal extension HasSoilableComponent {
+public extension HasSoilableComponent {
     
     var soilableComponent: SoilableComponent {
         

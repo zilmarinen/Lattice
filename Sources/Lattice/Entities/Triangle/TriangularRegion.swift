@@ -16,7 +16,7 @@ public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
         case chunks
     }
     
-    required internal init(_ triangle: Triangle) {
+    required public init(_ triangle: Triangle) {
         
         super.init(triangle,
                    .region)
@@ -37,7 +37,7 @@ public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
         children.forEach { addChild($0) }
     }
     
-    public override func encode(to encoder: any Encoder) throws {
+    override public func encode(to encoder: any Encoder) throws {
     
         try super.encode(to: encoder)
         
@@ -95,9 +95,9 @@ extension TriangularRegion {
     }
 }
 
-extension TriangularRegion {
+public extension TriangularRegion {
     
-    internal func propagate(triangle tile: Triangle) {
+    func propagate(triangle tile: Triangle) {
         
         let chunk = chunk(for: tile) ?? .init(tile.transpose(.tile,
                                                              .chunk))

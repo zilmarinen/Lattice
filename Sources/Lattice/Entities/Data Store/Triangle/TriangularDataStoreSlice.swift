@@ -7,11 +7,11 @@
 
 import Deltille
 
-internal struct TriangularDataStoreSlice<V: Codable>: DataStoreSlice {
+public struct TriangularDataStoreSlice<V: Codable>: DataStoreSlice {
     
-    internal typealias Tiles = [Triangle.Vertex : V]
+    public typealias Tiles = [Triangle.Vertex : V]
     
-    internal let data: Tiles
+    public let data: Tiles
     
     internal init(tiles: Tiles) {
         
