@@ -20,5 +20,9 @@ let package = Package(
         .target(name: "Lattice",
                 dependencies: ["Deltille",
                                "Euclid"]),
+        .testTarget(name: "LatticeTests",
+                    dependencies: ["Deltille",
+                                   "Euclid",
+                                   "Lattice"])
     ]
 )

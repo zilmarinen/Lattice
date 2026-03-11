@@ -20,7 +20,8 @@ public class DataStoreComponent<K: Vertex,
     }
 }
 
-internal protocol HasDataStore: Entity {
+public protocol HasDataStore: Entity,
+                              Codable {
     
     associatedtype K: Vertex
     associatedtype V: Codable
@@ -39,7 +40,7 @@ internal protocol HasDataStore: Entity {
     func remove(values keys: [K])
 }
 
-internal extension HasDataStore {
+public extension HasDataStore {
     
     var data: [K : V] {
         
@@ -52,7 +53,7 @@ internal extension HasDataStore {
     }
 }
 
-internal extension HasDataStore {
+public extension HasDataStore {
     
     func merge(_ other: DataStoreComponent<K, V>) {
         

@@ -12,9 +12,9 @@ open class HexagonalLattice<C: TriangularChunk,
                             V: Codable>: Entity,
                                          Lattice {
     
-    typealias R = HexagonalRegionDataStore<HexagonalChunkDataStore<V>, V>
+    public typealias R = HexagonalDataStoreRegion<HexagonalDataStoreChunk<V>, V>
     
-    internal let dataSource = HexagonalGridDataStore<R, HexagonalChunkDataStore<V>, V>()
+    public let dataStore = HexagonalDataStore<R, HexagonalDataStoreChunk<V>, V>()
     
     public let grid = TriangularGrid<TriangularRegion<C>, C>()
     
@@ -22,7 +22,7 @@ open class HexagonalLattice<C: TriangularChunk,
         
         super.init()
         
-        addChild(dataSource)
+        addChild(dataStore)
         addChild(grid)
     }
 }
@@ -30,47 +30,32 @@ open class HexagonalLattice<C: TriangularChunk,
 public extension HexagonalLattice {
     
     func set(_ value: V?,
-                    for key: Triangle.Vertex) {
+             for key: Triangle.Vertex) {
         
-        dataSource.set(value,
-                       for: key)
+        dataStore.set(value,
+                      for: key)
         
         grid.propagate(vertex: key)
     }
     
-    func value(for key: Triangle.Vertex) -> V? {
-        
-        dataSource.value(for: key)
+    func wedge(for sieve: Triangle.Sieve) -> HexagonalDataStoreWedge<V> {
+    
+        dataStore.wedge(for: sieve)
     }
     
-    func remove(values keys: [Triangle.Vertex]) {
+    func merge(_ slice: HexagonalLatticeSlice<C, V>) {
         
-        dataSource.remove(values: keys)
-    }
-    
-    func slice(for sieve: Triangle.Sieve) -> HexagonalDataStoreSlice<V> {
-    
-        dataSource.slice(for: sieve)
-    }
-}
-
-extension HexagonalLattice {
-    
-    //TODO: Merge into Lattice protocol?
-    public func merge(_ slice: HexagonalLatticeSlice<C, V>) {
-        
-        dataSource.merge(slice.dataSource)
+        dataStore.merge(slice.dataStore)
         grid.merge(slice.region)
     }
     
-    //TODO: Merge into Lattice protocol?
-    public func slice(region triangle: Triangle) -> HexagonalLatticeSlice<C, V>? {
+    func slice(region triangle: Triangle) -> HexagonalLatticeSlice<C, V>? {
         
         //TODO: change Triangle param to Vertex?
         guard let region = grid.region(for: triangle.transpose(.region,
                                                                .tile)) else { return nil }
         
-        return .init(dataSource: dataSource.chunks(intersecting: triangle),
+        return .init(dataStore: dataStore.chunks(intersecting: triangle),
                      region: region)
     }
 }

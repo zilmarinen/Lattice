@@ -9,12 +9,12 @@ import Deltille
 import RealityKit
 
 open class TriangularLattice<C: TriangularChunk,
-                             V: HasFootprint>: Entity,
-                                               Lattice {
+                             V: TriangularDataStoreTile>: Entity,
+                                                          Lattice {
     
-    typealias R = TriangularRegionDataStore<TriangularChunkDataStore<V>, V>
+    public typealias R = TriangularDataStoreRegion<TriangularDataStoreChunk<V>, V>
     
-    internal let dataSource = TriangularGridDataStore<R, TriangularChunkDataStore<V>, V>()
+    public let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()
     
     public let grid = TriangularGrid<TriangularRegion<C>, C>()
     
@@ -22,24 +22,24 @@ open class TriangularLattice<C: TriangularChunk,
         
         super.init()
         
-        addChild(dataSource)
+        addChild(dataStore)
         addChild(grid)
     }
 }
 
 public extension TriangularLattice {
     
-    func set(_ value: V?,
-                    for key: Triangle.Vertex) {
+    private func set(_ value: V?,
+                     for key: Triangle) {
         
-        func set(_ value: V?,
-                 for tile: Triangle) {
-            
-            dataSource.set(value,
-                           for: tile.vertex)
-            
-            grid.propagate(triangle: tile)
-        }
+        dataStore.set(value,
+                      for: key.vertex)
+        
+        grid.propagate(vertex: key.vertex)
+    }
+    
+    func set(_ value: V?,
+             for key: Triangle.Vertex) {
         
         guard let value else {
                     
@@ -63,40 +63,25 @@ public extension TriangularLattice {
                 for: tile)
         }
     }
- 
-    func remove(values keys: [Triangle.Vertex]) {
-     
-        dataSource.remove(values: keys)
-    }
     
-    func value(for key: Triangle.Vertex) -> V? {
-        
-        dataSource.value(for: key)
-    }
+    func wedge(for sieve: Triangle.Sieve) -> TriangularDataStoreWedge<V> {
     
-    func slice(for sieve: Triangle.Sieve) -> TriangularDataStoreSlice<V> {
-    
-        dataSource.slice(for: sieve)
+        dataStore.wedge(for: sieve)
     }
-}
 
-extension TriangularLattice {
-    
-    //TODO: Merge into Lattice protocol?
-    public func merge(_ slice: TriangularLatticeSlice<C, V>) {
+    func merge(_ slice: TriangularLatticeSlice<C, V>) {
         
-        dataSource.merge(slice.dataSource)
+        dataStore.merge(slice.dataStore)
         grid.merge(slice.region)
     }
     
-    //TODO: Merge into Lattice protocol?
-    public func slice(region triangle: Triangle) -> TriangularLatticeSlice<C, V>? {
+    func slice(region triangle: Triangle) -> TriangularLatticeSlice<C, V>? {
         
         //TODO: change Triangle param to Vertex?
         guard let region = grid.region(for: triangle.transpose(.region,
                                                                .tile)) else { return nil }
         
-        return .init(dataSource: dataSource.chunks(intersecting: triangle),
+        return .init(dataStore: dataStore.chunks(intersecting: triangle),
                      region: region)
     }
 }

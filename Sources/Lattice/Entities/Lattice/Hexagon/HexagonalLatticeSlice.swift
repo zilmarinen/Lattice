@@ -9,51 +9,15 @@ import Deltille
 
 @MainActor
 public struct HexagonalLatticeSlice<C: TriangularChunk,
-                                    V: Codable>: Codable,
-                                                 @preconcurrency Equatable,
-                                                 @preconcurrency Hashable  {
+                                    V: Codable>: @preconcurrency LatticeSlice {
     
-    public let dataSource: [HexagonalChunkDataStore<V>]
+    public let dataStore: [HexagonalDataStoreChunk<V>]
     public let region: TriangularRegion<C>
     
-    public init(dataSource: [HexagonalChunkDataStore<V>],
+    public init(dataStore: [HexagonalDataStoreChunk<V>],
                 region: TriangularRegion<C>) {
         
-        self.dataSource = dataSource
+        self.dataStore = dataStore
         self.region = region
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        
-        hasher.combine(region.triangle)
-    }
-    
-    public static func == (lhs: HexagonalLatticeSlice,
-                           rhs: HexagonalLatticeSlice) -> Bool {
-        
-        lhs.region.triangle == rhs.region.triangle
-    }
-}
-
-public extension HexagonalLatticeSlice {
-    
-    var isEmpty: Bool {
-        
-        dataSource.isEmpty
-    }
- 
-    func remove(values keys: [Triangle.Vertex]) {
-        
-        dataSource.forEach {
-            
-            $0.remove(values: keys)
-        }
-        
-        region.chunks.forEach {
-            
-            $0.becomeDirty()
-        }
-        
-        region.becomeDirty()
     }
 }
