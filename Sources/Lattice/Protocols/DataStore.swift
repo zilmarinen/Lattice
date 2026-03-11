@@ -1,5 +1,5 @@
 //
-//  GridDataStore.swift
+//  DataStore.swift
 //  Lattice
 //
 //  Created by Zack Brown on 07/03/2026.
@@ -8,10 +8,10 @@
 import Deltille
 import RealityKit
 
-internal protocol GridDataStore: Entity {
+public protocol DataStore: Entity {
     
     associatedtype C: HasDataStore
-    associatedtype S: DataStoreSlice
+    associatedtype W: DataStoreWedge
     
     associatedtype K = C.K
     associatedtype V = C.V
@@ -25,10 +25,10 @@ internal protocol GridDataStore: Entity {
     
     func remove(values keys: [K])
     
-    func slice(for sieve: Triangle.Sieve) -> S
+    func wedge(for sieve: Triangle.Sieve) -> W
 }
 
-internal extension GridDataStore {
+public extension DataStore {
     
     func remove(values keys: [K]) {
      

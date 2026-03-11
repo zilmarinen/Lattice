@@ -12,27 +12,41 @@ public protocol Lattice: Entity {
     
     associatedtype C: TriangularChunk
     associatedtype G: TriangularGrid<TriangularRegion<C>, C>
-    associatedtype K: Vertex
-    associatedtype S: DataStoreSlice
-    associatedtype V: Codable
+    associatedtype D: DataStore
+    associatedtype S: LatticeSlice
     
-    typealias Cleaner = ((_ slice: S, _ chunk: C) -> Bool)
+    typealias Cleaner = ((_ wedge: D.W, _ chunk: C) -> Bool)
     
     var grid: G { get }
+    var dataStore: D { get }
     
-    func value(for key: K) -> V?
+    func value(for key: D.K) -> D.V?
     
-    func set(_ value: V?,
-             for key: K)
+    func set(_ value: D.V?,
+             for key: D.K)
     
-    func remove(values keys: [K])
+    func remove(values keys: [D.K])
     
-    func slice(for sieve: Triangle.Sieve) -> S
+    func wedge(for sieve: Triangle.Sieve) -> D.W
     
     func clean(_ cleaner: Cleaner)
+    
+    func merge(_ slice: S)
+    
+    func slice(region triangle: Triangle) -> S?
 }
 
 public extension Lattice {
+    
+    func value(for key: D.K) -> D.V? {
+        
+        dataStore.value(for: key)
+    }
+    
+    func remove(values keys: [D.K]) {
+        
+        dataStore.remove(values: keys)
+    }
     
     func clean(_ cleaner: Cleaner) {
         
@@ -40,20 +54,24 @@ public extension Lattice {
         
         for region in grid.dirtyRegions {
             
+            print("Cleaning region")
+            
             var emptyChunks: [C] = []
             
             for chunk in region.dirtyChunks {
                 
-                let slice = self.slice(for: chunk.triangle.sieve(for: .chunk))
+                let wedge = self.wedge(for: chunk.triangle.sieve(for: .chunk))
                 
-                guard !slice.isEmpty,
-                      cleaner(slice,
+                guard !wedge.isEmpty,
+                      cleaner(wedge,
                               chunk) else {
                     
                     emptyChunks.append(chunk)
                     
                     continue
                 }
+                
+                print("Cleaning chunk")
                 
                 chunk.isDirty = false
             }

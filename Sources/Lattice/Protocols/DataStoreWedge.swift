@@ -1,5 +1,5 @@
 //
-//  DataStoreSlice.swift
+//  DataStoreWedge.swift
 //  Lattice
 //
 //  Created by Zack Brown on 07/03/2026.
@@ -7,7 +7,7 @@
 
 import Deltille
 
-public protocol DataStoreSlice {
+public protocol DataStoreWedge {
     
     associatedtype V: Codable
     
@@ -22,7 +22,7 @@ public protocol DataStoreSlice {
     func tile(for key: Triangle.Vertex) -> V?
 }
 
-public extension DataStoreSlice {
+public extension DataStoreWedge {
     
     var isEmpty: Bool {
         

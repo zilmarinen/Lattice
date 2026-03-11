@@ -1,5 +1,5 @@
 //
-//  RegionDataStore.swift
+//  DataStoreRegion.swift
 //  Lattice
 //
 //  Created by Zack Brown on 07/03/2026.
@@ -7,7 +7,7 @@
 
 import RealityKit
 
-internal protocol RegionDataStore: Entity {
+public protocol DataStoreRegion: Entity {
     
     associatedtype C: HasDataStore
     
