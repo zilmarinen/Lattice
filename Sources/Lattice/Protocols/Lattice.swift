@@ -10,12 +10,12 @@ import RealityKit
 
 public protocol Lattice: Entity {
     
-    associatedtype C: TriangularChunk
-    associatedtype G: TriangularGrid<TriangularRegion<C>, C>
+    associatedtype G: TriangularGrid<TriangularRegion<S.C>, S.C>
     associatedtype D: DataStore
     associatedtype S: LatticeSlice
     
-    typealias Cleaner = ((_ wedge: D.W, _ chunk: C) -> Bool)
+    typealias Cleaner = ((_ chunk: S.C,
+                          _ wedge: D.W) -> Bool)
     
     var grid: G { get }
     var dataStore: D { get }
@@ -29,11 +29,14 @@ public protocol Lattice: Entity {
     
     func wedge(for sieve: Triangle.Sieve) -> D.W
     
-    func clean(_ cleaner: Cleaner)
-    
     func merge(_ slice: S)
     
     func slice(region triangle: Triangle) -> S?
+    
+    func propagate(triangle tile: Triangle)
+    func propagate(vertex: Triangle.Vertex)
+    
+    func clean(_ cleaner: Cleaner)
 }
 
 public extension Lattice {
@@ -48,30 +51,41 @@ public extension Lattice {
         dataStore.remove(values: keys)
     }
     
+    func wedge(for sieve: Triangle.Sieve) -> D.W {
+    
+        dataStore.wedge(for: sieve)
+    }
+    
+    func propagate(triangle tile: Triangle) {
+     
+        grid.propagate(triangle: tile)
+    }
+
+    func propagate(vertex: Triangle.Vertex) {
+        
+        grid.propagate(vertex: vertex)
+    }
+    
     func clean(_ cleaner: Cleaner) {
         
-        var emptyRegions: [TriangularRegion<C>] = []
+        var emptyRegions: [TriangularRegion<S.C>] = []
         
         for region in grid.dirtyRegions {
             
-            print("Cleaning region")
-            
-            var emptyChunks: [C] = []
+            var emptyChunks: [S.C] = []
             
             for chunk in region.dirtyChunks {
                 
-                let wedge = self.wedge(for: chunk.triangle.sieve(for: .chunk))
+                let wedge = wedge(for: chunk.triangle.sieve(for: .chunk))
                 
                 guard !wedge.isEmpty,
-                      cleaner(wedge,
-                              chunk) else {
+                      cleaner(chunk,
+                              wedge) else {
                     
                     emptyChunks.append(chunk)
                     
                     continue
                 }
-                
-                print("Cleaning chunk")
                 
                 chunk.isDirty = false
             }
@@ -92,15 +106,5 @@ public extension Lattice {
             
             $0.removeFromParent()
         }
-    }
-    
-    func propagate(triangle tile: Triangle) {
-     
-        grid.propagate(triangle: tile)
-    }
-
-    func propagate(vertex: Triangle.Vertex) {
-        
-        grid.propagate(vertex: vertex)
     }
 }

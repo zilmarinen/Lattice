@@ -9,12 +9,12 @@ import Deltille
 
 public struct TriangularDataStoreWedge<V: Codable>: DataStoreWedge {
     
-    public typealias Tiles = [Triangle.Vertex : V]
+    public typealias Wedge = [Triangle.Vertex : V]
     
-    public let data: Tiles
+    public let data: Wedge
     
-    internal init(tiles: Tiles) {
+    internal init(data: Wedge) {
         
-        self.data = tiles
+        self.data = data
     }
 }

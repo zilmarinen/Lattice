@@ -70,21 +70,21 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
             result[vertex] = value(for: vertex)
         }
         
-        let tiles = sieve.tiles.reduce(into: [Triangle.Vertex : HexagonalDataStoreTile<V>]()) { result, tile in
+        let tiles = sieve.triangles.reduce(into: [Triangle.Vertex : HexagonalDataStoreTile<V>]()) { result, triangle in
             
-            let vertices = tile.vertices.reduce(into: [Triangle.Vertex : V]()) { result, vertex in
+            let values = triangle.vertices.reduce(into: [Triangle.Vertex : V]()) { result, vertex in
                 
                 guard let value = vertices[vertex] else { return }
-             
+                
                 result[vertex] = value
             }
 
-            guard !vertices.isEmpty else { return }
+            guard !values.isEmpty else { return }
 
-            result[tile.vertex] = .init(tile: tile,
-                                        vertices: vertices)
+            result[triangle.vertex] = .init(triangle: triangle,
+                                            vertices: values)
         }
         
-        return .init(tiles: tiles)
+        return .init(data: tiles)
     }
 }

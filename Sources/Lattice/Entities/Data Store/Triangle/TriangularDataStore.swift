@@ -62,11 +62,11 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
     
     public func wedge(for sieve: Triangle.Sieve) -> TriangularDataStoreWedge<V> {
         
-        let tiles = sieve.tiles.reduce(into: [Triangle.Vertex : V]()) { result, tile in
+        let tiles = sieve.triangles.reduce(into: [Triangle.Vertex : V]()) { result, triangle in
             
-            result[tile.vertex] = value(for: tile.vertex)
+            result[triangle.vertex] = value(for: triangle.vertex)
         }
         
-        return .init(tiles: tiles)
+        return .init(data: tiles)
     }
 }

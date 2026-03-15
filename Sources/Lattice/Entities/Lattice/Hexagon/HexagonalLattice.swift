@@ -37,12 +37,7 @@ public extension HexagonalLattice {
         
         grid.propagate(vertex: key)
     }
-    
-    func wedge(for sieve: Triangle.Sieve) -> HexagonalDataStoreWedge<V> {
-    
-        dataStore.wedge(for: sieve)
-    }
-    
+
     func merge(_ slice: HexagonalLatticeSlice<C, V>) {
         
         dataStore.merge(slice.dataStore)
@@ -51,7 +46,6 @@ public extension HexagonalLattice {
     
     func slice(region triangle: Triangle) -> HexagonalLatticeSlice<C, V>? {
         
-        //TODO: change Triangle param to Vertex?
         guard let region = grid.region(for: triangle.transpose(.region,
                                                                .tile)) else { return nil }
         

@@ -9,6 +9,6 @@ import Deltille
 
 public struct HexagonalDataStoreTile<V: Codable>: Codable {
     
-    public let tile: Triangle
+    public let triangle: Triangle
     public let vertices: [Triangle.Vertex : V]
 }

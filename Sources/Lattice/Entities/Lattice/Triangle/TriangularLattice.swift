@@ -63,11 +63,6 @@ public extension TriangularLattice {
                 for: tile)
         }
     }
-    
-    func wedge(for sieve: Triangle.Sieve) -> TriangularDataStoreWedge<V> {
-    
-        dataStore.wedge(for: sieve)
-    }
 
     func merge(_ slice: TriangularLatticeSlice<C, V>) {
         
@@ -77,7 +72,6 @@ public extension TriangularLattice {
     
     func slice(region triangle: Triangle) -> TriangularLatticeSlice<C, V>? {
         
-        //TODO: change Triangle param to Vertex?
         guard let region = grid.region(for: triangle.transpose(.region,
                                                                .tile)) else { return nil }
         

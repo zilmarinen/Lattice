@@ -16,24 +16,88 @@ final class TriangularDataStoreTests: XCTestCase {
     internal typealias R = TriangularDataStoreRegion<TriangularDataStoreChunk<V>, V>
     internal typealias V = TriLatticeTile
     
-    internal let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()
-    
     // MARK: Data Store
     
-    func testValueStorage() throws {
+    func testValueStorageAndRetrieval() throws {
+        
+        let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()
+        
+        let value0 = "hex"
+        let value1 = "tri"
+        
+        let triangle0 = Triangle(-14, 26, -12)
+        let triangle1 = Triangle(-2, 4, -2)
+        
+        let vertex0 = triangle0.vertex
+        let vertex1 = triangle1.vertex
+        
+        dataStore.set(.init(origin: vertex0,
+                            value: value0),
+                      for: vertex0)
+        
+        dataStore.set(.init(origin: vertex1,
+                            value: value1),
+                      for: vertex1)
+        
+        let result0 = dataStore.value(for: vertex0)
+        let result1 = dataStore.value(for: vertex1)
+        
+        XCTAssertEqual(vertex0, result0?.origin)
+        XCTAssertEqual(value0, result0?.value)
+        XCTAssertEqual(vertex1, result1?.origin)
+        XCTAssertEqual(value1, result1?.value)
+    }
+    
+    func testSoilablePropagation() throws {
+        
+        let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()
         
         let value = "lattice"
-        let triangle = Triangle(-14, 26, -12)
+        
+        let triangle = Triangle(-82, 58, 23)
+        let chunk = triangle.transpose(.tile,
+                                       .chunk)
+        let region = triangle.transpose(.tile,
+                                        .region)
+        
         let vertex = triangle.vertex
         
-        let tile = TriLatticeTile(origin: vertex,
-                                  value: value)
-        
-        dataStore.set(tile,
+        dataStore.set(.init(origin: vertex,
+                            value: value),
                       for: vertex)
         
-        let result = dataStore.value(for: vertex)
+        let dirtyRegions = dataStore.dirtyRegions
+        let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
         
-        XCTAssertEqual(value, result?.value)
+        XCTAssertEqual(1, dirtyRegions.count)
+        XCTAssertEqual(region, dirtyRegions.first?.triangle)
+        
+        XCTAssertEqual(1, dirtyChunks.count)
+        XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
+    }
+    
+    func testWedge() throws {
+        
+        let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()
+        
+        let value = "lattice"
+        
+        let triangle = Triangle(-82, 58, 23)
+        let chunk = triangle.transpose(.tile,
+                                       .chunk)
+        
+        let vertex = triangle.vertex
+        
+        dataStore.set(.init(origin: vertex,
+                            value: value),
+                      for: vertex)
+        
+        let wedge = dataStore.wedge(for: chunk.sieve(for: .chunk))
+        
+        let vertices = wedge.data.map { $0.value.origin }
+        
+        XCTAssertEqual(wedge.tiles.count, 1)
+        XCTAssertEqual(wedge.data.count, 1)
+        XCTAssertTrue(vertices.contains(triangle.vertex))
     }
 }
