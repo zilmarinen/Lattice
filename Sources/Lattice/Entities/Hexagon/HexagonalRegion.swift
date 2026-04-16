@@ -8,7 +8,8 @@
 import Deltille
 import RealityKit
 
-public class HexagonalRegion<C: HexagonalEntity>: HexagonalEntity {
+public class HexagonalRegion<C: HexagonalEntity>: HexagonalEntity,
+                                                  DefinesHierarchy {
     
     internal enum CodingKeys: CodingKey {
         
@@ -47,14 +48,14 @@ public class HexagonalRegion<C: HexagonalEntity>: HexagonalEntity {
     }
 }
 
-extension HexagonalRegion {
+public extension HexagonalRegion {
     
-    public var isEmpty: Bool {
+    var descendants: [C] {
         
-        chunks.isEmpty
+        chunks
     }
     
-    public var chunks: [C] {
+    var chunks: [C] {
         
         children.compactMap {
             

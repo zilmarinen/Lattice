@@ -46,11 +46,6 @@ public extension Lattice {
         dataStore.value(for: key)
     }
     
-    func remove(values keys: [D.K]) {
-        
-        dataStore.remove(values: keys)
-    }
-    
     func wedge(for sieve: Triangle.Sieve) -> D.W {
     
         dataStore.wedge(for: sieve)
@@ -97,7 +92,7 @@ public extension Lattice {
             
             region.isDirty = false
             
-            guard region.isEmpty else { continue }
+            guard region.numberOfDescendants == 0 else { continue }
             
             emptyRegions.append(region)
         }

@@ -55,7 +55,7 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
         region.set(value,
                    for: key)
         
-        guard region.isEmpty else { return }
+        guard region.numberOfDescendants == 0 else { return }
         
         region.removeFromParent()
     }

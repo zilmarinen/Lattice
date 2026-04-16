@@ -9,6 +9,7 @@ import Deltille
 import RealityKit
 
 public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
+                                                   DefinesHierarchy,
                                                    HasSoilableComponent {
     
     internal enum CodingKeys: CodingKey {
@@ -48,14 +49,14 @@ public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
     }
 }
 
-extension TriangularRegion {
+public extension TriangularRegion {
     
-    public var isEmpty: Bool {
+    var descendants: [C] {
         
-        chunks.isEmpty
+        chunks
     }
     
-    public var chunks: [C] {
+    var chunks: [C] {
         
         children.compactMap {
             
@@ -63,7 +64,7 @@ extension TriangularRegion {
         }
     }
     
-    internal var dirtyChunks: [C] {
+    var dirtyChunks: [C] {
         
         chunks.filter {
             

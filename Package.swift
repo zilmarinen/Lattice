@@ -9,12 +9,12 @@ let package = Package(
                 .iOS(.v17)],
     products: [
         .library(name: "Lattice",
-                 targets: ["Lattice"]),
+                 targets: ["Lattice"])
     ],
     dependencies: [
         .package(path: "../Deltille"),
         .package(url: "git@github.com:nicklockwood/Euclid.git",
-                 branch: "main"),
+                 branch: "main")
     ],
     targets: [
         .target(name: "Lattice",

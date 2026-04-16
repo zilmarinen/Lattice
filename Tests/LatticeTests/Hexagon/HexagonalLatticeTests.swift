@@ -49,18 +49,14 @@ final class HexagonalLatticeTests: XCTestCase {
         
         let lattice = HexLattice()
         
-        let value = "lattice"
-        
         let triangle = Triangle(-82, 58, 23)
         let chunk = triangle.transpose(.tile,
                                        .chunk)
         let region = triangle.transpose(.tile,
                                         .region)
         
-        let vertex = triangle.vertex(.c0)
-        
-        lattice.set(value,
-                    for: vertex)
+        lattice.set("lattice",
+                    for: triangle.vertex(.c0))
         
         let dirtyRegions = lattice.grid.dirtyRegions
         let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
@@ -70,5 +66,29 @@ final class HexagonalLatticeTests: XCTestCase {
         
         XCTAssertEqual(1, dirtyChunks.count)
         XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
+    }
+    
+    func testSoilablePropagationAdditional() throws {
+        
+        let lattice = HexLattice()
+        
+        let vertex = Triangle.Vertex(-16, 12, 5)
+        
+        lattice.set("lattice",
+                    for: vertex)
+        
+        let regions = Set(vertex.tiles.unique(.tile,
+                                              .region))
+        let chunks = Set(vertex.tiles.unique(.tile,
+                                             .chunk))
+        
+        let dirtyRegions = lattice.grid.dirtyRegions
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        
+        XCTAssertEqual(1, dirtyRegions.count)
+        XCTAssertEqual(regions.first, dirtyRegions.first?.triangle)
+        
+        XCTAssertEqual(6, dirtyChunks.count)
+        XCTAssertEqual(chunks, dirtyChunks)
     }
 }

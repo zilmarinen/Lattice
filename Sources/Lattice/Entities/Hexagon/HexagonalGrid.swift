@@ -9,13 +9,14 @@ import Deltille
 import RealityKit
 
 public class HexagonalGrid<R: HexagonalRegion<C>,
-                           C: HexagonalEntity>: Entity {}
+                           C: HexagonalEntity>: Entity,
+                                                DefinesHierarchy {}
 
 public extension HexagonalGrid {
     
-    var isEmpty: Bool {
+    var descendants: [R] {
         
-        regions.isEmpty
+        regions
     }
     
     var regions: [R] {

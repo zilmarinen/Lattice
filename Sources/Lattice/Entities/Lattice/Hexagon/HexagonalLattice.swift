@@ -37,6 +37,16 @@ public extension HexagonalLattice {
         
         grid.propagate(vertex: key)
     }
+    
+    func remove(values keys: [Triangle.Vertex]) {
+        
+        dataStore.remove(values: keys)
+        
+        keys.forEach {
+            
+            grid.propagate(vertex: $0)
+        }
+    }
 
     func merge(_ slice: HexagonalLatticeSlice<C, V>) {
         

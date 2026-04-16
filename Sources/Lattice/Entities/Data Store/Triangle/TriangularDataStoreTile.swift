@@ -14,5 +14,5 @@ public protocol TriangularDataStoreTile: Codable,
     
     var footprint: Triangle.Footprint { get }
     
-    var rotation: Triangle.Rotation? { get }
+    var rotation: Triangle.Rotation { get }
 }

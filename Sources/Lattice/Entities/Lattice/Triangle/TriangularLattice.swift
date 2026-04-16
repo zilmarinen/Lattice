@@ -35,7 +35,10 @@ public extension TriangularLattice {
         dataStore.set(value,
                       for: key.vertex)
         
-        grid.propagate(vertex: key.vertex)
+        key.perimeter.forEach {
+            
+            grid.propagate(triangle: $0)
+        }
     }
     
     func set(_ value: V?,
@@ -61,6 +64,16 @@ public extension TriangularLattice {
             
             set(value,
                 for: tile)
+        }
+    }
+    
+    func remove(values keys: [Triangle.Vertex]) {
+        
+        dataStore.remove(values: keys)
+        
+        keys.forEach {
+            
+            grid.propagate(triangle: .init($0))
         }
     }
 

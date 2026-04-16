@@ -75,19 +75,15 @@ final class TriangularLatticeTests: XCTestCase {
         
         let lattice = TriLattice()
         
-        let value = "lattice"
-        
         let triangle = Triangle(-82, 58, 23)
         let chunk = triangle.transpose(.tile,
                                        .chunk)
         let region = triangle.transpose(.tile,
                                         .region)
         
-        let vertex = triangle.vertex
-        
-        lattice.set(.init(origin: vertex,
-                          value: value),
-                    for: vertex)
+        lattice.set(.init(origin: triangle.vertex,
+                          value: "lattice"),
+                    for: triangle.vertex)
         
         let dirtyRegions = lattice.grid.dirtyRegions
         let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
@@ -97,5 +93,30 @@ final class TriangularLatticeTests: XCTestCase {
         
         XCTAssertEqual(1, dirtyChunks.count)
         XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
+    }
+    
+    func testSoilablePropagationAdditional() throws {
+        
+        let lattice = TriLattice()
+        
+        let triangle = Triangle(-17, 11, 5)
+        let region = triangle.transpose(.tile,
+                                        .region)
+        
+        lattice.set(.init(origin: triangle.vertex,
+                          value: "lattice"),
+                    for: triangle.vertex)
+        
+        let chunks = Set(triangle.perimeter.unique(.tile,
+                                                   .chunk))
+        
+        let dirtyRegions = lattice.grid.dirtyRegions
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        
+        XCTAssertEqual(1, dirtyRegions.count)
+        XCTAssertEqual(region, dirtyRegions.first?.triangle)
+        
+        XCTAssertEqual(6, dirtyChunks.count)
+        XCTAssertEqual(chunks, dirtyChunks)
     }
 }

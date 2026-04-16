@@ -10,6 +10,31 @@
 - [Credits](#credits)
 
 # Lattice
+Lattice is a Swift library for modeling hexagonal and triangular grid lattices as efficient, hierarchical data structures. It is designed to persist values at each vertex of a uniform grid, making it ideal for simulations, procedural generation and spatial data processing.
+
+Lattice provides a structured way to represent grid-based data using either triangular or hexagonal topologies. It combines:
+
+ - Efficient spatial partitioning via chunking
+ - Hierarchical invalidation to minimize unnecessary computation (dirty propagation)
+ - Unified triangular representation across both lattice types
+ - Interoperability between coordinate systems
+
+Built with performance and extensibility in mind, Lattice enables you to build custom behaviors on top of a consistent and efficient core.
+
+## Features
+
+- Dual Grid Support
+ - Native support for both hexagonal and triangular lattices
+- Hierarchical Chunking
+ - Organize data into regions, chunks, and tiles
+ - Optimized for fast lookup and localized updates
+- Dirty State Propagation
+ - Automatically mark regions and chunks as dirty when values change
+ - Efficient propagation through the hierarchy for recalculation or rendering
+- Coordinate Conversion
+ - Seamless conversion between hexagonal and triangular coordinate systems
+- Test Coverage
+ - Unit tested implementations for data stores and lattice types
 
 # Installation
 To install using Swift Package Manager, add this to the `dependencies:` section in your Package.swift file:

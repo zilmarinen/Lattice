@@ -9,7 +9,8 @@ import Deltille
 import RealityKit
 
 public class TriangularGrid<R: TriangularRegion<C>,
-                            C: TriangularEntity>: Entity {
+                            C: TriangularEntity>: Entity,
+                                                  DefinesHierarchy {
     
     internal func merge(_ region: R) {
         
@@ -32,9 +33,9 @@ public class TriangularGrid<R: TriangularRegion<C>,
 
 public extension TriangularGrid {
     
-    var isEmpty: Bool {
+    var descendants: [R] {
         
-        regions.isEmpty
+        regions
     }
     
     var regions: [R] {
