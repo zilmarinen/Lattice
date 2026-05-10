@@ -8,7 +8,8 @@
 import Deltille
 import RealityKit
 
-public protocol Lattice: Entity {
+public protocol Lattice: Entity,
+                         PropagatesChanges {
     
     associatedtype G: TriangularGrid<TriangularRegion<S.C>, S.C>
     associatedtype D: DataStore
@@ -33,9 +34,6 @@ public protocol Lattice: Entity {
     
     func slice(region triangle: Triangle) -> S?
     
-    func propagate(triangle: Triangle)
-    func propagate(vertex: Triangle.Vertex)
-    
     func clean(_ cleaner: Cleaner)
 }
 
@@ -51,14 +49,18 @@ public extension Lattice {
         dataStore.wedge(for: sieve)
     }
     
-    func propagate(triangle: Triangle) {
+    func propagate(triangle: Triangle,
+                   _ createHierarchy: Bool = false) {
      
-        grid.propagate(triangle: triangle)
+        grid.propagate(triangle: triangle,
+                       createHierarchy)
     }
 
-    func propagate(vertex: Triangle.Vertex) {
+    func propagate(vertex: Triangle.Vertex,
+                   _ createHierarchy: Bool = false) {
         
-        grid.propagate(vertex: vertex)
+        grid.propagate(vertex: vertex,
+                       createHierarchy)
     }
     
     func clean(_ cleaner: Cleaner) {

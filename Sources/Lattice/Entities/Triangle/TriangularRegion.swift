@@ -95,21 +95,3 @@ extension TriangularRegion {
         }
     }
 }
-
-public extension TriangularRegion {
-    
-    func propagate(triangle tile: Triangle) {
-        
-        let chunk = chunk(for: tile) ?? .init(tile.transpose(.tile,
-                                                             .chunk))
-        
-        if chunk.parent == nil {
-            
-            addChild(chunk)
-        }
-        
-        chunk.becomeDirty()
-        
-        becomeDirty()
-    }
-}

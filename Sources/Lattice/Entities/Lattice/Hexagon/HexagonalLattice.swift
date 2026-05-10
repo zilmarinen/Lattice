@@ -35,7 +35,8 @@ public extension HexagonalLattice {
         dataStore.set(value,
                       for: key)
         
-        grid.propagate(vertex: key)
+        grid.propagate(vertex: key,
+                       true)
     }
     
     func remove(values keys: [Triangle.Vertex]) {

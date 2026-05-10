@@ -10,7 +10,8 @@ import RealityKit
 
 public class TriangularGrid<R: TriangularRegion<C>,
                             C: TriangularEntity>: Entity,
-                                                  DefinesHierarchy {
+                                                  DefinesHierarchy,
+                                                  PropagatesChanges {
     
     internal func merge(_ region: R) {
         
@@ -84,26 +85,51 @@ public extension TriangularGrid {
     }
 }
 
-internal extension TriangularGrid {
+public extension TriangularGrid {
     
-    func propagate(triangle: Triangle) {
+    func propagate(triangle: Triangle,
+                   _ createHierarchy: Bool = false) {
         
-        let region = region(for: triangle) ?? .init(triangle.transpose(.tile,
-                                                                       .region))
+        let transposedRegion = triangle.transpose(.tile,
+                                                  .region)
+        let transposedChunk = triangle.transpose(.tile,
+                                                 .chunk)
+        
+        guard createHierarchy else {
+            
+            guard let region = region(for: transposedRegion),
+                  let chunk = region.chunk(for: triangle) else { return }
+            
+            chunk.becomeDirty()
+            
+            return region.becomeDirty()
+        }
+        
+        let region = region(for: triangle) ?? .init(transposedRegion)
+        let chunk = region.chunk(for: triangle) ?? .init(transposedChunk)
+        
+        if chunk.parent == nil {
+            
+            region.addChild(chunk)
+        }
+        
+        chunk.becomeDirty()
         
         if region.parent == nil {
             
             addChild(region)
         }
         
-        region.propagate(triangle: triangle)
+        region.becomeDirty()
     }
     
-    func propagate(vertex: Triangle.Vertex) {
+    func propagate(vertex: Triangle.Vertex,
+                   _ createHierarchy: Bool = false) {
         
         for triangle in vertex.tiles {
             
-            propagate(triangle: triangle)
+            propagate(triangle: triangle,
+                      createHierarchy)
         }
     }
 }

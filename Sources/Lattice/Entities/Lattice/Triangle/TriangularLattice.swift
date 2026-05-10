@@ -37,7 +37,8 @@ public extension TriangularLattice {
         
         key.vertices.forEach {
             
-            grid.propagate(vertex: $0)
+            grid.propagate(vertex: $0,
+                           true)
         }
     }
     
