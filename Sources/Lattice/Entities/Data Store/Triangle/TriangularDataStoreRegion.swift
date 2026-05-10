@@ -48,8 +48,6 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
         chunk.set(value,
                   for: key)
         
-        becomeDirty()
-        
         guard chunk.isEmpty else { return }
         
         chunk.removeFromParent()

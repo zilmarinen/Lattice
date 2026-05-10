@@ -35,9 +35,9 @@ public extension TriangularLattice {
         dataStore.set(value,
                       for: key.vertex)
         
-        key.perimeter.forEach {
+        key.vertices.forEach {
             
-            grid.propagate(triangle: $0)
+            grid.propagate(vertex: $0)
         }
     }
     

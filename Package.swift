@@ -12,7 +12,8 @@ let package = Package(
                  targets: ["Lattice"])
     ],
     dependencies: [
-        .package(path: "../Deltille"),
+        .package(url: "git@github.com:zilmarinen/Deltille.git",
+                 branch: "main"),
         .package(url: "git@github.com:nicklockwood/Euclid.git",
                  branch: "main")
     ],

@@ -68,7 +68,5 @@ public extension TriangularDataStoreChunk {
         }
         
         store.data[key] = value
-        
-        becomeDirty()
     }
 }

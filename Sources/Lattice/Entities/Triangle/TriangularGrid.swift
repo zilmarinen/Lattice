@@ -86,17 +86,17 @@ public extension TriangularGrid {
 
 internal extension TriangularGrid {
     
-    func propagate(triangle tile: Triangle) {
+    func propagate(triangle: Triangle) {
         
-        let region = region(for: tile) ?? .init(tile.transpose(.tile,
-                                                               .region))
+        let region = region(for: triangle) ?? .init(triangle.transpose(.tile,
+                                                                       .region))
         
         if region.parent == nil {
             
             addChild(region)
         }
         
-        region.propagate(triangle: tile)
+        region.propagate(triangle: triangle)
     }
     
     func propagate(vertex: Triangle.Vertex) {

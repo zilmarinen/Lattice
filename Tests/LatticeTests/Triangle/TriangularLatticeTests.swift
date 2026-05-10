@@ -25,14 +25,14 @@ internal struct TriLatticeTile: TriangularDataStoreTile {
               [Coordinate.zero])
     }
     
-    internal let rotation: Triangle.Rotation?
+    internal let rotation: Triangle.Rotation
     
     internal init(origin: Triangle.Vertex,
                   value: String) {
         
         self.origin = origin
         self.value = value
-        self.rotation = nil
+        self.rotation = .identity
     }
 }
 

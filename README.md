@@ -24,17 +24,17 @@ Built with performance and extensibility in mind, Lattice enables you to build c
 ## Features
 
 - Dual Grid Support
- - Native support for both hexagonal and triangular lattices
+  - Native support for both hexagonal and triangular lattices
 - Hierarchical Chunking
- - Organize data into regions, chunks, and tiles
- - Optimized for fast lookup and localized updates
+  - Organize data into regions, chunks, and tiles
+  - Optimized for fast lookup and localized updates
 - Dirty State Propagation
- - Automatically mark regions and chunks as dirty when values change
- - Efficient propagation through the hierarchy for recalculation or rendering
+  - Automatically mark regions and chunks as dirty when values change
+  - Efficient propagation through the hierarchy for recalculation or rendering
 - Coordinate Conversion
- - Seamless conversion between hexagonal and triangular coordinate systems
+  - Seamless conversion between hexagonal and triangular coordinate systems
 - Test Coverage
- - Unit tested implementations for data stores and lattice types
+  - Unit tested implementations for data stores and lattice types
 
 # Installation
 To install using Swift Package Manager, add this to the `dependencies:` section in your Package.swift file:
@@ -45,6 +45,7 @@ To install using Swift Package Manager, add this to the `dependencies:` section 
 
 ## Dependencies
 [Deltille](https://github.com/zilmarinen/deltille) is a Swift library for working with hexagonal and triangular grid systems.
+
 [Euclid](https://github.com/nicklockwood/Euclid) is a Swift library for creating and manipulating 3D geometry and is used extensively within this project for mesh generation and vector operations.
 
 ## License

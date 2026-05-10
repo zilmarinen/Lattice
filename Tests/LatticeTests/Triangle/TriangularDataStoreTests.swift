@@ -48,34 +48,6 @@ final class TriangularDataStoreTests: XCTestCase {
         XCTAssertEqual(value1, result1?.value)
     }
     
-    func testSoilablePropagation() throws {
-        
-        let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()
-        
-        let value = "lattice"
-        
-        let triangle = Triangle(-82, 58, 23)
-        let chunk = triangle.transpose(.tile,
-                                       .chunk)
-        let region = triangle.transpose(.tile,
-                                        .region)
-        
-        let vertex = triangle.vertex
-        
-        dataStore.set(.init(origin: vertex,
-                            value: value),
-                      for: vertex)
-        
-        let dirtyRegions = dataStore.dirtyRegions
-        let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
-        
-        XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(region, dirtyRegions.first?.triangle)
-        
-        XCTAssertEqual(1, dirtyChunks.count)
-        XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
-    }
-    
     func testWedge() throws {
         
         let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()

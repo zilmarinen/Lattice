@@ -33,7 +33,7 @@ public protocol Lattice: Entity {
     
     func slice(region triangle: Triangle) -> S?
     
-    func propagate(triangle tile: Triangle)
+    func propagate(triangle: Triangle)
     func propagate(vertex: Triangle.Vertex)
     
     func clean(_ cleaner: Cleaner)
@@ -51,9 +51,9 @@ public extension Lattice {
         dataStore.wedge(for: sieve)
     }
     
-    func propagate(triangle tile: Triangle) {
+    func propagate(triangle: Triangle) {
      
-        grid.propagate(triangle: tile)
+        grid.propagate(triangle: triangle)
     }
 
     func propagate(vertex: Triangle.Vertex) {
