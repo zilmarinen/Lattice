@@ -90,14 +90,9 @@ public extension TriangularGrid {
     func propagate(triangle: Triangle,
                    _ createHierarchy: Bool = false) {
         
-        let transposedRegion = triangle.transpose(.tile,
-                                                  .region)
-        let transposedChunk = triangle.transpose(.tile,
-                                                 .chunk)
-        
         guard createHierarchy else {
             
-            guard let region = region(for: transposedRegion),
+            guard let region = region(for: triangle),
                   let chunk = region.chunk(for: triangle) else { return }
             
             chunk.becomeDirty()
@@ -105,8 +100,10 @@ public extension TriangularGrid {
             return region.becomeDirty()
         }
         
-        let region = region(for: triangle) ?? .init(transposedRegion)
-        let chunk = region.chunk(for: triangle) ?? .init(transposedChunk)
+        let region = region(for: triangle) ?? .init(triangle.transpose(.tile,
+                                                                       .region))
+        let chunk = region.chunk(for: triangle) ?? .init(triangle.transpose(.tile,
+                                                                            .chunk))
         
         if chunk.parent == nil {
             
