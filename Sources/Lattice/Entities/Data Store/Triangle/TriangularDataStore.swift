@@ -17,11 +17,9 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
         
         chunks.forEach {
             
-            let match = $0.triangle.transpose(.chunk,
-                                              .tile)
-            
-            let region = region(for: match) ?? R($0.triangle.transpose(.chunk,
-                                                                       .region))
+            let region = region(for: $0.triangle,
+                                .chunk) ?? R($0.triangle.transpose(.chunk,
+                                                                   .region))
             
             if region.parent == nil {
                 
@@ -32,41 +30,88 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
         }
     }
     
-    public func value(for key: Triangle.Vertex) -> V? {
+    public func value(for key: Triangle) -> V? {
         
-        guard let region = region(for: .init(key)) else { return nil }
+        guard let region = region(for: key,
+                                  .tile) else { return nil }
         
         return region.value(for: key)
     }
     
-    public func set(_ value: V?,
-                    for key: Triangle.Vertex) {
+    public func set(_ value: V,
+                    for key: Triangle) {
         
-        let triangle = Triangle(key)
+        let footprint = value.footprint.map { Triangle($0) }
         
-        let region = region(for: triangle) ?? R(triangle.transpose(.tile,
-                                                                   .region))
-        
-        if region.parent == nil {
+        for triangle in footprint {
             
-            addChild(region)
+            guard self.value(for: triangle) == nil else { return }
         }
         
-        region.set(value,
-                   for: key)
+        let unique = footprint.unique(.tile,
+                                      .region)
         
-        guard region.numberOfDescendants == 0 else { return }
+        var remaining = Set(footprint)
         
-        region.removeFromParent()
+        for triangle in unique {
+            
+            let region = region(for: triangle,
+                                .region) ?? R(triangle)
+            
+            if region.parent == nil {
+                
+                addChild(region)
+            }
+            
+            let tiles = remaining.filter {
+                
+                $0.transpose(.tile,
+                             .region) == triangle
+            }
+            
+            remaining.subtract(tiles)
+            
+            tiles.forEach {
+             
+                region.set(value,
+                           for: $0)
+            }
+        }
     }
     
-    public func wedge(for sieve: Triangle.Sieve) -> TriangularDataStoreWedge<V> {
+    public func remove(values keys: [Triangle]) {
         
-        let tiles = sieve.triangles.reduce(into: [Triangle.Vertex : V]()) { result, triangle in
+        let unique = keys.unique(.tile,
+                                 .region)
+        
+        var remaining = Set(keys)
+        
+        for triangle in unique {
             
-            result[triangle.vertex] = value(for: triangle.vertex)
+            guard let region = region(for: triangle,
+                                      .region) else { continue }
+            
+            let tiles = Array(remaining.filter {
+                
+                $0.transpose(.tile,
+                             .region) == triangle
+            })
+            
+            remaining.subtract(tiles)
+            
+            region.remove(values: tiles)
+            
+            guard region.numberOfDescendants == 0 else { continue }
+            
+            region.removeFromParent()
         }
+    }
+    
+    public func wedge(for sieve: Triangle.Sieve) -> W {
         
-        return .init(data: tiles)
+        .init(data: sieve.triangles.reduce(into: [C.K : C.V]()) { result, triangle in
+            
+            result[triangle.vertex] = value(for: triangle)
+        })
     }
 }

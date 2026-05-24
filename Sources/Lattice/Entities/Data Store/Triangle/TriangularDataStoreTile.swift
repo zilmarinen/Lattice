@@ -12,7 +12,7 @@ public protocol TriangularDataStoreTile: Codable,
     
     var origin: Triangle.Vertex { get }
     
-    var footprint: Triangle.Footprint { get }
+    var footprint: [Triangle.Vertex] { get }
     
     var rotation: Triangle.Rotation { get }
 }

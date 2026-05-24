@@ -55,12 +55,13 @@ public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: TriangularChu
 
 public extension TriangularDataStoreChunk {
     
-    func set(_ value: V?,
+    func set(_ value: V,
              for key: K) {
         
-        guard let value,
-              Triangle(key.position(.tile),
-                       .chunk) == triangle else {
+        let tile = Triangle(key)
+        
+        guard tile.transpose(.tile,
+                             .chunk) == triangle else {
             
             remove(values: [key])
             
@@ -68,5 +69,17 @@ public extension TriangularDataStoreChunk {
         }
         
         store.data[key] = value
+        
+        becomeDirty()
+    }
+    
+    func remove(values keys: [K]) {
+        
+        keys.forEach {
+            
+            store.data.removeValue(forKey: $0)
+        }
+        
+        becomeDirty()
     }
 }

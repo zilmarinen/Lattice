@@ -9,15 +9,12 @@ import Deltille
 import RealityKit
 
 public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
-                                       V: TriangularDataStoreTile>: TriangularRegion<C>,
-                                                                    DataStoreRegion {
+                                       V: TriangularDataStoreTile>: TriangularRegion<C> {
     
-    public func merge(_ chunk: C) {
+    internal func merge(_ chunk: C) {
         
-        let match = chunk.triangle.transpose(.chunk,
-                                             .tile)
-        
-        guard let existing = self.chunk(for: match) else {
+        guard let existing = self.chunk(for: chunk.triangle,
+                                        .chunk) else {
             
             return addChild(chunk)
         }
@@ -25,20 +22,20 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
         existing.merge(chunk.store)
     }
     
-    public func value(for key: Triangle.Vertex) -> V? {
+    internal func value(for key: Triangle) -> V? {
         
-        guard let chunk = chunk(for: .init(key)) else { return nil }
+        guard let chunk = chunk(for: key,
+                                .tile) else { return nil }
         
-        return chunk.value(for: key)
+        return chunk.value(for: key.vertex)
     }
     
-    public func set(_ value: V?,
-                    for key: Triangle.Vertex) {
+    internal func set(_ value: V,
+                      for key: Triangle) {
         
-        let triangle = Triangle(key)
-        
-        let chunk = chunk(for: triangle) ?? C(triangle.transpose(.tile,
-                                                                 .chunk))
+        let chunk = chunk(for: key,
+                          .tile) ?? C(key.transpose(.tile,
+                                                    .chunk))
         
         if chunk.parent == nil {
             
@@ -46,10 +43,36 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
         }
         
         chunk.set(value,
-                  for: key)
+                  for: key.vertex)
+    }
+    
+    internal func remove(values keys: [Triangle]) {
+     
+        let unique = keys.unique(.tile,
+                                 .chunk)
         
-        guard chunk.isEmpty else { return }
+        var remaining = Set(keys)
         
-        chunk.removeFromParent()
+        for triangle in unique {
+            
+            guard let chunk = chunk(for: triangle,
+                                    .chunk) else { continue }
+            
+            let tiles = remaining.filter {
+                
+                $0.transpose(.tile,
+                             .chunk) == triangle
+            }
+            
+            remaining.subtract(tiles)
+            
+            chunk.remove(values: tiles.map { $0.vertex })
+            
+            guard chunk.isEmpty else { continue }
+            
+            chunk.removeFromParent()
+        }
+        
+        becomeDirty()
     }
 }
