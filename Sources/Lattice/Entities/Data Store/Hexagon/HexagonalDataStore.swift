@@ -10,16 +10,16 @@ import RealityKit
 
 public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
                                 C: HexagonalDataStoreChunk<V>,
-                                V: Codable>: HexagonalGrid<R, C>,
-                                             DataStore {
+                                V: DataStoreVertex>: HexagonalGrid<R, C>,
+                                                              DataStore {
     
     public func merge(_ chunks: [C]) {
         
         chunks.forEach {
             
-            let match = $0.hexagon.parent()
-            
-            let region = region(for: match) ?? R(match)
+            let region = region(for: $0.hexagon,
+                                .chunk) ?? R($0.hexagon.transpose(.chunk,
+                                                                  .region))
             
             if region.parent == nil {
                 
@@ -35,20 +35,20 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
         let hexagon = Hexagon(key.position(.tile),
                               .chunk)
         
-        guard let region = region(for: hexagon.parent()) else { return nil }
+        guard let chunk = chunk(for: hexagon,
+                                .chunk) else { return nil }
         
-        return region.value(for: key)
+        return chunk.value(for: key)
     }
     
-    public func set(_ value: V?,
+    public func set(_ value: V,
                     for key: Triangle.Vertex) {
         
         let hexagon = Hexagon(key.position(.tile),
-                              .chunk)
+                              .region)
         
-        let parent = hexagon.parent()
-        
-        let region = region(for: parent) ?? R(parent)
+        let region = region(for: hexagon,
+                            .region) ?? R(hexagon)
         
         if region.parent == nil {
             
@@ -57,34 +57,40 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
         
         region.set(value,
                    for: key)
-        
-        guard region.numberOfDescendants == 0 else { return }
-        
-        region.removeFromParent()
     }
     
-    public func wedge(for sieve: Triangle.Sieve) -> HexagonalDataStoreWedge<V> {
+    public func remove(values keys: [Triangle.Vertex]) {
         
-        let vertices = sieve.vertices.reduce(into: [Triangle.Vertex : V]()) { result, vertex in
+        let unique = keys.reduce(into: [Hexagon : [Triangle.Vertex]]()) { result, vertex in
+            
+            let hexagon = Hexagon(vertex.position(.tile),
+                                  .region)
+            
+            var values = result[hexagon] ?? Array()
+            
+            values.append(vertex)
+            
+            result[hexagon] = values
+        }
+        
+        for (hexagon, values) in unique {
+            
+            guard let region = region(for: hexagon,
+                                      .region) else { continue }
+            
+            region.remove(values: values)
+            
+            guard region.numberOfDescendants == 0 else { return }
+            
+            region.removeFromParent()
+        }
+    }
+    
+    public func wedge(for sieve: Triangle.Sieve) -> W {
+        
+        .init(data: sieve.vertices.reduce(into: [C.K : C.V]()) { result, vertex in
             
             result[vertex] = value(for: vertex)
-        }
-        
-        let tiles = sieve.triangles.reduce(into: [Triangle.Vertex : HexagonalDataStoreTile<V>]()) { result, triangle in
-            
-            let values = triangle.vertices.reduce(into: [Triangle.Vertex : V]()) { result, vertex in
-                
-                guard let value = vertices[vertex] else { return }
-                
-                result[vertex] = value
-            }
-
-            guard !values.isEmpty else { return }
-
-            result[triangle.vertex] = .init(triangle: triangle,
-                                            vertices: values)
-        }
-        
-        return .init(data: tiles)
+        })
     }
 }

@@ -1,5 +1,5 @@
 //
-//  HexagonalDataStoreTile.swift
+//  DataStoreVertex.swift
 //  Lattice
 //
 //  Created by Zack Brown on 08/03/2026.
@@ -7,8 +7,8 @@
 
 import Deltille
 
-public struct HexagonalDataStoreTile<V: Codable>: Codable {
+public protocol DataStoreVertex: Codable,
+                                 Hashable {
     
-    public let triangle: Triangle
-    public let vertices: [Triangle.Vertex : V]
+    var vertex: Triangle.Vertex { get }
 }

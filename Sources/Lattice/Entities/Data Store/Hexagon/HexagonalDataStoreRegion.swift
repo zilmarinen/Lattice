@@ -9,12 +9,12 @@ import Deltille
 import RealityKit
 
 public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
-                                      V: Codable>: HexagonalRegion<C>,
-                                                   DataStoreRegion {
+                                      V: DataStoreVertex>: HexagonalRegion<C> {
     
-    public func merge(_ chunk: C) {
+    internal func merge(_ chunk: C) {
         
-        guard let existing = self.chunk(for: chunk.hexagon) else {
+        guard let existing = self.chunk(for: chunk.hexagon,
+                                        .chunk) else {
         
             return addChild(chunk)
         }
@@ -22,23 +22,25 @@ public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
         existing.merge(chunk.store)
     }
     
-    public func value(for key: Triangle.Vertex) -> V? {
+    internal func value(for key: Triangle.Vertex) -> V? {
         
         let hexagon = Hexagon(key.position(.tile),
                               .chunk)
         
-        guard let chunk = chunk(for: hexagon) else { return nil }
+        guard let chunk = chunk(for: hexagon,
+                                .chunk) else { return nil }
         
         return chunk.value(for: key)
     }
     
-    public func set(_ value: V?,
+    internal func set(_ value: V,
                     for key: Triangle.Vertex) {
         
         let hexagon = Hexagon(key.position(.tile),
                               .chunk)
         
-        let chunk = chunk(for: hexagon) ?? C(hexagon)
+        let chunk = chunk(for: hexagon,
+                          .chunk) ?? C(hexagon)
         
         if chunk.parent == nil {
             
@@ -47,9 +49,32 @@ public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
         
         chunk.set(value,
                   for: key)
+    }
+    
+    internal func remove(values keys: [Triangle.Vertex]) {
         
-        guard chunk.isEmpty else { return }
+        let unique = keys.reduce(into: [Hexagon : [Triangle.Vertex]]()) { result, vertex in
+            
+            let hexagon = Hexagon(vertex.position(.tile),
+                                  .chunk)
+            
+            var values = result[hexagon] ?? Array()
+            
+            values.append(vertex)
+            
+            result[hexagon] = values
+        }
         
-        chunk.removeFromParent()
+        for (hexagon, values) in unique {
+            
+            guard let chunk = chunk(for: hexagon,
+                                    .chunk) else { continue }
+            
+            chunk.remove(values: values)
+            
+            guard chunk.isEmpty else { return }
+            
+            chunk.removeFromParent()
+        }
     }
 }

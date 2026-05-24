@@ -8,8 +8,8 @@
 import Deltille
 import RealityKit
 
-public class HexagonalDataStoreChunk<V: Codable>: HexagonalEntity,
-                                                  HasDataStore {
+public class HexagonalDataStoreChunk<V: DataStoreVertex>: HexagonalChunk,
+                                                          HasDataStore {
     
     internal enum CodingKeys: CodingKey {
         
@@ -18,12 +18,11 @@ public class HexagonalDataStoreChunk<V: Codable>: HexagonalEntity,
     
     public let store: DataStoreComponent<Triangle.Vertex, V>
     
-    required public init(_ hexagon: Hexagon) {
+    required internal init(_ hexagon: Hexagon) {
         
         self.store = .init()
         
-        super.init(hexagon,
-                   .chunk)
+        super.init(hexagon)
         
         components.set(store)
     }
@@ -56,12 +55,13 @@ public class HexagonalDataStoreChunk<V: Codable>: HexagonalEntity,
 
 public extension HexagonalDataStoreChunk {
     
-    func set(_ value: V?,
+    func set(_ value: V,
              for key: K) {
         
-        guard let value,
-              Hexagon(key.position(.tile),
-                      .chunk) == hexagon else {
+        let chunk = Hexagon(key.position(.tile),
+                            .chunk)
+        
+        guard chunk == hexagon else {
             
             remove(values: [key])
             
@@ -69,5 +69,13 @@ public extension HexagonalDataStoreChunk {
         }
         
         store.data[key] = value
+    }
+    
+    func remove(values keys: [K]) {
+        
+        keys.forEach {
+            
+            store.data.removeValue(forKey: $0)
+        }
     }
 }
