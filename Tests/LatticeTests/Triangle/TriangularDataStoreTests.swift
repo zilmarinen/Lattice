@@ -31,20 +31,20 @@ final class TriangularDataStoreTests: XCTestCase {
         let vertex0 = triangle0.vertex
         let vertex1 = triangle1.vertex
         
-        dataStore.set(.init(origin: vertex0,
+        dataStore.set(.init(vertex: vertex0,
                             value: value0),
                       for: triangle0)
         
-        dataStore.set(.init(origin: vertex1,
+        dataStore.set(.init(vertex: vertex1,
                             value: value1),
                       for: triangle1)
         
         let result0 = dataStore.value(for: triangle0)
         let result1 = dataStore.value(for: triangle1)
         
-        XCTAssertEqual(vertex0, result0?.origin)
+        XCTAssertEqual(vertex0, result0?.vertex)
         XCTAssertEqual(value0, result0?.value)
-        XCTAssertEqual(vertex1, result1?.origin)
+        XCTAssertEqual(vertex1, result1?.vertex)
         XCTAssertEqual(value1, result1?.value)
     }
     
@@ -60,13 +60,13 @@ final class TriangularDataStoreTests: XCTestCase {
         
         let vertex = triangle.vertex
         
-        dataStore.set(.init(origin: vertex,
+        dataStore.set(.init(vertex: vertex,
                             value: value),
                       for: triangle)
         
         let wedge = dataStore.wedge(for: chunk.sieve(for: .chunk))
         
-        let vertices = wedge.data.map { $0.value.origin }
+        let vertices = wedge.data.map { $0.value.vertex }
         
         XCTAssertEqual(wedge.data.count, 1)
         XCTAssertTrue(vertices.contains(vertex))

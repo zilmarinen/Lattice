@@ -14,7 +14,7 @@ fileprivate class HexLattice: HexagonalLattice<HexLatticeChunk, HexLatticeVertex
 
 fileprivate class HexLatticeChunk: TriangularChunk {}
 
-internal struct HexLatticeVertex: HexagonalDataStoreVertex {
+internal struct HexLatticeVertex: DataStoreValue {
     
     internal let vertex: Triangle.Vertex
     internal let value: String

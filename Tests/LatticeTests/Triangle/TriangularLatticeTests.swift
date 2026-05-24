@@ -16,17 +16,17 @@ fileprivate class TriLatticeChunk: TriangularChunk {}
 
 internal struct TriLatticeTile: TriangularDataStoreTile {
     
-    internal let origin: Triangle.Vertex
+    internal let vertex: Triangle.Vertex
     internal let value: String
     
-    internal var footprint: [Triangle.Vertex] { [origin] }
+    internal var footprint: [Triangle.Vertex] { [vertex] }
     
     internal var rotation: Triangle.Rotation { .identity }
     
-    internal init(origin: Triangle.Vertex,
+    internal init(vertex: Triangle.Vertex,
                   value: String) {
         
-        self.origin = origin
+        self.vertex = vertex
         self.value = value
     }
 }
@@ -49,20 +49,20 @@ final class TriangularLatticeTests: XCTestCase {
         let vertex0 = triangle0.vertex
         let vertex1 = triangle1.vertex
         
-        lattice.set(.init(origin: vertex0,
+        lattice.set(.init(vertex: vertex0,
                           value: value0),
                     for: triangle0)
         
-        lattice.set(.init(origin: vertex1,
+        lattice.set(.init(vertex: vertex1,
                           value: value1),
                     for: triangle1)
         
         let result0 = lattice.value(for: triangle0)
         let result1 = lattice.value(for: triangle1)
         
-        XCTAssertEqual(vertex0, result0?.origin)
+        XCTAssertEqual(vertex0, result0?.vertex)
         XCTAssertEqual(value0, result0?.value)
-        XCTAssertEqual(vertex1, result1?.origin)
+        XCTAssertEqual(vertex1, result1?.vertex)
         XCTAssertEqual(value1, result1?.value)
     }
     
@@ -76,7 +76,7 @@ final class TriangularLatticeTests: XCTestCase {
         let region = triangle.transpose(.tile,
                                         .region)
         
-        lattice.set(.init(origin: triangle.vertex,
+        lattice.set(.init(vertex: triangle.vertex,
                           value: "lattice"),
                     for: triangle)
         
@@ -98,7 +98,7 @@ final class TriangularLatticeTests: XCTestCase {
         let region = triangle.transpose(.tile,
                                         .region)
         
-        lattice.set(.init(origin: triangle.vertex,
+        lattice.set(.init(vertex: triangle.vertex,
                           value: "lattice"),
                     for: triangle)
         
