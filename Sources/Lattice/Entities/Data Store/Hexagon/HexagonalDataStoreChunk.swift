@@ -8,8 +8,8 @@
 import Deltille
 import RealityKit
 
-public class HexagonalDataStoreChunk<V: DataStoreVertex>: HexagonalChunk,
-                                                          HasDataStore {
+public class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
+                                                         HasDataStore {
     
     internal enum CodingKeys: CodingKey {
         

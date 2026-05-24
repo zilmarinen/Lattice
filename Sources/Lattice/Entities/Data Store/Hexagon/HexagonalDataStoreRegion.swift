@@ -9,7 +9,7 @@ import Deltille
 import RealityKit
 
 public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
-                                      V: DataStoreVertex>: HexagonalRegion<C> {
+                                      V: DataStoreValue>: HexagonalRegion<C> {
     
     internal func merge(_ chunk: C) {
         

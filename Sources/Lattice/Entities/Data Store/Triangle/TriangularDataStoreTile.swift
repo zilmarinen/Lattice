@@ -8,9 +8,8 @@
 import Deltille
 
 public protocol TriangularDataStoreTile: Codable,
+                                         DataStoreValue,
                                          Hashable {
-    
-    var origin: Triangle.Vertex { get }
     
     var footprint: [Triangle.Vertex] { get }
     

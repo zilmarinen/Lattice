@@ -10,8 +10,8 @@ import RealityKit
 
 public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
                                 C: HexagonalDataStoreChunk<V>,
-                                V: DataStoreVertex>: HexagonalGrid<R, C>,
-                                                              DataStore {
+                                V: DataStoreValue>: HexagonalGrid<R, C>,
+                                                    DataStore {
     
     public func merge(_ chunks: [C]) {
         

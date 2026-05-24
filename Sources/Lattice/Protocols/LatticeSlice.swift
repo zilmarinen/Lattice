@@ -25,17 +25,6 @@ public protocol LatticeSlice: Codable,
 
 public extension LatticeSlice {
     
-//    static func == (lhs: Self,
-//                    rhs: Self) -> Bool {
-//        
-//        lhs.region.triangle == rhs.region.triangle
-//    }
-//    
-//    func hash(into hasher: inout Hasher) {
-//        
-//        hasher.combine(region.triangle)
-//    }
-    
     var isEmpty: Bool {
         
         dataStore.isEmpty

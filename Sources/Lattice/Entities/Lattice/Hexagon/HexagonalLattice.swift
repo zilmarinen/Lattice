@@ -9,8 +9,8 @@ import Deltille
 import RealityKit
 
 open class HexagonalLattice<C: TriangularChunk,
-                            V: DataStoreVertex>: Entity,
-                                                 Lattice {
+                            V: DataStoreValue>: Entity,
+                                                Lattice {
     
     public typealias R = HexagonalDataStoreRegion<HexagonalDataStoreChunk<V>, V>
     
