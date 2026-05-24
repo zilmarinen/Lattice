@@ -10,7 +10,25 @@ import RealityKit
 
 public class HexagonalGrid<R: HexagonalRegion<C>,
                            C: HexagonalEntity>: Entity,
-                                                DefinesHierarchy {}
+                                                DefinesHierarchy {
+    
+    internal func merge(_ region: R) {
+        
+        guard let existing = self.region(for: region.hexagon,
+                                         .region) else {
+            
+            return addChild(region)
+        }
+        
+        for chunk in region.chunks {
+            
+            guard existing.chunk(for: chunk.hexagon,
+                                 .chunk) == nil else { continue }
+            
+            existing.addChild(chunk)
+        }
+    }
+}
 
 public extension HexagonalGrid {
     
@@ -30,26 +48,35 @@ public extension HexagonalGrid {
 
 public extension HexagonalGrid {
     
-    func region(for region: Hexagon) -> R? {
+    func region(for hexagon: Hexagon,
+                _ from: Hexagon.Scale) -> R? {
         
-        regions.first {
+        let region = hexagon.transpose(from,
+                                       .region)
+        
+        return regions.first {
             
             $0.hexagon == region
         }
     }
     
-    func chunk(for chunk: Hexagon) -> C? {
+    func chunk(for chunk: Hexagon,
+               _ from: Hexagon.Scale) -> C? {
         
-        guard let region = region(for: chunk.parent()) else { return nil }
+        guard let region = region(for: chunk,
+                                  from) else { return nil }
         
-        return region.chunk(for: chunk)
+        return region.chunk(for: chunk,
+                            from)
     }
     
-    func chunks(intersecting triangle: Triangle) -> [C] {
+    func chunks(intersecting triangle: Triangle,
+                _ from: Triangle.Scale) -> [C] {
         
         regions.flatMap {
          
-            $0.chunks(intersecting: triangle)
+            $0.chunks(intersecting: triangle,
+                      from)
         }
     }
 }

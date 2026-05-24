@@ -8,8 +8,8 @@
 import Deltille
 import RealityKit
 
-public class HexagonalRegion<C: HexagonalEntity>: HexagonalEntity,
-                                                  DefinesHierarchy {
+public class HexagonalRegion<C: HexagonalChunk>: HexagonalEntity,
+                                                 DefinesHierarchy {
     
     internal enum CodingKeys: CodingKey {
         
@@ -34,7 +34,10 @@ public class HexagonalRegion<C: HexagonalEntity>: HexagonalEntity,
         let children = try container.decode([C].self,
                                             forKey: .chunks)
         
-        children.forEach { addChild($0) }
+        children.forEach {
+            
+            addChild($0)
+        }
     }
     
     override public func encode(to encoder: any Encoder) throws {
@@ -66,32 +69,37 @@ public extension HexagonalRegion {
 
 public extension HexagonalRegion {
     
-    func chunk(for chunk: Hexagon) -> C? {
+    func chunk(for hexagon: Hexagon,
+               _ from: Hexagon.Scale) -> C? {
         
-        chunks.first {
+        let chunk = hexagon.transpose(from,
+                                      .chunk)
+        
+        return chunks.first {
             
             $0.hexagon == chunk
         }
     }
     
-    func chunks(intersecting region: Triangle) -> [C] {
+    func chunks(intersecting triangle: Triangle,
+                _ from: Triangle.Scale) -> [C] {
         
         chunks.filter {
             
             for vertex in $0.hexagon.vertices {
                 
                 let match = Triangle(vertex.position(.chunk),
-                                     .region)
+                                     from)
                 
-                if match == region {
+                if match == triangle {
                     
                     return true
                 }
             }
             
-            for vertex in region.vertices {
+            for vertex in triangle.vertices {
                 
-                let match = Hexagon(vertex.position(.region),
+                let match = Hexagon(vertex.position(from),
                                     .chunk)
                 
                 if match == $0.hexagon {

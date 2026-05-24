@@ -6,15 +6,16 @@
 //
 
 import Deltille
+import Euclid
 import RealityKit
 
-public class HexagonalEntity: Entity,
-                              @preconcurrency Codable {
+open class HexagonalEntity: Entity,
+                            @preconcurrency Codable {
    
    internal enum CodingKeys: CodingKey {
        
-       case hexagon
        case scale
+       case vertex
    }
     
     public let hexagon: Hexagon
@@ -40,8 +41,10 @@ public class HexagonalEntity: Entity,
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.hexagon = try container.decode(Hexagon.self,
-                                            forKey: .hexagon)
+        let vertex = try container.decode(Hexagon.Vertex.self,
+                                          forKey: .vertex)
+        
+        self.hexagon = .init(vertex)
         
         self.scale = try container.decode(Hexagon.Scale.self,
                                           forKey: .scale)
@@ -57,8 +60,8 @@ public class HexagonalEntity: Entity,
     
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(hexagon,
-                             forKey: .hexagon)
+        try container.encode(hexagon.vertex,
+                             forKey: .vertex)
         
         try container.encode(scale,
                              forKey: .scale)
@@ -73,17 +76,60 @@ extension HexagonalEntity {
             
         case .region:
             
-            position = .init(hexagon.child().position(.chunk))
+            position = .init(hexagon.position(scale))
             
         case .chunk:
             
-            let origin = hexagon.parent().child().position(scale)
+            let region = hexagon.transpose(scale,
+                                           .region)
             
-            position = .init(hexagon.position(scale) - origin)
+            position = .init(hexagon.position(scale) - region.position(.region))
             
-        default:
-            
-            position = .init(hexagon.position(scale))
+            //REMOVE
+            guard region.transpose(.region,
+                                   .chunk) != hexagon else { return }
         }
+        
+        let vertices = hexagon.vertices.position(scale)
+        let color: Color = scale == .region ? .red : .blue
+        let elevation: Float = scale == .region ? 0.01 : 0.02
+        
+        guard let surface = Polygon.surface(vertices,
+                                            color),
+              let entity = try? ModelEntity(Mesh([surface])) else { return }
+
+        entity.position = -.init(hexagon.position(.chunk)) - [0.0, elevation, 0.0]
+        entity.model?.materials = [SimpleMaterial(color: .init(color),
+                                                  isMetallic: false)]
+
+        addChild(entity)
+    }
+}
+
+public extension Polygon {
+    
+    static func surface(_ vectors: [Vector],
+                        _ color: Color) -> Self? {
+        
+        guard vectors.count >= 3 else { return nil }
+        
+        let a = vectors[0]
+        let b = vectors[1]
+        let c = vectors[2]
+        
+        let ac = c - a
+        let bc = c - b
+        
+        let normal = ac.cross(bc).normalized()
+        
+        let vertices = vectors.map {
+            
+            Vertex($0,
+                   normal,
+                   nil,
+                   color)
+        }
+        
+        return Polygon(vertices)
     }
 }
