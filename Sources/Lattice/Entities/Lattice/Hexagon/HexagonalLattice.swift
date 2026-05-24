@@ -9,8 +9,8 @@ import Deltille
 import RealityKit
 
 open class HexagonalLattice<C: TriangularChunk,
-                            V: Codable>: Entity,
-                                         Lattice {
+                            V: DataStoreVertex>: Entity,
+                                                 Lattice {
     
     public typealias R = HexagonalDataStoreRegion<HexagonalDataStoreChunk<V>, V>
     
@@ -29,7 +29,7 @@ open class HexagonalLattice<C: TriangularChunk,
 
 public extension HexagonalLattice {
     
-    func set(_ value: V?,
+    func set(_ value: V,
              for key: Triangle.Vertex) {
         
         dataStore.set(value,
@@ -57,10 +57,11 @@ public extension HexagonalLattice {
     
     func slice(region triangle: Triangle) -> HexagonalLatticeSlice<C, V>? {
         
-        guard let region = grid.region(for: triangle.transpose(.region,
-                                                               .tile)) else { return nil }
+        guard let region = grid.region(for: triangle,
+                                       .tile) else { return nil }
         
-        return .init(dataStore: dataStore.chunks(intersecting: triangle),
+        return .init(dataStore: dataStore.chunks(intersecting: triangle,
+                                                 .tile),
                      region: region)
     }
 }

@@ -11,16 +11,16 @@ import RealityKit
 public protocol DataStore: Entity {
     
     associatedtype C: HasDataStore
-    associatedtype W: DataStoreWedge
     
     associatedtype K = C.K
     associatedtype V = C.V
+    associatedtype W = DataStoreWedge<C.K, C.V>
     
     func merge(_ chunks: [C])
     
     func value(for key: K) -> V?
     
-    func set(_ value: V?,
+    func set(_ value: V,
              for key: K)
     
     func remove(values keys: [K])
@@ -28,14 +28,3 @@ public protocol DataStore: Entity {
     func wedge(for sieve: Triangle.Sieve) -> W
 }
 
-public extension DataStore {
-    
-    func remove(values keys: [K]) {
-     
-        keys.forEach {
-            
-            set(nil,
-                for: $0)
-        }
-    }
-}

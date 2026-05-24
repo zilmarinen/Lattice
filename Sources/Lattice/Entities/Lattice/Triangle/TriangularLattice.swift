@@ -29,11 +29,11 @@ open class TriangularLattice<C: TriangularChunk,
 
 public extension TriangularLattice {
     
-    private func set(_ value: V?,
-                     for key: Triangle) {
+    func set(_ value: V,
+             for key: Triangle) {
         
         dataStore.set(value,
-                      for: key.vertex)
+                      for: key)
         
         key.vertices.forEach {
             
@@ -42,39 +42,13 @@ public extension TriangularLattice {
         }
     }
     
-    func set(_ value: V?,
-             for key: Triangle.Vertex) {
-        
-        guard let value else {
-                    
-            guard let existing = self.value(for: key) else { return }
-            
-            return existing.footprint.tiles.forEach {
-                
-                set(nil,
-                    for: $0)
-            }
-        }
-        
-        for tile in value.footprint.tiles {
-            
-            guard self.value(for: tile.vertex) == nil else { return }
-        }
-        
-        for tile in value.footprint.tiles {
-            
-            set(value,
-                for: tile)
-        }
-    }
-    
-    func remove(values keys: [Triangle.Vertex]) {
+    func remove(values keys: [Triangle]) {
         
         dataStore.remove(values: keys)
         
         keys.forEach {
             
-            grid.propagate(triangle: .init($0))
+            grid.propagate(triangle: $0)
         }
     }
 
@@ -86,10 +60,11 @@ public extension TriangularLattice {
     
     func slice(region triangle: Triangle) -> TriangularLatticeSlice<C, V>? {
         
-        guard let region = grid.region(for: triangle.transpose(.region,
-                                                               .tile)) else { return nil }
+        guard let region = grid.region(for: triangle,
+                                       .tile) else { return nil }
         
-        return .init(dataStore: dataStore.chunks(intersecting: triangle),
+        return .init(dataStore: dataStore.chunks(intersecting: triangle,
+                                                 .tile),
                      region: region)
     }
 }

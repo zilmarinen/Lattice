@@ -16,19 +16,19 @@ public protocol Lattice: Entity,
     associatedtype S: LatticeSlice
     
     typealias Cleaner = ((_ chunk: S.C,
-                          _ wedge: D.W) -> Bool)
+                          _ wedge: DataStoreWedge<D.C.K, D.C.V>) -> Bool)
     
     var grid: G { get }
     var dataStore: D { get }
     
     func value(for key: D.K) -> D.V?
     
-    func set(_ value: D.V?,
+    func set(_ value: D.V,
              for key: D.K)
     
     func remove(values keys: [D.K])
     
-    func wedge(for sieve: Triangle.Sieve) -> D.W
+    func wedge(for sieve: Triangle.Sieve) -> DataStoreWedge<D.C.K, D.C.V>
     
     func merge(_ slice: S)
     

@@ -9,7 +9,7 @@ import Deltille
 
 @MainActor
 public struct HexagonalLatticeSlice<C: TriangularChunk,
-                                    V: Codable>: @preconcurrency LatticeSlice {
+                                    V: DataStoreVertex>: LatticeSlice {
     
     public let dataStore: [HexagonalDataStoreChunk<V>]
     public let region: TriangularRegion<C>
