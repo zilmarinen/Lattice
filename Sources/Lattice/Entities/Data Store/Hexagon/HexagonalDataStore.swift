@@ -88,9 +88,11 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
     
     public func wedge(for sieve: Triangle.Sieve) -> W {
         
-        .init(data: sieve.vertices.reduce(into: [C.K : C.V]()) { result, vertex in
+        let data = sieve.vertices.reduce(into: [C.K : C.V]()) { result, vertex in
             
             result[vertex] = value(for: vertex)
-        })
+        }
+        
+        return .init(data: data)
     }
 }

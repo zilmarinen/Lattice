@@ -9,8 +9,8 @@ import Deltille
 import RealityKit
 
 public class DataStoreComponent<K: Vertex,
-                                V: Codable>: Component,
-                                             Codable {
+                                V: DataStoreValue>: Component,
+                                                    Codable {
     
     public internal(set) var data: [K : V] = [:]
     
@@ -24,7 +24,7 @@ public protocol HasDataStore: Entity,
                               Codable {
     
     associatedtype K: Vertex
-    associatedtype V: Codable
+    associatedtype V: DataStoreValue
     
     var store: DataStoreComponent<K, V> { get }
     

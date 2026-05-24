@@ -16,6 +16,7 @@ public protocol Lattice: Entity,
     associatedtype S: LatticeSlice
     
     typealias Cleaner = ((_ chunk: S.C,
+                          _ sieve: Triangle.Sieve,
                           _ wedge: DataStoreWedge<D.C.K, D.C.V>) -> Bool)
     
     var grid: G { get }
@@ -73,10 +74,12 @@ public extension Lattice {
             
             for chunk in region.dirtyChunks {
                 
-                let wedge = wedge(for: chunk.triangle.sieve(for: .chunk))
+                let sieve = chunk.triangle.sieve(for: .chunk)
+                let wedge = wedge(for: sieve)
                 
                 guard !wedge.isEmpty,
                       cleaner(chunk,
+                              sieve,
                               wedge) else {
                     
                     emptyChunks.append(chunk)

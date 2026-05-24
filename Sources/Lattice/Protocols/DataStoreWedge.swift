@@ -8,7 +8,7 @@
 import Deltille
 
 public struct DataStoreWedge<K: Vertex,
-                             V: Codable> {
+                             V: DataStoreValue> {
     
     public let data: [K : V]
 }
