@@ -15,7 +15,7 @@ open class TriangularEntity: Entity,
     internal enum CodingKeys: CodingKey {
         
         case scale
-        case triangle
+        case vertex
     }
     
     public let triangle: Triangle
@@ -41,8 +41,10 @@ open class TriangularEntity: Entity,
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.triangle = try container.decode(Triangle.self,
-                                             forKey: .triangle)
+        let vertex = try container.decode(Triangle.Vertex.self,
+                                          forKey: .vertex)
+        
+        self.triangle = .init(vertex)
         
         self.scale = try container.decode(Triangle.Scale.self,
                                           forKey: .scale)
@@ -58,8 +60,8 @@ open class TriangularEntity: Entity,
     
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(triangle,
-                             forKey: .triangle)
+        try container.encode(triangle.vertex,
+                             forKey: .vertex)
         
         try container.encode(scale,
                              forKey: .scale)
@@ -78,10 +80,10 @@ extension TriangularEntity {
             
         case .chunk:
             
-            let origin = triangle.transpose(scale,
-                                            .region).position(.region)
+            let region = triangle.transpose(scale,
+                                            .region)
             
-            position = .init(triangle.position(scale) - origin)
+            position = .init(triangle.position(scale) - region.position(.region))
             
         default:
             

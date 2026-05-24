@@ -10,22 +10,20 @@ import RealityKit
 
 public class TriangularGrid<R: TriangularRegion<C>,
                             C: TriangularEntity>: Entity,
-                                                  DefinesHierarchy,
-                                                  PropagatesChanges {
+                                                  DefinesHierarchy {
     
     internal func merge(_ region: R) {
         
-        let match = region.triangle.transpose(.region,
-                                              .tile)
-        
-        guard let existing = self.region(for: match) else {
+        guard let existing = self.region(for: region.triangle,
+                                         .region) else {
             
             return addChild(region)
         }
         
         for chunk in region.chunks {
             
-            guard existing.chunk(for: chunk.triangle) == nil else { continue }
+            guard existing.chunk(for: chunk.triangle,
+                                 .chunk) == nil else { continue }
             
             existing.addChild(chunk)
         }
@@ -58,10 +56,11 @@ public extension TriangularGrid {
 
 public extension TriangularGrid {
     
-    func region(for tile: Triangle) -> R? {
+    func region(for triangle: Triangle,
+                _ from: Triangle.Scale) -> R? {
         
-        let region = tile.transpose(.tile,
-                                    .region)
+        let region = triangle.transpose(from,
+                                        .region)
         
         return regions.first {
             
@@ -69,18 +68,23 @@ public extension TriangularGrid {
         }
     }
     
-    func chunk(for tile: Triangle) -> C? {
+    func chunk(for triangle: Triangle,
+               _ from: Triangle.Scale) -> C? {
         
-        guard let region = region(for: tile) else { return nil }
+        guard let region = self.region(for: triangle,
+                                       from) else { return nil }
         
-        return region.chunk(for: tile)
+        return region.chunk(for: triangle,
+                            from)
     }
     
-    func chunks(intersecting region: Triangle) -> [C] {
+    func chunks(intersecting triangle: Triangle,
+                _ from: Triangle.Scale) -> [C] {
         
         regions.flatMap {
             
-            $0.chunks(intersecting: region)
+            $0.chunks(intersecting: triangle,
+                      from)
         }
     }
 }
@@ -92,18 +96,23 @@ public extension TriangularGrid {
         
         guard createHierarchy else {
             
-            guard let region = region(for: triangle),
-                  let chunk = region.chunk(for: triangle) else { return }
+            guard let region = region(for: triangle,
+                                      .tile),
+                  let chunk = region.chunk(for: triangle,
+                                           .tile) else { return }
             
             chunk.becomeDirty()
             
             return region.becomeDirty()
         }
         
-        let region = region(for: triangle) ?? .init(triangle.transpose(.tile,
-                                                                       .region))
-        let chunk = region.chunk(for: triangle) ?? .init(triangle.transpose(.tile,
-                                                                            .chunk))
+        let region = region(for: triangle,
+                            .tile) ?? .init(triangle.transpose(.tile,
+                                                               .region))
+        
+        let chunk = region.chunk(for: triangle,
+                                 .tile) ?? .init(triangle.transpose(.tile,
+                                                                    .chunk))
         
         if chunk.parent == nil {
             
@@ -123,7 +132,18 @@ public extension TriangularGrid {
     func propagate(vertex: Triangle.Vertex,
                    _ createHierarchy: Bool = false) {
         
-        for triangle in vertex.tiles {
+        let unique = vertex.tiles.unique(.tile,
+                                         .chunk)
+        
+        let tiles = vertex.tiles.filter {
+            
+            let chunk = $0.transpose(.tile,
+                                     .chunk)
+            
+            return unique.contains(chunk)
+        }
+        
+        for triangle in tiles {
             
             propagate(triangle: triangle,
                       createHierarchy)

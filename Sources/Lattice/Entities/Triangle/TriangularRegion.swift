@@ -35,7 +35,10 @@ public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
         let children = try container.decode([C].self,
                                             forKey: .chunks)
         
-        children.forEach { addChild($0) }
+        children.forEach {
+            
+            addChild($0)
+        }
     }
     
     override public func encode(to encoder: any Encoder) throws {
@@ -75,10 +78,11 @@ public extension TriangularRegion {
 
 extension TriangularRegion {
     
-    internal func chunk(for tile: Triangle) -> C? {
+    internal func chunk(for triangle: Triangle,
+                        _ from: Triangle.Scale) -> C? {
         
-        let chunk = tile.transpose(.tile,
-                                   .chunk)
+        let chunk = triangle.transpose(from,
+                                       .chunk)
         
         return chunks.first {
             
@@ -86,12 +90,13 @@ extension TriangularRegion {
         }
     }
     
-    internal func chunks(intersecting region: Triangle) -> [C] {
+    internal func chunks(intersecting triangle: Triangle,
+                         _ from: Triangle.Scale) -> [C] {
         
         chunks.filter {
             
-            $0.triangle.transpose(.chunk,
-                                  .region) == region
+            $0.triangle.transpose(from,
+                                  .region) == triangle
         }
     }
 }
