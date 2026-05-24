@@ -14,7 +14,7 @@ import XCTest
 final class HexagonalDataStoreTests: XCTestCase {
     
     internal typealias R = HexagonalDataStoreRegion<HexagonalDataStoreChunk<V>, V>
-    internal typealias V = String
+    internal typealias V = HexLatticeVertex
     
     // MARK: Data Store
     
@@ -31,17 +31,19 @@ final class HexagonalDataStoreTests: XCTestCase {
         let vertex0 = triangle0.vertex(.c0)
         let vertex1 = triangle1.vertex(.c0)
         
-        dataStore.set(value0,
+        dataStore.set(.init(vertex: vertex0,
+                            value: value0),
                       for: vertex0)
         
-        dataStore.set(value1,
+        dataStore.set(.init(vertex: vertex1,
+                            value: value1),
                       for: vertex1)
         
         let result0 = dataStore.value(for: vertex0)
         let result1 = dataStore.value(for: vertex1)
         
-        XCTAssertEqual(value0, result0)
-        XCTAssertEqual(value1, result1)
+        XCTAssertEqual(value0, result0?.value)
+        XCTAssertEqual(value1, result1?.value)
     }
     
     func testWedge() throws {
@@ -56,15 +58,15 @@ final class HexagonalDataStoreTests: XCTestCase {
         
         let vertex = triangle.vertex(.c0)
         
-        dataStore.set(value,
+        dataStore.set(.init(vertex: vertex,
+                            value: value),
                       for: vertex)
         
         let wedge = dataStore.wedge(for: chunk.sieve(for: .chunk))
         
-        let vertices = Set(wedge.data.map { $0.value.triangle.vertex })
+        let vertices = Set(wedge.data.map { $0.value.vertex })
         
-        XCTAssertEqual(wedge.tiles.count, 6)
-        XCTAssertEqual(wedge.data.count, 6)
-        XCTAssertTrue(vertices.isSubset(of: vertex.tiles.map { $0.vertex }))
+        XCTAssertEqual(wedge.data.count, 1)
+        XCTAssertTrue(vertices.contains(vertex))
     }
 }

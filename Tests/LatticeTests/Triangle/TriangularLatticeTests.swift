@@ -19,20 +19,15 @@ internal struct TriLatticeTile: TriangularDataStoreTile {
     internal let origin: Triangle.Vertex
     internal let value: String
     
-    internal var footprint: Triangle.Footprint {
-        
-        .init(.init(origin),
-              [Coordinate.zero])
-    }
+    internal var footprint: [Triangle.Vertex] { [origin] }
     
-    internal let rotation: Triangle.Rotation
+    internal var rotation: Triangle.Rotation { .identity }
     
     internal init(origin: Triangle.Vertex,
                   value: String) {
         
         self.origin = origin
         self.value = value
-        self.rotation = .identity
     }
 }
 
@@ -56,14 +51,14 @@ final class TriangularLatticeTests: XCTestCase {
         
         lattice.set(.init(origin: vertex0,
                           value: value0),
-                    for: vertex0)
+                    for: triangle0)
         
         lattice.set(.init(origin: vertex1,
                           value: value1),
-                    for: vertex1)
+                    for: triangle1)
         
-        let result0 = lattice.value(for: vertex0)
-        let result1 = lattice.value(for: vertex1)
+        let result0 = lattice.value(for: triangle0)
+        let result1 = lattice.value(for: triangle1)
         
         XCTAssertEqual(vertex0, result0?.origin)
         XCTAssertEqual(value0, result0?.value)
@@ -83,7 +78,7 @@ final class TriangularLatticeTests: XCTestCase {
         
         lattice.set(.init(origin: triangle.vertex,
                           value: "lattice"),
-                    for: triangle.vertex)
+                    for: triangle)
         
         let dirtyRegions = lattice.grid.dirtyRegions
         let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
@@ -105,7 +100,7 @@ final class TriangularLatticeTests: XCTestCase {
         
         lattice.set(.init(origin: triangle.vertex,
                           value: "lattice"),
-                    for: triangle.vertex)
+                    for: triangle)
         
         let chunks = Set(triangle.perimeter.unique(.tile,
                                                    .chunk))

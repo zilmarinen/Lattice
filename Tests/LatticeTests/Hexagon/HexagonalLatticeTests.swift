@@ -10,9 +10,15 @@ import Euclid
 import XCTest
 @testable import Lattice
 
-fileprivate class HexLattice: HexagonalLattice<HexLatticeChunk, String> {}
+fileprivate class HexLattice: HexagonalLattice<HexLatticeChunk, HexLatticeVertex> {}
 
 fileprivate class HexLatticeChunk: TriangularChunk {}
+
+internal struct HexLatticeVertex: HexagonalDataStoreVertex {
+    
+    internal let vertex: Triangle.Vertex
+    internal let value: String
+}
 
 @MainActor
 final class HexagonalLatticeTests: XCTestCase {
@@ -32,17 +38,19 @@ final class HexagonalLatticeTests: XCTestCase {
         let vertex0 = triangle0.vertex(.c0)
         let vertex1 = triangle1.vertex(.c0)
         
-        lattice.set(value0,
+        lattice.set(.init(vertex: vertex0,
+                          value: value0),
                     for: vertex0)
         
-        lattice.set(value1,
+        lattice.set(.init(vertex: vertex1,
+                          value: value1),
                     for: vertex1)
         
         let result0 = lattice.value(for: vertex0)
         let result1 = lattice.value(for: vertex1)
         
-        XCTAssertEqual(value0, result0)
-        XCTAssertEqual(value1, result1)
+        XCTAssertEqual(value0, result0?.value)
+        XCTAssertEqual(value1, result1?.value)
     }
     
     func testSoilablePropagation() throws {
@@ -55,8 +63,11 @@ final class HexagonalLatticeTests: XCTestCase {
         let region = triangle.transpose(.tile,
                                         .region)
         
-        lattice.set("lattice",
-                    for: triangle.vertex(.c0))
+        let vertex = triangle.vertex(.c0)
+        
+        lattice.set(.init(vertex: vertex,
+                          value: "lattice"),
+                    for: vertex)
         
         let dirtyRegions = lattice.grid.dirtyRegions
         let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
@@ -74,7 +85,8 @@ final class HexagonalLatticeTests: XCTestCase {
         
         let vertex = Triangle.Vertex(-16, 12, 5)
         
-        lattice.set("lattice",
+        lattice.set(.init(vertex: vertex,
+                          value: "lattice"),
                     for: vertex)
         
         let regions = Set(vertex.tiles.unique(.tile,
