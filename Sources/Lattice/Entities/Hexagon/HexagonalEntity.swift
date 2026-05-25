@@ -84,52 +84,6 @@ extension HexagonalEntity {
                                            .region)
             
             position = .init(hexagon.position(scale) - region.position(.region))
-            
-            //REMOVE
-            guard region.transpose(.region,
-                                   .chunk) != hexagon else { return }
         }
-        
-        let vertices = hexagon.vertices.position(scale)
-        let color: Color = scale == .region ? .red : .blue
-        let elevation: Float = scale == .region ? 0.01 : 0.02
-        
-        guard let surface = Polygon.surface(vertices,
-                                            color),
-              let entity = try? ModelEntity(Mesh([surface])) else { return }
-
-        entity.position = -.init(hexagon.position(.chunk)) - [0.0, elevation, 0.0]
-        entity.model?.materials = [SimpleMaterial(color: .init(color),
-                                                  isMetallic: false)]
-
-        addChild(entity)
-    }
-}
-
-public extension Polygon {
-    
-    static func surface(_ vectors: [Vector],
-                        _ color: Color) -> Self? {
-        
-        guard vectors.count >= 3 else { return nil }
-        
-        let a = vectors[0]
-        let b = vectors[1]
-        let c = vectors[2]
-        
-        let ac = c - a
-        let bc = c - b
-        
-        let normal = ac.cross(bc).normalized()
-        
-        let vertices = vectors.map {
-            
-            Vertex($0,
-                   normal,
-                   nil,
-                   color)
-        }
-        
-        return Polygon(vertices)
     }
 }

@@ -58,10 +58,10 @@ public extension HexagonalLattice {
     func slice(region triangle: Triangle) -> HexagonalLatticeSlice<C, V>? {
         
         guard let region = grid.region(for: triangle,
-                                       .tile) else { return nil }
+                                       .region) else { return nil }
         
         return .init(dataStore: dataStore.chunks(intersecting: triangle,
-                                                 .tile),
+                                                 .region),
                      region: region)
     }
 }

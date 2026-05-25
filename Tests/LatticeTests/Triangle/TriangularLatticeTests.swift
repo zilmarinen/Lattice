@@ -66,6 +66,25 @@ final class TriangularLatticeTests: XCTestCase {
         XCTAssertEqual(value1, result1?.value)
     }
     
+    func testValueSettingAndDeletion() throws {
+        
+        let lattice = TriLattice()
+        
+        let triangle = Triangle(-82, 58, 23)
+        
+        lattice.set(.init(vertex: triangle.vertex,
+                          value: "lattice"),
+                    for: triangle)
+        
+        lattice.remove(values: [triangle])
+        
+        let regions = lattice.dataStore.regions
+        let chunks = regions.flatMap { $0.chunks }
+        
+        XCTAssertEqual(0, regions.count)
+        XCTAssertEqual(0, chunks.count)
+    }
+    
     func testSoilablePropagation() throws {
         
         let lattice = TriLattice()

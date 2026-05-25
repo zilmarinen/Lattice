@@ -6,7 +6,6 @@
 //
 
 import Deltille
-import Euclid
 import RealityKit
 
 open class TriangularEntity: Entity,

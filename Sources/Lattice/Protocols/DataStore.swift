@@ -14,7 +14,7 @@ public protocol DataStore: Entity {
     
     associatedtype K = C.K
     associatedtype V = C.V
-    associatedtype W = DataStoreWedge<C.K, C.V>
+    associatedtype W = DataStoreWedge<C.V>
     
     func merge(_ chunks: [C])
     
