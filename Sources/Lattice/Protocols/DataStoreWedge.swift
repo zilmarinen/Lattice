@@ -21,10 +21,15 @@ public extension DataStoreWedge {
 }
 
 public extension DataStoreWedge {
+    
+    func value(for key: Triangle.Vertex) -> V? {
+        
+        data[key]
+    }
 
-    func tiles(_ sieve: Triangle.Sieve) -> [DataStoreWeave<V>] {
+    func weave(_ sieve: Triangle.Sieve) -> DataStoreWeave<V> {
 
-        sieve.triangles.reduce(into: [DataStoreWeave<V>]()) { result, triangle in
+        let values = sieve.triangles.reduce(into: [Triangle : DataStoreStitch<V>]()) { result, triangle in
                     
             let values = triangle.vertices.reduce(into: [Triangle.Vertex : V]()) { result, vertex in
                 
@@ -35,14 +40,10 @@ public extension DataStoreWedge {
 
             guard !values.isEmpty else { return }
 
-            result.append(.init(triangle: triangle,
-                                vertices: values))
+            result[triangle] = .init(triangle: triangle,
+                                     vertices: values)
         }
+        
+        return .init(data: values)
     }
-}
-
-public struct DataStoreWeave<V: DataStoreValue> {
-    
-    public let triangle: Triangle
-    public let vertices: [Triangle.Vertex : V]
 }

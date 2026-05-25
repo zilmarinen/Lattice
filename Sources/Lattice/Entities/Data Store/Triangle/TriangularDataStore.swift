@@ -81,6 +81,8 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
     
     public func remove(values keys: [Triangle]) {
         
+        //TODO: Check footprint of items being removed to ensure
+        //entire footprint is removed from the data store
         let unique = keys.unique(.tile,
                                  .region)
         

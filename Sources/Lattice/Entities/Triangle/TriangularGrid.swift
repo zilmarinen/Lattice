@@ -135,17 +135,10 @@ public extension TriangularGrid {
         let unique = vertex.tiles.unique(.tile,
                                          .chunk)
         
-        let tiles = vertex.tiles.filter {
+        for triangle in unique {
             
-            let chunk = $0.transpose(.tile,
-                                     .chunk)
-            
-            return unique.contains(chunk)
-        }
-        
-        for triangle in tiles {
-            
-            propagate(triangle: triangle,
+            propagate(triangle: triangle.transpose(.chunk,
+                                                   .tile),
                       createHierarchy)
         }
     }
