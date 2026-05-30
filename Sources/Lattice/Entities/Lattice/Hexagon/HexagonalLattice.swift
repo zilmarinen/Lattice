@@ -35,23 +35,32 @@ public extension HexagonalLattice {
         dataStore.set(value,
                       for: key)
         
-        grid.propagate(vertex: key,
-                       true)
+        propagate([key],
+                  true)
     }
     
     func remove(values keys: [Triangle.Vertex]) {
         
         dataStore.remove(values: keys)
         
-        keys.forEach {
+        propagate(keys)
+    }
+    
+    func propagate(_ keys: [Triangle.Vertex],
+                   _ createHierarchy: Bool = false) {
+        
+        let triangles = Set(keys.flatMap {
             
-            grid.propagate(vertex: $0)
-        }
+            $0.tiles
+        })
+        
+        grid.propagate(Array(triangles),
+                       createHierarchy)
     }
 
     func merge(_ slice: HexagonalLatticeSlice<C, V>) {
         
-        dataStore.merge(slice.dataStore)
+        dataStore.merge(slice.stores)
         grid.merge(slice.region)
     }
     
@@ -60,8 +69,8 @@ public extension HexagonalLattice {
         guard let region = grid.region(for: triangle,
                                        .region) else { return nil }
         
-        return .init(dataStore: dataStore.chunks(intersecting: triangle,
-                                                 .region),
+        return .init(stores: dataStore.chunks(intersecting: triangle,
+                                              .region),
                      region: region)
     }
 }

@@ -35,26 +35,32 @@ public extension TriangularLattice {
         dataStore.set(value,
                       for: key)
         
-        key.vertices.forEach {
-            
-            grid.propagate(vertex: $0,
-                           true)
-        }
+        propagate([key],
+                  true)
     }
     
     func remove(values keys: [Triangle]) {
         
         dataStore.remove(values: keys)
         
-        keys.forEach {
+        propagate(keys)
+    }
+    
+    func propagate(_ keys: [Triangle],
+                   _ createHierarchy: Bool = false) {
+        
+        let triangles = Set(keys.flatMap {
             
-            grid.propagate(triangle: $0)
-        }
+            $0.perimeter
+        })
+        
+        grid.propagate(Array(triangles),
+                       createHierarchy)
     }
 
     func merge(_ slice: TriangularLatticeSlice<C, V>) {
         
-        dataStore.merge(slice.dataStore)
+        dataStore.merge(slice.stores)
         grid.merge(slice.region)
     }
     
@@ -63,8 +69,8 @@ public extension TriangularLattice {
         guard let region = grid.region(for: triangle,
                                        .region) else { return nil }
         
-        return .init(dataStore: dataStore.chunks(intersecting: triangle,
-                                                 .region),
+        return .init(stores: dataStore.chunks(intersecting: triangle,
+                                              .region),
                      region: region)
     }
 }

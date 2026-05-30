@@ -32,26 +32,24 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
     
     public func value(for key: Triangle) -> V? {
         
-        guard let region = region(for: key,
-                                  .tile) else { return nil }
+        guard let chunk = chunk(for: key,
+                                .tile) else { return nil }
         
-        return region.value(for: key)
+        return chunk.value(for: key.vertex)
     }
     
     public func set(_ value: V,
                     for key: Triangle) {
         
-        let footprint = value.footprint.map { Triangle($0) }
+        guard !intersects(value) else { return }
         
-        for triangle in footprint {
+        let unique = Set(value.footprint.map {
             
-            guard self.value(for: triangle) == nil else { return }
-        }
-        
-        let unique = footprint.unique(.tile,
+            let triangle = Triangle($0)
+            
+            return triangle.transpose(.tile,
                                       .region)
-        
-        var remaining = Set(footprint)
+        })
         
         for triangle in unique {
             
@@ -63,45 +61,33 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
                 addChild(region)
             }
             
-            let tiles = remaining.filter {
-                
-                $0.transpose(.tile,
-                             .region) == triangle
-            }
-            
-            remaining.subtract(tiles)
-            
-            tiles.forEach {
-             
-                region.set(value,
-                           for: $0)
-            }
+            region.set(value,
+                       for: key)
         }
     }
-    
+     
     public func remove(values keys: [Triangle]) {
         
-        //TODO: Check footprint of items being removed to ensure
-        //entire footprint is removed from the data store
-        let unique = keys.unique(.tile,
-                                 .region)
+        let tiles = values(for: keys)
         
-        var remaining = Set(keys)
+        let unique = tiles.reduce(into: [Triangle : [Triangle]]()) { result, triangle in
+            
+            let region = triangle.transpose(.tile,
+                                            .region)
+            
+            var values = result[region] ?? Array()
+            
+            values.append(triangle)
+            
+            result[region] = values
+        }
         
-        for triangle in unique {
+        for (triangle, values) in unique {
             
             guard let region = region(for: triangle,
                                       .region) else { continue }
             
-            let tiles = Array(remaining.filter {
-                
-                $0.transpose(.tile,
-                             .region) == triangle
-            })
-            
-            remaining.subtract(tiles)
-            
-            region.remove(values: tiles)
+            region.remove(values: values)
             
             guard region.numberOfDescendants == 0 else { continue }
             
@@ -117,5 +103,40 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
         }
         
         return .init(data: data)
+    }
+}
+
+extension TriangularDataStore {
+    
+    private func intersects(_ value: V) -> Bool {
+        
+        let footprint = Set(value.footprint + [value.vertex])
+        
+        let tiles = footprint.map {
+            
+            Triangle($0)
+        }
+        
+        return !values(for: tiles).isEmpty
+    }
+    
+    private func values(for keys: [Triangle]) -> [Triangle] {
+        
+        var visited = Set<Triangle>()
+        
+        for key in keys {
+            
+            guard !visited.contains(key),
+                  let value = value(for: key) else { continue }
+            
+            let footprint = Set(value.footprint + [value.vertex])
+            
+            visited.formUnion(footprint.map {
+                
+                Triangle($0)
+            })
+        }
+        
+        return Array(visited)
     }
 }

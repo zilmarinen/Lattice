@@ -16,7 +16,7 @@ public protocol LatticeSlice: Codable,
     associatedtype DS: HasDataStore
     
     var region: TriangularRegion<C> { get }
-    var dataStore: [DS] { get }
+    var stores: [DS] { get }
     
     var isEmpty: Bool { get }
         
@@ -27,12 +27,12 @@ public extension LatticeSlice {
     
     var isEmpty: Bool {
         
-        dataStore.isEmpty
+        stores.isEmpty
     }
     
     func remove(values keys: [DS.K]) {
         
-        dataStore.forEach {
+        stores.forEach {
             
             $0.remove(values: keys)
         }

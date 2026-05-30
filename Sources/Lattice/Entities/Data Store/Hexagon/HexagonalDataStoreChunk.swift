@@ -52,30 +52,3 @@ public class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
                              forKey: .store)
     }
 }
-
-public extension HexagonalDataStoreChunk {
-    
-    func set(_ value: V,
-             for key: K) {
-        
-        let chunk = Hexagon(key.position(.tile),
-                            .chunk)
-        
-        guard chunk == hexagon else {
-            
-            remove(values: [key])
-            
-            return
-        }
-        
-        store.data[key] = value
-    }
-    
-    func remove(values keys: [K]) {
-        
-        keys.forEach {
-            
-            store.data.removeValue(forKey: $0)
-        }
-    }
-}

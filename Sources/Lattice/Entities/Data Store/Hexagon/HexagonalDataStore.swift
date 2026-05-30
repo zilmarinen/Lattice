@@ -63,14 +63,14 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
         
         let unique = keys.reduce(into: [Hexagon : [Triangle.Vertex]]()) { result, vertex in
             
-            let hexagon = Hexagon(vertex.position(.tile),
-                                  .region)
+            let region = Hexagon(vertex.position(.tile),
+                                 .region)
             
-            var values = result[hexagon] ?? Array()
+            var values = result[region] ?? Array()
             
             values.append(vertex)
             
-            result[hexagon] = values
+            result[region] = values
         }
         
         for (hexagon, values) in unique {
@@ -80,7 +80,7 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
             
             region.remove(values: values)
             
-            guard region.numberOfDescendants == 0 else { return }
+            guard region.numberOfDescendants == 0 else { continue }
             
             region.removeFromParent()
         }

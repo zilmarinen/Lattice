@@ -22,28 +22,42 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
         existing.merge(chunk.store)
     }
     
-    internal func value(for key: Triangle) -> V? {
-        
-        guard let chunk = chunk(for: key,
-                                .tile) else { return nil }
-        
-        return chunk.value(for: key.vertex)
-    }
-    
     internal func set(_ value: V,
                       for key: Triangle) {
         
-        let chunk = chunk(for: key,
-                          .tile) ?? C(key.transpose(.tile,
-                                                    .chunk))
-        
-        if chunk.parent == nil {
+        let unique = value.footprint.reduce(into: [Triangle : [Triangle]]()) { result, vertex in
             
-            addChild(chunk)
+            let tile = Triangle(vertex)
+            
+            guard tile.transpose(.tile,
+                                 .region) == triangle else { return }
+            
+            let chunk = tile.transpose(.tile,
+                                       .chunk)
+            
+            var values = result[chunk] ?? Array()
+            
+            values.append(tile)
+            
+            result[chunk] = values
         }
         
-        chunk.set(value,
-                  for: key.vertex)
+        for (triangle, values) in unique {
+            
+            let chunk = chunk(for: triangle,
+                              .chunk) ?? C(triangle)
+            
+            if chunk.parent == nil {
+                
+                addChild(chunk)
+            }
+            
+            for tile in values {
+             
+                chunk.set(value,
+                          for: tile.vertex)
+            }
+        }
     }
     
     internal func remove(values keys: [Triangle]) {
@@ -72,7 +86,5 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
             
             chunk.removeFromParent()
         }
-        
-        becomeDirty()
     }
 }

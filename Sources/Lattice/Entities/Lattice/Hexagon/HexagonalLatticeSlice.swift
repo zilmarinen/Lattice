@@ -11,13 +11,13 @@ import Deltille
 public struct HexagonalLatticeSlice<C: TriangularChunk,
                                     V: DataStoreValue>: LatticeSlice {
     
-    public let dataStore: [HexagonalDataStoreChunk<V>]
+    public let stores: [HexagonalDataStoreChunk<V>]
     public let region: TriangularRegion<C>
     
-    public init(dataStore: [HexagonalDataStoreChunk<V>],
+    public init(stores: [HexagonalDataStoreChunk<V>],
                 region: TriangularRegion<C>) {
         
-        self.dataStore = dataStore
+        self.stores = stores
         self.region = region
     }
 }

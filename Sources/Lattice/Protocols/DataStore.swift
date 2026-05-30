@@ -27,4 +27,3 @@ public protocol DataStore: Entity {
     
     func wedge(for sieve: Triangle.Sieve) -> W
 }
-

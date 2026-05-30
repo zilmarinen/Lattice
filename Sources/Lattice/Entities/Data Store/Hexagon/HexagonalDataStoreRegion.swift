@@ -22,17 +22,6 @@ public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
         existing.merge(chunk.store)
     }
     
-    internal func value(for key: Triangle.Vertex) -> V? {
-        
-        let hexagon = Hexagon(key.position(.tile),
-                              .chunk)
-        
-        guard let chunk = chunk(for: hexagon,
-                                .chunk) else { return nil }
-        
-        return chunk.value(for: key)
-    }
-    
     internal func set(_ value: V,
                     for key: Triangle.Vertex) {
         

@@ -10,8 +10,8 @@ import RealityKit
 
 public protocol PropagatesChanges: Entity {
     
-    func propagate(triangle: Triangle,
-                   _ createHierarchy: Bool)
-    func propagate(vertex: Triangle.Vertex,
+    associatedtype K
+    
+    func propagate(_ keys: [K],
                    _ createHierarchy: Bool)
 }

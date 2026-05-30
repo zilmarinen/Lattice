@@ -14,7 +14,7 @@ public protocol Lattice: Entity,
     associatedtype G: TriangularGrid<TriangularRegion<S.C>, S.C>
     associatedtype D: DataStore
     associatedtype S: LatticeSlice
-    
+
     typealias Cleaner = ((_ chunk: S.C,
                           _ sieve: Triangle.Sieve,
                           _ wedge: DataStoreWedge<D.C.V>) -> Bool)
@@ -48,20 +48,6 @@ public extension Lattice {
     func wedge(for sieve: Triangle.Sieve) -> D.W {
     
         dataStore.wedge(for: sieve)
-    }
-    
-    func propagate(triangle: Triangle,
-                   _ createHierarchy: Bool = false) {
-     
-        grid.propagate(triangle: triangle,
-                       createHierarchy)
-    }
-
-    func propagate(vertex: Triangle.Vertex,
-                   _ createHierarchy: Bool = false) {
-        
-        grid.propagate(vertex: vertex,
-                       createHierarchy)
     }
     
     func clean(_ cleaner: Cleaner) {

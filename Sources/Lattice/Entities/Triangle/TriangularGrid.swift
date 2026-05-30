@@ -10,7 +10,8 @@ import RealityKit
 
 public class TriangularGrid<R: TriangularRegion<C>,
                             C: TriangularEntity>: Entity,
-                                                  DefinesHierarchy {
+                                                  DefinesHierarchy,
+                                                  PropagatesChanges {
     
     internal func merge(_ region: R) {
         
@@ -56,6 +57,22 @@ public extension TriangularGrid {
 
 public extension TriangularGrid {
     
+    func propagate(_ keys: [Triangle],
+                   _ createHierarchy: Bool) {
+        
+        let chunks = keys.unique(.tile,
+                                 .chunk)
+        
+        chunks.forEach {
+            
+            propagate($0,
+                      createHierarchy)
+        }
+    }
+}
+
+public extension TriangularGrid {
+    
     func region(for triangle: Triangle,
                 _ from: Triangle.Scale) -> R? {
         
@@ -89,17 +106,17 @@ public extension TriangularGrid {
     }
 }
 
-public extension TriangularGrid {
+extension TriangularGrid {
     
-    func propagate(triangle: Triangle,
-                   _ createHierarchy: Bool = false) {
-        
+    private func propagate(_ triangle: Triangle,
+                           _ createHierarchy: Bool) {
+        print("Propagating chunk \(triangle.id) -> creating: [\(createHierarchy)]")
         guard createHierarchy else {
             
             guard let region = region(for: triangle,
-                                      .tile),
+                                      .chunk),
                   let chunk = region.chunk(for: triangle,
-                                           .tile) else { return }
+                                           .chunk) else { return }
             
             chunk.becomeDirty()
             
@@ -107,12 +124,11 @@ public extension TriangularGrid {
         }
         
         let region = region(for: triangle,
-                            .tile) ?? .init(triangle.transpose(.tile,
-                                                               .region))
+                            .chunk) ?? .init(triangle.transpose(.chunk,
+                                                                .region))
         
         let chunk = region.chunk(for: triangle,
-                                 .tile) ?? .init(triangle.transpose(.tile,
-                                                                    .chunk))
+                                 .chunk) ?? .init(triangle)
         
         if chunk.parent == nil {
             
@@ -127,19 +143,5 @@ public extension TriangularGrid {
         }
         
         region.becomeDirty()
-    }
-    
-    func propagate(vertex: Triangle.Vertex,
-                   _ createHierarchy: Bool = false) {
-        
-        let unique = vertex.tiles.unique(.tile,
-                                         .chunk)
-        
-        for triangle in unique {
-            
-            propagate(triangle: triangle.transpose(.chunk,
-                                                   .tile),
-                      createHierarchy)
-        }
     }
 }

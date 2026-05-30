@@ -64,4 +64,18 @@ public extension HasDataStore {
         
         data[key]
     }
+    
+    func set(_ value: V,
+             for key: K) {
+        
+        store.data[key] = value
+    }
+    
+    func remove(values keys: [K]) {
+        
+        keys.forEach {
+            
+            store.data.removeValue(forKey: $0)
+        }
+    }
 }
