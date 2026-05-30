@@ -13,14 +13,14 @@ public protocol LatticeSlice: Codable,
                               Hashable {
     
     associatedtype C: TriangularChunk
-    associatedtype DS: HasDataStore
+    associatedtype DSC: DataStoreChunk
     
     var region: TriangularRegion<C> { get }
-    var stores: [DS] { get }
+    var stores: [DSC] { get }
     
     var isEmpty: Bool { get }
         
-    func remove(values keys: [DS.K])
+    func remove(values keys: [DSC.K])
 }
 
 public extension LatticeSlice {
@@ -30,7 +30,7 @@ public extension LatticeSlice {
         stores.isEmpty
     }
     
-    func remove(values keys: [DS.K]) {
+    func remove(values keys: [DSC.K]) {
         
         stores.forEach {
             

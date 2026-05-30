@@ -12,24 +12,24 @@ public protocol Lattice: Entity,
                          PropagatesChanges {
     
     associatedtype G: TriangularGrid<TriangularRegion<S.C>, S.C>
-    associatedtype D: DataStore
+    associatedtype DS: DataStore
     associatedtype S: LatticeSlice
 
     typealias Cleaner = ((_ chunk: S.C,
                           _ sieve: Triangle.Sieve,
-                          _ wedge: DataStoreWedge<D.C.V>) -> Bool)
+                          _ wedge: DataStoreWedge<DS.C.V>) -> Bool)
     
     var grid: G { get }
-    var dataStore: D { get }
+    var dataStore: DS { get }
     
-    func value(for key: D.K) -> D.V?
+    func value(for key: DS.K) -> DS.V?
     
-    func set(_ value: D.V,
-             for key: D.K)
+    func set(_ value: DS.V,
+             for key: DS.K)
     
-    func remove(values keys: [D.K])
+    func remove(values keys: [DS.K])
     
-    func wedge(for sieve: Triangle.Sieve) -> DataStoreWedge<D.C.V>
+    func wedge(for sieve: Triangle.Sieve) -> DataStoreWedge<DS.C.V>
     
     func merge(_ slice: S)
     
@@ -40,12 +40,12 @@ public protocol Lattice: Entity,
 
 public extension Lattice {
     
-    func value(for key: D.K) -> D.V? {
+    func value(for key: DS.K) -> DS.V? {
         
         dataStore.value(for: key)
     }
     
-    func wedge(for sieve: Triangle.Sieve) -> D.W {
+    func wedge(for sieve: Triangle.Sieve) -> DS.W {
     
         dataStore.wedge(for: sieve)
     }

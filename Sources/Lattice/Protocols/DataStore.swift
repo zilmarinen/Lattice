@@ -10,7 +10,7 @@ import RealityKit
 
 public protocol DataStore: Entity {
     
-    associatedtype C: HasDataStore
+    associatedtype C: DataStoreChunk
     
     associatedtype K = C.K
     associatedtype V = C.V
