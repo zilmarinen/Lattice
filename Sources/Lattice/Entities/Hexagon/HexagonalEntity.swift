@@ -41,10 +41,10 @@ open class HexagonalEntity: Entity,
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        let vertex = try container.decode(Hexagon.Vertex.self,
-                                          forKey: .vertex)
+        let coordinate = try container.decode(Coordinate.self,
+                                              forKey: .vertex)
         
-        self.hexagon = .init(vertex)
+        self.hexagon = .init(coordinate)
         
         self.scale = try container.decode(Hexagon.Scale.self,
                                           forKey: .scale)
@@ -60,7 +60,7 @@ open class HexagonalEntity: Entity,
     
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(hexagon.vertex,
+        try container.encode(hexagon.vertex.position,
                              forKey: .vertex)
         
         try container.encode(scale,

@@ -40,10 +40,10 @@ open class TriangularEntity: Entity,
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        let vertex = try container.decode(Triangle.Vertex.self,
-                                          forKey: .vertex)
+        let coordinate = try container.decode(Coordinate.self,
+                                              forKey: .vertex)
         
-        self.triangle = .init(vertex)
+        self.triangle = .init(coordinate)
         
         self.scale = try container.decode(Triangle.Scale.self,
                                           forKey: .scale)
@@ -59,7 +59,7 @@ open class TriangularEntity: Entity,
     
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(triangle.vertex,
+        try container.encode(triangle.vertex.position,
                              forKey: .vertex)
         
         try container.encode(scale,
