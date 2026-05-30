@@ -21,3 +21,21 @@ public struct HexagonalLatticeSlice<C: TriangularChunk,
         self.region = region
     }
 }
+
+public extension HexagonalLatticeSlice {
+    
+    func remove(values keys: [Triangle.Vertex]) {
+        
+        stores.forEach {
+            
+            $0.remove(values: keys)
+        }
+        
+        region.chunks.forEach {
+            
+            $0.becomeDirty()
+        }
+        
+        region.becomeDirty()
+    }
+}
