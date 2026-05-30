@@ -70,5 +70,6 @@ final class TriangularDataStoreTests: XCTestCase {
         
         XCTAssertEqual(wedge.data.count, 1)
         XCTAssertTrue(vertices.contains(vertex))
+        XCTAssertEqual(wedge.value(for: vertex)?.value, value)
     }
 }

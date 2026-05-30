@@ -17,6 +17,7 @@ fileprivate class HexLatticeChunk: TriangularChunk {}
 internal struct HexLatticeVertex: DataStoreValue {
     
     internal let vertex: Triangle.Vertex
+    
     internal let value: String
 }
 
@@ -53,13 +54,11 @@ final class HexagonalLatticeTests: XCTestCase {
         XCTAssertEqual(value1, result1?.value)
     }
     
-    func testValueSettingAndDeletion() throws {
+    func testValueDeletion() throws {
         
         let lattice = HexLattice()
         
-        let triangle = Triangle(-82, 58, 23)
-        
-        let vertex = triangle.vertex(.c0)
+        let vertex = Triangle.Vertex(-16, 12, 5)
         
         lattice.set(.init(vertex: vertex,
                           value: "lattice"),
@@ -70,8 +69,14 @@ final class HexagonalLatticeTests: XCTestCase {
         let regions = lattice.dataStore.regions
         let chunks = regions.flatMap { $0.chunks }
         
+        let dirtyRegions = lattice.grid.dirtyRegions
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        
         XCTAssertEqual(0, regions.count)
         XCTAssertEqual(0, chunks.count)
+        
+        XCTAssertEqual(1, dirtyRegions.count)
+        XCTAssertEqual(6, dirtyChunks.count)
     }
     
     func testSoilablePropagation() throws {
@@ -100,7 +105,7 @@ final class HexagonalLatticeTests: XCTestCase {
         XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
     }
     
-    func testSoilablePropagationAdditional() throws {
+    func testSoilablePropagationCorner() throws {
         
         let lattice = HexLattice()
         
@@ -123,5 +128,25 @@ final class HexagonalLatticeTests: XCTestCase {
         
         XCTAssertEqual(6, dirtyChunks.count)
         XCTAssertEqual(chunks, dirtyChunks)
+    }
+    
+    // MARK: Lattice Slice
+    
+    func testLatticeSlice() throws {
+        
+        let lattice = HexLattice()
+        
+        let vertex = Triangle.Vertex(-16, 12, 5)
+        
+        let triangle = vertex.tiles.first!
+        
+        lattice.set(.init(vertex: vertex,
+                          value: "lattice"),
+                    for: vertex)
+        
+        let slice = lattice.slice(region: triangle.transpose(.tile,
+                                                             .region))
+        
+        slice?.remove(values: [vertex])
     }
 }

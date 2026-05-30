@@ -17,17 +17,20 @@ fileprivate class TriLatticeChunk: TriangularChunk {}
 internal struct TriLatticeTile: TriangularDataStoreTile {
     
     internal let vertex: Triangle.Vertex
+    
     internal let value: String
     
-    internal var footprint: [Triangle.Vertex] { [vertex] }
+    internal let footprint: [Triangle.Vertex]
     
     internal var rotation: Triangle.Rotation { .identity }
     
     internal init(vertex: Triangle.Vertex,
-                  value: String) {
+                  value: String,
+                  footprint: [Triangle.Vertex]? = nil) {
         
         self.vertex = vertex
         self.value = value
+        self.footprint = footprint ?? [vertex]
     }
 }
 
@@ -66,14 +69,40 @@ final class TriangularLatticeTests: XCTestCase {
         XCTAssertEqual(value1, result1?.value)
     }
     
-    func testValueSettingAndDeletion() throws {
+    func testValueDeletion() throws {
+        
+        let lattice = TriLattice()
+        
+        let triangle = Triangle(-17, 11, 5)
+        
+        lattice.set(.init(vertex: triangle.vertex,
+                          value: "lattice"),
+                    for: triangle)
+        
+        lattice.remove(values: [triangle])
+        
+        let regions = lattice.dataStore.regions
+        let chunks = regions.flatMap { $0.chunks }
+        
+        let dirtyRegions = lattice.grid.dirtyRegions
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        
+        XCTAssertEqual(0, regions.count)
+        XCTAssertEqual(0, chunks.count)
+        
+        XCTAssertEqual(1, dirtyRegions.count)
+        XCTAssertEqual(6, dirtyChunks.count)
+    }
+    
+    func testFootprint() throws {
         
         let lattice = TriLattice()
         
         let triangle = Triangle(-82, 58, 23)
         
         lattice.set(.init(vertex: triangle.vertex,
-                          value: "lattice"),
+                          value: "lattice",
+                          footprint: [triangle.vertex] + triangle.adjacent.map { $0.vertex }),
                     for: triangle)
         
         lattice.remove(values: [triangle])
@@ -109,7 +138,7 @@ final class TriangularLatticeTests: XCTestCase {
         XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
     }
     
-    func testSoilablePropagationAdditional() throws {
+    func testSoilablePropagationCorner() throws {
         
         let lattice = TriLattice()
         
@@ -132,5 +161,24 @@ final class TriangularLatticeTests: XCTestCase {
         
         XCTAssertEqual(6, dirtyChunks.count)
         XCTAssertEqual(chunks, dirtyChunks)
+    }
+    
+    // MARK: Lattice Slice
+    
+    func testLatticeSlice() throws {
+        
+        let lattice = TriLattice()
+        
+        let triangle = Triangle(-17, 11, 5)
+        let region = triangle.transpose(.tile,
+                                        .region)
+        
+        lattice.set(.init(vertex: triangle.vertex,
+                          value: "lattice"),
+                    for: triangle)
+        
+        let slice = lattice.slice(region: region)
+        
+        slice?.remove(values: [triangle])
     }
 }
