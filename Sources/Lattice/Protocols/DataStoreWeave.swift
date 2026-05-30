@@ -27,9 +27,3 @@ public extension DataStoreWeave {
         data[key]
     }
 }
-
-public struct DataStoreStitch<V: DataStoreValue> {
-    
-    public let triangle: Triangle
-    public let vertices: [Triangle.Vertex : V]
-}
