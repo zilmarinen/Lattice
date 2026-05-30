@@ -15,6 +15,7 @@ public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
     internal enum CodingKeys: CodingKey {
         
         case chunks
+        case dirty
     }
     
     required public init(_ triangle: Triangle) {
@@ -31,6 +32,9 @@ public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
         try super.init(from: decoder)
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        isDirty = try container.decode(Bool.self,
+                                       forKey: .dirty)
         
         let children = try container.decode([C].self,
                                             forKey: .chunks)
@@ -49,6 +53,9 @@ public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
         
         try container.encode(chunks,
                              forKey: .chunks)
+
+        try container.encode(isDirty,
+                             forKey: .dirty)
     }
 }
 
