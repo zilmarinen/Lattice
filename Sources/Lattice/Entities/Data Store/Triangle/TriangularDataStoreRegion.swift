@@ -55,7 +55,7 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
             for tile in values {
              
                 chunk.set(value,
-                          for: tile.vertex)
+                          for: tile.vertex.position)
             }
         }
     }
@@ -80,7 +80,7 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
             
             remaining.subtract(tiles)
             
-            chunk.remove(values: tiles.map { $0.vertex })
+            chunk.remove(values: tiles.map { $0.vertex.position })
             
             guard chunk.isEmpty else { continue }
             

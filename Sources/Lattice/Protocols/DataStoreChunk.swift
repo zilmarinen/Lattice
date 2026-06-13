@@ -11,26 +11,25 @@ import RealityKit
 public protocol DataStoreChunk: Entity,
                                 Codable {
     
-    associatedtype K: Vertex
     associatedtype V: DataStoreValue
     
-    var store: DataStoreComponent<K, V> { get }
+    var store: DataStoreComponent<V> { get }
     
-    var data: [K : V] { get }
+    var data: [Coordinate : V] { get }
     
-    func merge(_ other: DataStoreComponent<K, V>)
+    func merge(_ other: DataStoreComponent<V>)
     
-    func value(for key: K) -> V?
+    func value(for key: Coordinate) -> V?
     
     func set(_ value: V,
-             for key: K)
+             for key: Coordinate)
     
-    func remove(values keys: [K])
+    func remove(values keys: [Coordinate])
 }
 
 public extension DataStoreChunk {
     
-    var data: [K : V] {
+    var data: [Coordinate : V] {
         
         store.data
     }
@@ -43,23 +42,23 @@ public extension DataStoreChunk {
 
 public extension DataStoreChunk {
     
-    func merge(_ other: DataStoreComponent<K, V>) {
+    func merge(_ other: DataStoreComponent<V>) {
         
         store.data.merge(other.data) { (current, _) in current }
     }
     
-    func value(for key: K) -> V? {
+    func value(for key: Coordinate) -> V? {
         
         data[key]
     }
     
     func set(_ value: V,
-             for key: K) {
+             for key: Coordinate) {
         
         store.data[key] = value
     }
     
-    func remove(values keys: [K]) {
+    func remove(values keys: [Coordinate]) {
         
         keys.forEach {
             

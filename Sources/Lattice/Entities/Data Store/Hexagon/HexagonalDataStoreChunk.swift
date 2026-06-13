@@ -16,7 +16,7 @@ public class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
         case store
     }
     
-    public let store: DataStoreComponent<Triangle.Vertex, V>
+    public let store: DataStoreComponent<V>
     
     required internal init(_ hexagon: Hexagon) {
         
@@ -34,8 +34,10 @@ public class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.store = try container.decode(DataStoreComponent<Triangle.Vertex, V>.self,
+        let values = try container.decode([V].self,
                                           forKey: .store)
+        
+        self.store = .init(values: values)
         
         try super.init(from: decoder)
         
@@ -48,7 +50,7 @@ public class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
         
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(store,
+        try container.encode(Array(store.data.values),
                              forKey: .store)
     }
 }

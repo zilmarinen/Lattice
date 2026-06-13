@@ -12,7 +12,7 @@ public protocol DataStore: Entity {
     
     associatedtype C: DataStoreChunk
     
-    associatedtype K = C.K
+    associatedtype K = Vertex
     associatedtype V = C.V
     associatedtype W = DataStoreWedge<C.V>
     

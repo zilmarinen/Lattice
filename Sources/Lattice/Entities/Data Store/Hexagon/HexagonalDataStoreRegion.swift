@@ -37,7 +37,7 @@ public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
         }
         
         chunk.set(value,
-                  for: key)
+                  for: key.position)
     }
     
     internal func remove(values keys: [Triangle.Vertex]) {
@@ -59,7 +59,7 @@ public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
             guard let chunk = chunk(for: hexagon,
                                     .chunk) else { continue }
             
-            chunk.remove(values: values)
+            chunk.remove(values: values.map { $0.position })
             
             guard chunk.isEmpty else { return }
             

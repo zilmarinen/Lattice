@@ -26,11 +26,11 @@ public extension TriangularLatticeSlice {
     
     func remove(values keys: [Triangle]) {
         
-        let vertices = keys.map { $0.vertex }
+        let keys = keys.map { $0.vertex.position }
         
         stores.forEach {
             
-            $0.remove(values: vertices)
+            $0.remove(values: keys)
         }
         
         region.chunks.forEach {

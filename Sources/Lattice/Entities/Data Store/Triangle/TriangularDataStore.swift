@@ -35,7 +35,7 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
         guard let chunk = chunk(for: key,
                                 .tile) else { return nil }
         
-        return chunk.value(for: key.vertex)
+        return chunk.value(for: key.vertex.position)
     }
     
     public func set(_ value: V,
@@ -97,7 +97,7 @@ public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
     
     public func wedge(for sieve: Triangle.Sieve) -> W {
         
-        let data = sieve.triangles.reduce(into: [C.K : C.V]()) { result, triangle in
+        let data = sieve.triangles.reduce(into: [Triangle.Vertex : C.V]()) { result, triangle in
             
             result[triangle.vertex] = value(for: triangle)
         }

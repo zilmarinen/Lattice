@@ -26,6 +26,8 @@ public extension HexagonalLatticeSlice {
     
     func remove(values keys: [Triangle.Vertex]) {
         
+        let keys = keys.map { $0.position }
+        
         stores.forEach {
             
             $0.remove(values: keys)

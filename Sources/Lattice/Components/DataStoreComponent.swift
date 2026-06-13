@@ -8,11 +8,28 @@
 import Deltille
 import RealityKit
 
-public class DataStoreComponent<K: Vertex,
-                                V: DataStoreValue>: Component,
+public class DataStoreComponent<V: DataStoreValue>: Component,
                                                     Codable {
     
-    public internal(set) var data: [K : V] = [:]
+    internal enum CodingKeys: CodingKey {
+        
+        case data
+    }
+    
+    public internal(set) var data: [Coordinate : V]
+    
+    internal init(values: [V]? = nil) {
+        
+        let values = values ?? []
+        
+        self.data = values.reduce(into: [Coordinate : V](), { result, value in
+            
+            result[value.vertex.position] = value
+        })
+    }
+}
+
+extension DataStoreComponent {
     
     internal var isEmpty: Bool {
         

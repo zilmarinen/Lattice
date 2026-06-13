@@ -38,7 +38,7 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
         guard let chunk = chunk(for: hexagon,
                                 .chunk) else { return nil }
         
-        return chunk.value(for: key)
+        return chunk.value(for: key.position)
     }
     
     public func set(_ value: V,
@@ -88,7 +88,7 @@ public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
     
     public func wedge(for sieve: Triangle.Sieve) -> W {
         
-        let data = sieve.vertices.reduce(into: [C.K : C.V]()) { result, vertex in
+        let data = sieve.vertices.reduce(into: [Triangle.Vertex : C.V]()) { result, vertex in
             
             result[vertex] = value(for: vertex)
         }

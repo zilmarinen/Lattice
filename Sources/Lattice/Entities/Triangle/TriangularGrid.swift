@@ -110,7 +110,7 @@ extension TriangularGrid {
     
     private func propagate(_ triangle: Triangle,
                            _ createHierarchy: Bool) {
-        print("Propagating chunk \(triangle.id) -> creating: [\(createHierarchy)]")
+        
         guard createHierarchy else {
             
             guard let region = region(for: triangle,
