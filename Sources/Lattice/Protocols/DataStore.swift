@@ -8,7 +8,7 @@
 import Deltille
 import RealityKit
 
-public protocol DataStore: Entity {
+public protocol DataStore {
     
     associatedtype C: DataStoreChunk
     

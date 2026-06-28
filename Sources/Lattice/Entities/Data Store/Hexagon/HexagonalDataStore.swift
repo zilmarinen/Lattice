@@ -10,10 +10,87 @@ import RealityKit
 
 open class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
                               C: HexagonalDataStoreChunk<V>,
-                              V: DataStoreValue>: HexagonalGrid<R, C>,
+                              V: DataStoreValue>: HexagonalDataStoreContainer,
                                                   DataStore {
     
-    public func merge(_ chunks: [C]) {
+    required public init() {
+        
+        super.init(.zero,
+                   .region)
+    }
+    
+    required public init(from decoder: any Decoder) throws {
+        
+        try super.init(from: decoder)
+    }
+}
+
+internal extension HexagonalDataStore {
+    
+    var regions: [R] {
+        
+        children.compactMap {
+            
+            $0 as? R
+        }
+    }
+}
+
+public extension HexagonalDataStore {
+    
+    func region(for hexagon: Hexagon,
+                _ from: Hexagon.Scale) -> R? {
+        
+        let region = hexagon.transpose(from,
+                                       .region)
+        
+        return regions.first {
+            
+            $0.hexagon == region
+        }
+    }
+    
+    func chunk(for chunk: Hexagon,
+               _ from: Hexagon.Scale) -> C? {
+        
+        guard let region = region(for: chunk,
+                                  from) else { return nil }
+        
+        return region.chunk(for: chunk,
+                            from)
+    }
+    
+    func chunks(intersecting triangle: Triangle,
+                _ from: Triangle.Scale) -> [C] {
+        
+        regions.flatMap {
+         
+            $0.chunks(intersecting: triangle,
+                      from)
+        }
+    }
+}
+
+public extension HexagonalDataStore {
+    
+    func merge(_ region: R) {
+        
+        guard let existing = self.region(for: region.hexagon,
+                                         .region) else {
+            
+            return add(child: region)
+        }
+        
+        for chunk in region.chunks {
+            
+            guard existing.chunk(for: chunk.hexagon,
+                                 .chunk) == nil else { continue }
+            
+            existing.add(child: chunk)
+        }
+    }
+
+    func merge(_ chunks: [C]) {
         
         chunks.forEach {
             
@@ -23,14 +100,14 @@ open class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
             
             if region.parent == nil {
                 
-                addChild(region)
+                add(child: region)
             }
             
             region.merge($0)
         }
     }
     
-    public func value(for key: Triangle.Vertex) -> V? {
+    func value(for key: Triangle.Vertex) -> V? {
         
         let hexagon = Hexagon(key.position(.tile),
                               .chunk)
@@ -41,8 +118,8 @@ open class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
         return chunk.value(for: key.position)
     }
     
-    public func set(_ value: V,
-                    for key: Triangle.Vertex) {
+    func set(_ value: V,
+             for key: Triangle.Vertex) {
         
         let hexagon = Hexagon(key.position(.tile),
                               .region)
@@ -52,14 +129,14 @@ open class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
         
         if region.parent == nil {
             
-            addChild(region)
+            add(child: region)
         }
         
         region.set(value,
                    for: key)
     }
     
-    public func remove(values keys: [Triangle.Vertex]) {
+    func remove(values keys: [Triangle.Vertex]) {
         
         let unique = keys.reduce(into: [Hexagon : [Triangle.Vertex]]()) { result, vertex in
             
@@ -80,13 +157,13 @@ open class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
             
             region.remove(values: values)
             
-            guard region.numberOfDescendants == 0 else { continue }
+            guard region.children.isEmpty else { continue }
             
             region.removeFromParent()
         }
     }
     
-    public func wedge(for sieve: Triangle.Sieve) -> W {
+    func wedge(for sieve: Triangle.Sieve) -> W {
         
         let data = sieve.vertices.reduce(into: [Triangle.Vertex : C.V]()) { result, vertex in
             

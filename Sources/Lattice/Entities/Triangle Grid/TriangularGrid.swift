@@ -10,7 +10,6 @@ import RealityKit
 
 open class TriangularGrid<R: TriangularRegion<C>,
                           C: TriangularEntity>: Entity,
-                                                DefinesHierarchy,
                                                 PropagatesChanges {
     
     internal func merge(_ region: R) {

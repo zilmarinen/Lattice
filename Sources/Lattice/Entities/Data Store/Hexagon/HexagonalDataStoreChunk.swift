@@ -8,7 +8,7 @@
 import Deltille
 import RealityKit
 
-open class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
+open class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalDataStoreContainer,
                                                        DataStoreChunk {
     
     internal enum CodingKeys: CodingKey {
@@ -22,13 +22,9 @@ open class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
         
         self.store = .init()
         
-        super.init(hexagon)
-        
-        components.set(store)
+        super.init(hexagon,
+                   .chunk)
     }
-    
-    @available(*, unavailable)
-    required public init() { fatalError("init() has not been implemented") }
     
     required public init(from decoder: any Decoder) throws {
         
@@ -40,8 +36,6 @@ open class HexagonalDataStoreChunk<V: DataStoreValue>: HexagonalChunk,
         self.store = .init(values: values)
         
         try super.init(from: decoder)
-        
-        components.set(store)
     }
     
     override public func encode(to encoder: any Encoder) throws {

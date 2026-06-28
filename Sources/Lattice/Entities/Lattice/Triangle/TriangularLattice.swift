@@ -22,7 +22,6 @@ open class TriangularLattice<C: TriangularChunk,
         
         super.init()
         
-        addChild(dataStore)
         addChild(grid)
     }
 }

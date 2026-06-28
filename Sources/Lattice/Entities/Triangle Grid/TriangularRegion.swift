@@ -9,7 +9,6 @@ import Deltille
 import RealityKit
 
 public class TriangularRegion<C: TriangularChunk>: TriangularEntity,
-                                                   DefinesHierarchy,
                                                    HasSoilableComponent {
     
     internal enum CodingKeys: CodingKey {

@@ -8,8 +8,7 @@
 import Deltille
 import RealityKit
 
-public protocol DataStoreChunk: Entity,
-                                Codable {
+public protocol DataStoreChunk: Codable {
     
     associatedtype V: DataStoreValue
     
@@ -66,4 +65,3 @@ public extension DataStoreChunk {
         }
     }
 }
-

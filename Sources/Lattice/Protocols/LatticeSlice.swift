@@ -7,7 +7,6 @@
 
 import Deltille
 
-@MainActor
 public protocol LatticeSlice: Codable,
                               Equatable,
                               Hashable {
@@ -21,7 +20,7 @@ public protocol LatticeSlice: Codable,
     
     var isEmpty: Bool { get }
         
-    func remove(values keys: [K])
+    @MainActor func remove(values keys: [K])
 }
 
 public extension LatticeSlice {

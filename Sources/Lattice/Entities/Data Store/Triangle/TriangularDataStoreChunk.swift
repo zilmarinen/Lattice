@@ -8,9 +8,9 @@
 import Deltille
 import RealityKit
 
-public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: TriangularChunk,
+public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: TriangularDataStoreContainer,
                                                                    DataStoreChunk {
-    
+
     internal enum CodingKeys: CodingKey {
         
         case store
@@ -22,13 +22,9 @@ public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: TriangularChu
         
         self.store = .init()
         
-        super.init(triangle)
-        
-        components.set(store)
+        super.init(triangle,
+                   .chunk)
     }
-    
-    @available(*, unavailable)
-    required internal init() { fatalError("init() has not been implemented") }
     
     required internal init(from decoder: any Decoder) throws {
         
@@ -40,8 +36,6 @@ public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: TriangularChu
         self.store = .init(values: values)
         
         try super.init(from: decoder)
-        
-        components.set(store)
     }
     
     override public func encode(to encoder: any Encoder) throws {

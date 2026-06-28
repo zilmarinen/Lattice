@@ -83,7 +83,7 @@ public extension Lattice {
             
             region.isDirty = false
             
-            guard region.numberOfDescendants == 0 else { continue }
+            guard region.children.isEmpty else { continue }
             
             emptyRegions.append(region)
         }

@@ -10,10 +10,87 @@ import RealityKit
 
 open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
                                C: TriangularDataStoreChunk<V>,
-                               V: TriangularDataStoreTile>: TriangularGrid<R, C>,
+                               V: TriangularDataStoreTile>: TriangularDataStoreContainer,
                                                             DataStore {
     
-    public func merge(_ chunks: [C]) {
+    required public init() {
+        
+        super.init(.zero,
+                   .region)
+    }
+    
+    required public init(from decoder: any Decoder) throws {
+        
+        try super.init(from: decoder)
+    }
+}
+
+internal extension TriangularDataStore {
+    
+    var regions: [R] {
+        
+        children.compactMap {
+            
+            $0 as? R
+        }
+    }
+}
+
+public extension TriangularDataStore {
+    
+    func region(for triangle: Triangle,
+                _ from: Triangle.Scale) -> R? {
+        
+        let region = triangle.transpose(from,
+                                        .region)
+        
+        return regions.first {
+            
+            $0.triangle == region
+        }
+    }
+    
+    func chunk(for triangle: Triangle,
+               _ from: Triangle.Scale) -> C? {
+        
+        guard let region = self.region(for: triangle,
+                                       from) else { return nil }
+        
+        return region.chunk(for: triangle,
+                            from)
+    }
+    
+    func chunks(intersecting triangle: Triangle,
+                _ from: Triangle.Scale) -> [C] {
+        
+        regions.flatMap {
+            
+            $0.chunks(intersecting: triangle,
+                      from)
+        }
+    }
+}
+
+public extension TriangularDataStore {
+    
+    func merge(_ region: R) {
+        
+        guard let existing = self.region(for: region.triangle,
+                                         .region) else {
+            
+            return add(child: region)
+        }
+        
+        for chunk in region.chunks {
+            
+            guard existing.chunk(for: chunk.triangle,
+                                 .chunk) == nil else { continue }
+            
+            existing.add(child: chunk)
+        }
+    }
+    
+    func merge(_ chunks: [C]) {
         
         chunks.forEach {
             
@@ -23,14 +100,14 @@ open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
             
             if region.parent == nil {
                 
-                addChild(region)
+                add(child: region)
             }
             
             region.merge($0)
         }
     }
     
-    public func value(for key: Triangle) -> V? {
+    func value(for key: Triangle) -> V? {
         
         guard let chunk = chunk(for: key,
                                 .tile) else { return nil }
@@ -38,8 +115,8 @@ open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
         return chunk.value(for: key.vertex.position)
     }
     
-    public func set(_ value: V,
-                    for key: Triangle) {
+    func set(_ value: V,
+             for key: Triangle) {
         
         guard !intersects(value) else { return }
         
@@ -58,7 +135,7 @@ open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
             
             if region.parent == nil {
                 
-                addChild(region)
+                add(child: region)
             }
             
             region.set(value,
@@ -66,7 +143,7 @@ open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
         }
     }
      
-    public func remove(values keys: [Triangle]) {
+    func remove(values keys: [Triangle]) {
         
         let tiles = values(for: keys)
         
@@ -89,13 +166,13 @@ open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
             
             region.remove(values: values)
             
-            guard region.numberOfDescendants == 0 else { continue }
+            guard region.children.isEmpty else { continue }
             
             region.removeFromParent()
         }
     }
     
-    public func wedge(for sieve: Triangle.Sieve) -> W {
+    func wedge(for sieve: Triangle.Sieve) -> W {
         
         let data = sieve.triangles.reduce(into: [Triangle.Vertex : C.V]()) { result, triangle in
             
@@ -106,9 +183,9 @@ open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
     }
 }
 
-extension TriangularDataStore {
+private extension TriangularDataStore {
     
-    private func intersects(_ value: V) -> Bool {
+    func intersects(_ value: V) -> Bool {
         
         let footprint = Set(value.footprint + [value.vertex])
         
@@ -120,7 +197,7 @@ extension TriangularDataStore {
         return !values(for: tiles).isEmpty
     }
     
-    private func values(for keys: [Triangle]) -> [Triangle] {
+    func values(for keys: [Triangle]) -> [Triangle] {
         
         var visited = Set<Triangle>()
         

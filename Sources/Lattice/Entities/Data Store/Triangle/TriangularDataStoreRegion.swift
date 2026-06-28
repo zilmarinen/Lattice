@@ -9,21 +9,73 @@ import Deltille
 import RealityKit
 
 public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
-                                       V: TriangularDataStoreTile>: TriangularRegion<C> {
+                                       V: TriangularDataStoreTile>: TriangularDataStoreContainer {
     
-    internal func merge(_ chunk: C) {
+    required public init(_ triangle: Triangle) {
+        
+        super.init(triangle,
+                   .region)
+    }
+    
+    required public init(from decoder: any Decoder) throws {
+        
+        try super.init(from: decoder)
+    }
+}
+
+internal extension TriangularDataStoreRegion {
+    
+    var chunks: [C] {
+        
+        children.compactMap {
+            
+            $0 as? C
+        }
+    }
+}
+
+internal extension TriangularDataStoreRegion {
+    
+    func chunk(for triangle: Triangle,
+               _ from: Triangle.Scale) -> C? {
+        
+        let chunk = triangle.transpose(from,
+                                       .chunk)
+        
+        return chunks.first {
+            
+            $0.triangle == chunk
+        }
+    }
+    
+    func chunks(intersecting triangle: Triangle,
+                _ from: Triangle.Scale) -> [C] {
+        
+        let chunk = triangle.transpose(from,
+                                       .chunk)
+        
+        return chunks.filter {
+            
+            $0.triangle == chunk
+        }
+    }
+}
+
+internal extension TriangularDataStoreRegion {
+    
+    func merge(_ chunk: C) {
         
         guard let existing = self.chunk(for: chunk.triangle,
                                         .chunk) else {
             
-            return addChild(chunk)
+            return add(child: chunk)
         }
         
         existing.merge(chunk.store)
     }
     
-    internal func set(_ value: V,
-                      for key: Triangle) {
+    func set(_ value: V,
+             for key: Triangle) {
         
         let unique = value.footprint.reduce(into: [Triangle : [Triangle]]()) { result, vertex in
             
@@ -49,7 +101,7 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
             
             if chunk.parent == nil {
                 
-                addChild(chunk)
+                add(child: chunk)
             }
             
             for tile in values {
@@ -60,7 +112,7 @@ public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
         }
     }
     
-    internal func remove(values keys: [Triangle]) {
+    func remove(values keys: [Triangle]) {
      
         let unique = keys.unique(.tile,
                                  .chunk)

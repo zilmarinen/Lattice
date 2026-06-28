@@ -22,7 +22,6 @@ open class HexagonalLattice<C: TriangularChunk,
         
         super.init()
         
-        addChild(dataStore)
         addChild(grid)
     }
 }

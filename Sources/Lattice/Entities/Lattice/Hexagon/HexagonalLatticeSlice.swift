@@ -7,7 +7,6 @@
 
 import Deltille
 
-@MainActor
 public struct HexagonalLatticeSlice<C: TriangularChunk,
                                     V: DataStoreValue>: LatticeSlice {
     
@@ -24,6 +23,7 @@ public struct HexagonalLatticeSlice<C: TriangularChunk,
 
 public extension HexagonalLatticeSlice {
     
+    @MainActor
     func remove(values keys: [Triangle.Vertex]) {
         
         let keys = keys.map { $0.position }
