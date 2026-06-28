@@ -8,10 +8,10 @@
 import Deltille
 import RealityKit
 
-public class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
-                                C: HexagonalDataStoreChunk<V>,
-                                V: DataStoreValue>: HexagonalGrid<R, C>,
-                                                    DataStore {
+open class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
+                              C: HexagonalDataStoreChunk<V>,
+                              V: DataStoreValue>: HexagonalGrid<R, C>,
+                                                  DataStore {
     
     public func merge(_ chunks: [C]) {
         

@@ -8,24 +8,24 @@
 import Deltille
 import RealityKit
 
-public class HexagonalRegion<C: HexagonalChunk>: HexagonalEntity,
-                                                 DefinesHierarchy {
+open class HexagonalRegion<C: HexagonalChunk>: HexagonalEntity,
+                                               DefinesHierarchy {
     
     internal enum CodingKeys: CodingKey {
         
         case chunks
     }
     
-    required internal init(_ hexagon: Hexagon) {
+    required public init(_ hexagon: Hexagon) {
         
         super.init(hexagon,
                    .region)
     }
     
     @available(*, unavailable)
-    required internal init() { fatalError("init() has not been implemented") }
+    required public init() { fatalError("init() has not been implemented") }
     
-    required internal init(from decoder: any Decoder) throws {
+    required public init(from decoder: any Decoder) throws {
         
         try super.init(from: decoder)
         

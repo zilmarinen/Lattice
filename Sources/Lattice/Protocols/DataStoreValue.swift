@@ -8,7 +8,8 @@
 import Deltille
 
 public protocol DataStoreValue: Codable,
-                                Hashable {
+                                Hashable,
+                                Sendable {
     
     var vertex: Triangle.Vertex { get }
 }

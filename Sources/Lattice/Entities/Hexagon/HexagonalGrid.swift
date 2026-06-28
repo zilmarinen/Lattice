@@ -8,9 +8,8 @@
 import Deltille
 import RealityKit
 
-public class HexagonalGrid<R: HexagonalRegion<C>,
-                           C: HexagonalEntity>: Entity,
-                                                DefinesHierarchy {
+open class HexagonalGrid<R: HexagonalRegion<C>,
+                         C: HexagonalEntity>: Entity {
     
     internal func merge(_ region: R) {
         

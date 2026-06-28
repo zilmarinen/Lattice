@@ -8,10 +8,10 @@
 import Deltille
 import RealityKit
 
-public class TriangularGrid<R: TriangularRegion<C>,
-                            C: TriangularEntity>: Entity,
-                                                  DefinesHierarchy,
-                                                  PropagatesChanges {
+open class TriangularGrid<R: TriangularRegion<C>,
+                          C: TriangularEntity>: Entity,
+                                                DefinesHierarchy,
+                                                PropagatesChanges {
     
     internal func merge(_ region: R) {
         

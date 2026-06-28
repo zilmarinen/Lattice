@@ -6,10 +6,11 @@
 //
 
 import Deltille
+import Foundation
 import RealityKit
 
-public class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
-                                      V: DataStoreValue>: HexagonalRegion<C> {
+open class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
+                                    V: DataStoreValue>: HexagonalRegion<C> {
     
     internal func merge(_ chunk: C) {
         

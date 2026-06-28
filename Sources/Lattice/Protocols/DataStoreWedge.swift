@@ -7,7 +7,7 @@
 
 import Deltille
 
-public struct DataStoreWedge<V: DataStoreValue> {
+public struct DataStoreWedge<V: DataStoreValue>: Sendable {
     
     public let data: [Triangle.Vertex : V]
 }

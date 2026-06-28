@@ -8,10 +8,10 @@
 import Deltille
 import RealityKit
 
-public class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
-                                 C: TriangularDataStoreChunk<V>,
-                                 V: TriangularDataStoreTile>: TriangularGrid<R, C>,
-                                                              DataStore {
+open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
+                               C: TriangularDataStoreChunk<V>,
+                               V: TriangularDataStoreTile>: TriangularGrid<R, C>,
+                                                            DataStore {
     
     public func merge(_ chunks: [C]) {
         

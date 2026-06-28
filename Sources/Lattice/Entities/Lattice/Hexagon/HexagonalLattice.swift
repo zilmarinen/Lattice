@@ -18,7 +18,7 @@ open class HexagonalLattice<C: TriangularChunk,
     
     public let grid = TriangularGrid<TriangularRegion<C>, C>()
     
-    public required init() {
+    required public init() {
         
         super.init()
         
