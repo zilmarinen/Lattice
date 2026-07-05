@@ -68,8 +68,7 @@ public extension HexagonalLattice {
         guard let region = grid.region(for: triangle,
                                        .region) else { return nil }
         
-        return .init(stores: dataStore.chunks(intersecting: triangle,
-                                              .region),
+        return .init(stores: dataStore.chunks(intersecting: triangle),
                      region: region)
     }
 }

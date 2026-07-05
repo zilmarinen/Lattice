@@ -49,15 +49,12 @@ internal extension TriangularDataStoreRegion {
         }
     }
     
-    func chunks(intersecting triangle: Triangle,
-                _ from: Triangle.Scale) -> [C] {
+    func chunks(intersecting region: Triangle) -> [C] {
         
-        let chunk = triangle.transpose(from,
-                                       .chunk)
-        
-        return chunks.filter {
+        chunks.filter {
             
-            $0.tile == chunk
+            $0.tile.transpose(.chunk,
+                              .region) == region
         }
     }
 }

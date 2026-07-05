@@ -50,25 +50,24 @@ internal extension HexagonalDataStoreRegion {
         }
     }
     
-    func chunks(intersecting triangle: Triangle,
-                _ from: Triangle.Scale) -> [C] {
+    func chunks(intersecting region: Triangle) -> [C] {
         
         chunks.filter {
             
             for vertex in $0.tile.vertices {
                 
                 let match = Triangle(vertex.position(.chunk),
-                                     from)
+                                     .region)
                 
-                if match == triangle {
+                if match == region {
                     
                     return true
                 }
             }
             
-            for vertex in triangle.vertices {
+            for vertex in region.vertices {
                 
-                let match = Hexagon(vertex.position(from),
+                let match = Hexagon(vertex.position(.region),
                                     .chunk)
                 
                 if match == $0.tile {

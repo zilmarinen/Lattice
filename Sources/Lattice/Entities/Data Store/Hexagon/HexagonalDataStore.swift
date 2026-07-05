@@ -61,13 +61,11 @@ public extension HexagonalDataStore {
                             from)
     }
     
-    func chunks(intersecting triangle: Triangle,
-                _ from: Triangle.Scale) -> [C] {
+    func chunks(intersecting region: Triangle) -> [C] {
         
         regions.flatMap {
          
-            $0.chunks(intersecting: triangle,
-                      from)
+            $0.chunks(intersecting: region)
         }
     }
 }
