@@ -10,7 +10,7 @@ import RealityKit
 
 open class HexagonalDataStore<R: HexagonalDataStoreRegion<C, V>,
                               C: HexagonalDataStoreChunk<V>,
-                              V: DataStoreValue>: HexagonalDataStoreContainer,
+                              V: DataStoreValue>: DataStoreContainer<Hexagon, Hexagon.Scale>,
                                                   DataStore {
     
     required public init() {
@@ -47,7 +47,7 @@ public extension HexagonalDataStore {
         
         return regions.first {
             
-            $0.hexagon == region
+            $0.tile == region
         }
     }
     
@@ -76,7 +76,7 @@ public extension HexagonalDataStore {
     
     func merge(_ region: R) {
         
-        guard let existing = self.region(for: region.hexagon,
+        guard let existing = self.region(for: region.tile,
                                          .region) else {
             
             return add(child: region)
@@ -84,7 +84,7 @@ public extension HexagonalDataStore {
         
         for chunk in region.chunks {
             
-            guard existing.chunk(for: chunk.hexagon,
+            guard existing.chunk(for: chunk.tile,
                                  .chunk) == nil else { continue }
             
             existing.add(child: chunk)
@@ -95,9 +95,9 @@ public extension HexagonalDataStore {
         
         chunks.forEach {
             
-            let region = region(for: $0.hexagon,
-                                .chunk) ?? R($0.hexagon.transpose(.chunk,
-                                                                  .region))
+            let region = region(for: $0.tile,
+                                .chunk) ?? R($0.tile.transpose(.chunk,
+                                                               .region))
             
             if region.parent == nil {
                 

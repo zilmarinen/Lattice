@@ -10,7 +10,7 @@ import RealityKit
 
 open class TriangularDataStore<R: TriangularDataStoreRegion<C, V>,
                                C: TriangularDataStoreChunk<V>,
-                               V: TriangularDataStoreTile>: TriangularDataStoreContainer,
+                               V: TriangularDataStoreTile>: DataStoreContainer<Triangle, Triangle.Scale>,
                                                             DataStore {
     
     required public init() {
@@ -47,7 +47,7 @@ public extension TriangularDataStore {
         
         return regions.first {
             
-            $0.triangle == region
+            $0.tile == region
         }
     }
     
@@ -76,7 +76,7 @@ public extension TriangularDataStore {
     
     func merge(_ region: R) {
         
-        guard let existing = self.region(for: region.triangle,
+        guard let existing = self.region(for: region.tile,
                                          .region) else {
             
             return add(child: region)
@@ -84,7 +84,7 @@ public extension TriangularDataStore {
         
         for chunk in region.chunks {
             
-            guard existing.chunk(for: chunk.triangle,
+            guard existing.chunk(for: chunk.tile,
                                  .chunk) == nil else { continue }
             
             existing.add(child: chunk)
@@ -95,9 +95,9 @@ public extension TriangularDataStore {
         
         chunks.forEach {
             
-            let region = region(for: $0.triangle,
-                                .chunk) ?? R($0.triangle.transpose(.chunk,
-                                                                   .region))
+            let region = region(for: $0.tile,
+                                .chunk) ?? R($0.tile.transpose(.chunk,
+                                                               .region))
             
             if region.parent == nil {
                 

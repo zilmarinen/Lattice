@@ -10,7 +10,7 @@ import Foundation
 import RealityKit
 
 open class HexagonalDataStoreRegion<C: HexagonalDataStoreChunk<V>,
-                                    V: DataStoreValue>: HexagonalDataStoreContainer {
+                                    V: DataStoreValue>: DataStoreContainer<Hexagon, Hexagon.Scale> {
     
     required public init(_ hexagon: Hexagon) {
         
@@ -46,7 +46,7 @@ internal extension HexagonalDataStoreRegion {
         
         return chunks.first {
             
-            $0.hexagon == chunk
+            $0.tile == chunk
         }
     }
     
@@ -55,7 +55,7 @@ internal extension HexagonalDataStoreRegion {
         
         chunks.filter {
             
-            for vertex in $0.hexagon.vertices {
+            for vertex in $0.tile.vertices {
                 
                 let match = Triangle(vertex.position(.chunk),
                                      from)
@@ -71,7 +71,7 @@ internal extension HexagonalDataStoreRegion {
                 let match = Hexagon(vertex.position(from),
                                     .chunk)
                 
-                if match == $0.hexagon {
+                if match == $0.tile {
                     
                     return true
                 }
@@ -86,7 +86,7 @@ internal extension HexagonalDataStoreRegion {
     
     func merge(_ chunk: C) {
         
-        guard let existing = self.chunk(for: chunk.hexagon,
+        guard let existing = self.chunk(for: chunk.tile,
                                         .chunk) else {
         
             return add(child: chunk)

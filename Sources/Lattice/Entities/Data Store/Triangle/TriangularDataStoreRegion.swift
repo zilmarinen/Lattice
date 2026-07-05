@@ -9,7 +9,7 @@ import Deltille
 import RealityKit
 
 public class TriangularDataStoreRegion<C: TriangularDataStoreChunk<V>,
-                                       V: TriangularDataStoreTile>: TriangularDataStoreContainer {
+                                       V: TriangularDataStoreTile>: DataStoreContainer<Triangle, Triangle.Scale> {
     
     required public init(_ triangle: Triangle) {
         
@@ -45,7 +45,7 @@ internal extension TriangularDataStoreRegion {
         
         return chunks.first {
             
-            $0.triangle == chunk
+            $0.tile == chunk
         }
     }
     
@@ -57,7 +57,7 @@ internal extension TriangularDataStoreRegion {
         
         return chunks.filter {
             
-            $0.triangle == chunk
+            $0.tile == chunk
         }
     }
 }
@@ -66,7 +66,7 @@ internal extension TriangularDataStoreRegion {
     
     func merge(_ chunk: C) {
         
-        guard let existing = self.chunk(for: chunk.triangle,
+        guard let existing = self.chunk(for: chunk.tile,
                                         .chunk) else {
             
             return add(child: chunk)
@@ -83,7 +83,7 @@ internal extension TriangularDataStoreRegion {
             let tile = Triangle(vertex)
             
             guard tile.transpose(.tile,
-                                 .region) == triangle else { return }
+                                 .region) == tile else { return }
             
             let chunk = tile.transpose(.tile,
                                        .chunk)

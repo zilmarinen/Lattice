@@ -8,7 +8,7 @@
 import Deltille
 import RealityKit
 
-public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: TriangularDataStoreContainer,
+public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: DataStoreContainer<Triangle, Triangle.Scale>,
                                                                    DataStoreChunk {
 
     internal enum CodingKeys: CodingKey {

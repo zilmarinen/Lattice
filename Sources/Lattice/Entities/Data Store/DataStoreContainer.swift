@@ -1,14 +1,16 @@
 //
-//  HexagonalDataStoreContainer.swift
+//  DataStoreContainer.swift
 //  Lattice
 //
-//  Created by Zack Brown on 28/06/2026.
+//  Created by Zack Brown on 05/07/2026.
 //
 
 import Deltille
 
-open class HexagonalDataStoreContainer: Codable,
-                                        Hashable {
+open class DataStoreContainer<T: Tile,
+                              S: Scale>: Codable,
+                                         Hashable where T.S == S,
+                                                        T.V: Vertex {
     
     internal enum CodingKeys: CodingKey {
         
@@ -16,16 +18,16 @@ open class HexagonalDataStoreContainer: Codable,
         case vertex
     }
     
-    internal var parent: HexagonalDataStoreContainer?
-    internal var children: Set<HexagonalDataStoreContainer>?
+    internal var parent: DataStoreContainer?
+    internal var children: Set<DataStoreContainer>?
     
-    public let hexagon: Hexagon
-    public let scale: Hexagon.Scale
+    public let tile: T
+    public let scale: S
     
-    internal init(_ hexagon: Hexagon,
-                  _ scale: Hexagon.Scale) {
+    internal init(_ tile: T,
+                  _ scale: S) {
         
-        self.hexagon = hexagon
+        self.tile = tile
         self.scale = scale
     }
     
@@ -36,9 +38,9 @@ open class HexagonalDataStoreContainer: Codable,
         let coordinate = try container.decode(Coordinate.self,
                                               forKey: .vertex)
         
-        self.hexagon = .init(coordinate)
+        self.tile = .init(coordinate)
         
-        self.scale = try container.decode(Hexagon.Scale.self,
+        self.scale = try container.decode(S.self,
                                           forKey: .scale)
     }
     
@@ -46,7 +48,7 @@ open class HexagonalDataStoreContainer: Codable,
     
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(hexagon.vertex.position,
+        try container.encode(tile.vertex.position,
                              forKey: .vertex)
         
         try container.encode(scale,
@@ -54,23 +56,23 @@ open class HexagonalDataStoreContainer: Codable,
     }
 }
 
-public extension HexagonalDataStoreContainer {
+public extension DataStoreContainer {
     
-    static func == (lhs: HexagonalDataStoreContainer,
-                    rhs: HexagonalDataStoreContainer) -> Bool {
+    static func == (lhs: DataStoreContainer,
+                    rhs: DataStoreContainer) -> Bool {
         
-        lhs.hexagon == rhs.hexagon &&
+        lhs.tile == rhs.tile &&
         lhs.scale == rhs.scale
     }
 
     func hash(into hasher: inout Hasher) {
         
-        hasher.combine(hexagon)
+        hasher.combine(tile)
         hasher.combine(scale)
     }
 }
 
-internal extension HexagonalDataStoreContainer {
+internal extension DataStoreContainer {
  
     var hasChildren: Bool {
         
@@ -80,9 +82,9 @@ internal extension HexagonalDataStoreContainer {
     }
 }
 
-internal extension HexagonalDataStoreContainer {
+internal extension DataStoreContainer {
     
-    func add(child: HexagonalDataStoreContainer) {
+    func add(child: DataStoreContainer) {
         
         child.removeFromParent()
         
@@ -108,3 +110,4 @@ internal extension HexagonalDataStoreContainer {
         self.parent = nil
     }
 }
+
