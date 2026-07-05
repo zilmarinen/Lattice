@@ -6,10 +6,8 @@
 //
 
 import Deltille
-import RealityKit
 
-public class DataStoreComponent<V: DataStoreValue>: Component,
-                                                    Codable {
+public class DataStoreComponent<V: DataStoreValue>: Codable {
     
     internal enum CodingKeys: CodingKey {
         

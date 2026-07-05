@@ -27,10 +27,11 @@ internal extension TriangularDataStoreRegion {
     
     var chunks: [C] {
         
-        children.compactMap {
+        children?.compactMap {
             
             $0 as? C
-        }
+            
+        } ?? []
     }
 }
 

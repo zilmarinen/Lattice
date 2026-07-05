@@ -10,6 +10,11 @@ import Deltille
 public struct DataStoreWedge<V: DataStoreValue>: Sendable {
     
     public let data: [Triangle.Vertex : V]
+    
+    public init(data: [Triangle.Vertex : V]) {
+        
+        self.data = data
+    }
 }
 
 public extension DataStoreWedge {

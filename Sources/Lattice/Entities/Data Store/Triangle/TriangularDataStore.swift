@@ -29,10 +29,11 @@ internal extension TriangularDataStore {
     
     var regions: [R] {
         
-        children.compactMap {
+        children?.compactMap {
             
             $0 as? R
-        }
+            
+        } ?? []
     }
 }
 
@@ -166,7 +167,7 @@ public extension TriangularDataStore {
             
             region.remove(values: values)
             
-            guard region.children.isEmpty else { continue }
+            guard !region.hasChildren else { continue }
             
             region.removeFromParent()
         }

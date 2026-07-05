@@ -12,13 +12,12 @@ open class TriangularDataStoreContainer: Codable,
     
     internal enum CodingKeys: CodingKey {
         
-        case children
         case scale
         case vertex
     }
     
     internal var parent: TriangularDataStoreContainer?
-    internal var children: [TriangularDataStoreContainer] = []
+    internal var children: Set<TriangularDataStoreContainer>?
     
     public let triangle: Triangle
     public let scale: Triangle.Scale
@@ -41,14 +40,6 @@ open class TriangularDataStoreContainer: Codable,
         
         self.scale = try container.decode(Triangle.Scale.self,
                                           forKey: .scale)
-        
-        self.children = try container.decode([TriangularDataStoreContainer].self,
-                                             forKey: .children)
-        
-        self.children.forEach {
-            
-            $0.parent = self
-        }
     }
     
     public func encode(to encoder: any Encoder) throws {
@@ -60,9 +51,6 @@ open class TriangularDataStoreContainer: Codable,
         
         try container.encode(scale,
                              forKey: .scale)
-        
-        try container.encode(children,
-                             forKey: .children)
     }
 }
 
@@ -83,12 +71,27 @@ public extension TriangularDataStoreContainer {
 }
 
 internal extension TriangularDataStoreContainer {
+ 
+    var hasChildren: Bool {
+        
+        guard let children else { return false }
+        
+        return !children.isEmpty
+    }
+}
+
+internal extension TriangularDataStoreContainer {
     
     func add(child: TriangularDataStoreContainer) {
         
         child.removeFromParent()
         
-        children.append(child)
+        if children == nil {
+            
+            children = []
+        }
+        
+        children?.insert(child)
         
         child.parent = self
     }
@@ -97,9 +100,9 @@ internal extension TriangularDataStoreContainer {
         
         guard let parent else { return }
         
-        if let index = parent.children.firstIndex(of: self) {
+        if let index = parent.children?.firstIndex(of: self) {
             
-            parent.children.remove(at: index)
+            parent.children?.remove(at: index)
         }
         
         self.parent = nil
