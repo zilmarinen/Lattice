@@ -16,21 +16,21 @@ fileprivate class TriLatticeChunk: TriangularChunk {}
 
 internal struct TriLatticeTile: TriangularDataStoreTile {
     
-    internal let vertex: Triangle.Vertex
+    internal let coord: Coordinate
     
     internal let value: String
     
-    internal let footprint: [Triangle.Vertex]
+    internal let footprint: [Coordinate]
     
     internal var rotation: Triangle.Rotation { .identity }
     
-    internal init(vertex: Triangle.Vertex,
+    internal init(coord: Coordinate,
                   value: String,
-                  footprint: [Triangle.Vertex]? = nil) {
+                  footprint: [Coordinate]? = nil) {
         
-        self.vertex = vertex
+        self.coord = coord
         self.value = value
-        self.footprint = footprint ?? [vertex]
+        self.footprint = footprint ?? [coord]
     }
 }
 
@@ -52,20 +52,20 @@ final class TriangularLatticeTests: XCTestCase {
         let vertex0 = triangle0.vertex
         let vertex1 = triangle1.vertex
         
-        lattice.set(.init(vertex: vertex0,
+        lattice.set(.init(coord: vertex0.position,
                           value: value0),
                     for: triangle0)
         
-        lattice.set(.init(vertex: vertex1,
+        lattice.set(.init(coord: vertex1.position,
                           value: value1),
                     for: triangle1)
         
         let result0 = lattice.value(for: triangle0)
         let result1 = lattice.value(for: triangle1)
         
-        XCTAssertEqual(vertex0, result0?.vertex)
+        XCTAssertEqual(vertex0.position, result0?.coord)
         XCTAssertEqual(value0, result0?.value)
-        XCTAssertEqual(vertex1, result1?.vertex)
+        XCTAssertEqual(vertex1.position, result1?.coord)
         XCTAssertEqual(value1, result1?.value)
     }
     
@@ -75,8 +75,11 @@ final class TriangularLatticeTests: XCTestCase {
         
         let triangle = Triangle(-17, 11, 5)
         
-        lattice.set(.init(vertex: triangle.vertex,
-                          value: "lattice"),
+        let footprint = (triangle.perimeter + [triangle]).map { $0.vertex.position }
+        
+        lattice.set(.init(coord: triangle.vertex.position,
+                          value: "lattice",
+                          footprint: footprint),
                     for: triangle)
         
         lattice.remove(values: [triangle])
@@ -85,7 +88,7 @@ final class TriangularLatticeTests: XCTestCase {
         let chunks = regions.flatMap { $0.chunks }
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.tile } })
         
         XCTAssertEqual(0, regions.count)
         XCTAssertEqual(0, chunks.count)
@@ -100,9 +103,11 @@ final class TriangularLatticeTests: XCTestCase {
         
         let triangle = Triangle(-82, 58, 23)
         
-        lattice.set(.init(vertex: triangle.vertex,
+        let footprint = (triangle.perimeter + [triangle]).map { $0.vertex.position }
+        
+        lattice.set(.init(coord: triangle.vertex.position,
                           value: "lattice",
-                          footprint: [triangle.vertex] + triangle.adjacent.map { $0.vertex }),
+                          footprint: footprint),
                     for: triangle)
         
         lattice.remove(values: [triangle])
@@ -124,7 +129,7 @@ final class TriangularLatticeTests: XCTestCase {
         let region = triangle.transpose(.tile,
                                         .region)
         
-        lattice.set(.init(vertex: triangle.vertex,
+        lattice.set(.init(coord: triangle.vertex.position,
                           value: "lattice"),
                     for: triangle)
         
@@ -132,10 +137,10 @@ final class TriangularLatticeTests: XCTestCase {
         let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
         
         XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(region, dirtyRegions.first?.triangle)
+        XCTAssertEqual(region, dirtyRegions.first?.tile)
         
         XCTAssertEqual(1, dirtyChunks.count)
-        XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
+        XCTAssertEqual(chunk, dirtyChunks.first?.tile)
     }
     
     func testSoilablePropagationCorner() throws {
@@ -146,7 +151,7 @@ final class TriangularLatticeTests: XCTestCase {
         let region = triangle.transpose(.tile,
                                         .region)
         
-        lattice.set(.init(vertex: triangle.vertex,
+        lattice.set(.init(coord: triangle.vertex.position,
                           value: "lattice"),
                     for: triangle)
         
@@ -154,10 +159,10 @@ final class TriangularLatticeTests: XCTestCase {
                                                    .chunk))
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.tile } })
         
         XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(region, dirtyRegions.first?.triangle)
+        XCTAssertEqual(region, dirtyRegions.first?.tile)
         
         XCTAssertEqual(6, dirtyChunks.count)
         XCTAssertEqual(chunks, dirtyChunks)
@@ -173,7 +178,7 @@ final class TriangularLatticeTests: XCTestCase {
         let region = triangle.transpose(.tile,
                                         .region)
         
-        lattice.set(.init(vertex: triangle.vertex,
+        lattice.set(.init(coord: triangle.vertex.position,
                           value: "lattice"),
                     for: triangle)
         

@@ -31,11 +31,11 @@ final class HexagonalDataStoreTests: XCTestCase {
         let vertex0 = triangle0.vertex(.c0)
         let vertex1 = triangle1.vertex(.c0)
         
-        dataStore.set(.init(vertex: vertex0,
+        dataStore.set(.init(coord: vertex0.position,
                             value: value0),
                       for: vertex0)
         
-        dataStore.set(.init(vertex: vertex1,
+        dataStore.set(.init(coord: vertex1.position,
                             value: value1),
                       for: vertex1)
         
@@ -45,6 +45,27 @@ final class HexagonalDataStoreTests: XCTestCase {
         XCTAssertEqual(value0, result0?.value)
         XCTAssertEqual(value1, result1?.value)
     }
+    
+    func testValueDeletion() throws {
+        
+        let dataStore = HexagonalDataStore<R, HexagonalDataStoreChunk<V>, V>()
+        
+        let vertex = Triangle.Vertex(-16, 12, 5)
+        
+        dataStore.set(.init(coord: vertex.position,
+                            value: "lattice"),
+                      for: vertex)
+        
+        dataStore.remove(values: [vertex])
+        
+        let regions = dataStore.regions
+        let chunks = regions.flatMap { $0.chunks }
+        
+        XCTAssertEqual(0, regions.count)
+        XCTAssertEqual(0, chunks.count)
+    }
+    
+    // MARK: Wedge
     
     func testWedge() throws {
         
@@ -58,16 +79,16 @@ final class HexagonalDataStoreTests: XCTestCase {
         
         let vertex = triangle.vertex(.c0)
         
-        dataStore.set(.init(vertex: vertex,
+        dataStore.set(.init(coord: vertex.position,
                             value: value),
                       for: vertex)
         
         let wedge = dataStore.wedge(for: chunk.sieve(for: .chunk))
         
-        let vertices = Set(wedge.data.map { $0.value.vertex })
+        let vertices = Set(wedge.data.map { $0.value.coord })
         
         XCTAssertEqual(wedge.data.count, 1)
-        XCTAssertTrue(vertices.contains(vertex))
+        XCTAssertTrue(vertices.contains(vertex.position))
         XCTAssertEqual(wedge.value(for: vertex)?.value, value)
     }
 }

@@ -16,7 +16,7 @@ fileprivate class HexLatticeChunk: TriangularChunk {}
 
 internal struct HexLatticeVertex: DataStoreValue {
     
-    internal let vertex: Triangle.Vertex
+    internal let coord: Coordinate
     
     internal let value: String
 }
@@ -39,11 +39,11 @@ final class HexagonalLatticeTests: XCTestCase {
         let vertex0 = triangle0.vertex(.c0)
         let vertex1 = triangle1.vertex(.c0)
         
-        lattice.set(.init(vertex: vertex0,
+        lattice.set(.init(coord: vertex0.position,
                           value: value0),
                     for: vertex0)
         
-        lattice.set(.init(vertex: vertex1,
+        lattice.set(.init(coord: vertex1.position,
                           value: value1),
                     for: vertex1)
         
@@ -60,7 +60,7 @@ final class HexagonalLatticeTests: XCTestCase {
         
         let vertex = Triangle.Vertex(-16, 12, 5)
         
-        lattice.set(.init(vertex: vertex,
+        lattice.set(.init(coord: vertex.position,
                           value: "lattice"),
                     for: vertex)
         
@@ -70,7 +70,7 @@ final class HexagonalLatticeTests: XCTestCase {
         let chunks = regions.flatMap { $0.chunks }
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.tile } })
         
         XCTAssertEqual(0, regions.count)
         XCTAssertEqual(0, chunks.count)
@@ -91,7 +91,7 @@ final class HexagonalLatticeTests: XCTestCase {
         
         let vertex = triangle.vertex(.c0)
         
-        lattice.set(.init(vertex: vertex,
+        lattice.set(.init(coord: vertex.position,
                           value: "lattice"),
                     for: vertex)
         
@@ -99,10 +99,10 @@ final class HexagonalLatticeTests: XCTestCase {
         let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
         
         XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(region, dirtyRegions.first?.triangle)
+        XCTAssertEqual(region, dirtyRegions.first?.tile)
         
         XCTAssertEqual(1, dirtyChunks.count)
-        XCTAssertEqual(chunk, dirtyChunks.first?.triangle)
+        XCTAssertEqual(chunk, dirtyChunks.first?.tile)
     }
     
     func testSoilablePropagationCorner() throws {
@@ -111,7 +111,7 @@ final class HexagonalLatticeTests: XCTestCase {
         
         let vertex = Triangle.Vertex(-16, 12, 5)
         
-        lattice.set(.init(vertex: vertex,
+        lattice.set(.init(coord: vertex.position,
                           value: "lattice"),
                     for: vertex)
         
@@ -121,10 +121,10 @@ final class HexagonalLatticeTests: XCTestCase {
                                              .chunk))
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.triangle } })
+        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.tile } })
         
         XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(regions.first, dirtyRegions.first?.triangle)
+        XCTAssertEqual(regions.first, dirtyRegions.first?.tile)
         
         XCTAssertEqual(6, dirtyChunks.count)
         XCTAssertEqual(chunks, dirtyChunks)
@@ -140,7 +140,7 @@ final class HexagonalLatticeTests: XCTestCase {
         
         let triangle = vertex.tiles.first!
         
-        lattice.set(.init(vertex: vertex,
+        lattice.set(.init(coord: vertex.position,
                           value: "lattice"),
                     for: vertex)
         

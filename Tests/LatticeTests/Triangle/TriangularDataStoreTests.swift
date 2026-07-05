@@ -31,22 +31,46 @@ final class TriangularDataStoreTests: XCTestCase {
         let vertex0 = triangle0.vertex
         let vertex1 = triangle1.vertex
         
-        dataStore.set(.init(vertex: vertex0,
+        dataStore.set(.init(coord: vertex0.position,
                             value: value0),
                       for: triangle0)
         
-        dataStore.set(.init(vertex: vertex1,
+        dataStore.set(.init(coord: vertex1.position,
                             value: value1),
                       for: triangle1)
         
         let result0 = dataStore.value(for: triangle0)
         let result1 = dataStore.value(for: triangle1)
         
-        XCTAssertEqual(vertex0, result0?.vertex)
+        XCTAssertEqual(vertex0.position, result0?.coord)
         XCTAssertEqual(value0, result0?.value)
-        XCTAssertEqual(vertex1, result1?.vertex)
+        XCTAssertEqual(vertex1.position, result1?.coord)
         XCTAssertEqual(value1, result1?.value)
     }
+    
+    func testValueDeletion() throws {
+        
+        let dataStore = TriangularDataStore<R, TriangularDataStoreChunk<V>, V>()
+        
+        let triangle = Triangle(-17, 11, 5)
+        
+        let footprint = (triangle.perimeter + [triangle]).map { $0.vertex.position }
+        
+        dataStore.set(.init(coord: triangle.vertex.position,
+                            value: "lattice",
+                            footprint: footprint),
+                      for: triangle)
+        
+        dataStore.remove(values: [triangle])
+        
+        let regions = dataStore.regions
+        let chunks = regions.flatMap { $0.chunks }
+        
+        XCTAssertEqual(0, regions.count)
+        XCTAssertEqual(0, chunks.count)
+    }
+    
+    // MARK: Wedge
     
     func testWedge() throws {
         
@@ -60,16 +84,19 @@ final class TriangularDataStoreTests: XCTestCase {
         
         let vertex = triangle.vertex
         
-        dataStore.set(.init(vertex: vertex,
-                            value: value),
+        let footprint = (triangle.perimeter + [triangle]).map { $0.vertex.position }
+        
+        dataStore.set(.init(coord: vertex.position,
+                            value: value,
+                            footprint: footprint),
                       for: triangle)
         
         let wedge = dataStore.wedge(for: chunk.sieve(for: .chunk))
         
-        let vertices = wedge.data.map { $0.value.vertex }
+        let vertices = wedge.data.map { $0.value.coord }
         
-        XCTAssertEqual(wedge.data.count, 1)
-        XCTAssertTrue(vertices.contains(vertex))
+        XCTAssertEqual(wedge.data.count, footprint.count)
+        XCTAssertTrue(vertices.contains(vertex.position))
         XCTAssertEqual(wedge.value(for: vertex)?.value, value)
     }
 }
