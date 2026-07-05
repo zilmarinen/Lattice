@@ -17,18 +17,18 @@ open class TriangularEntity: Entity,
         case vertex
     }
     
-    public let triangle: Triangle
+    public let tile: Triangle
     public let scale: Triangle.Scale
     
-    internal init(_ triangle: Triangle,
+    internal init(_ tile: Triangle,
                   _ scale: Triangle.Scale) {
         
-        self.triangle = triangle
+        self.tile = tile
         self.scale = scale
         
         super.init()
         
-        name = triangle.id
+        name = tile.id
         
         updatePosition()
     }
@@ -43,14 +43,14 @@ open class TriangularEntity: Entity,
         let coordinate = try container.decode(Coordinate.self,
                                               forKey: .vertex)
         
-        self.triangle = .init(coordinate)
+        self.tile = .init(coordinate)
         
         self.scale = try container.decode(Triangle.Scale.self,
                                           forKey: .scale)
         
         super.init()
         
-        name = triangle.id
+        name = tile.id
         
         updatePosition()
     }
@@ -59,7 +59,7 @@ open class TriangularEntity: Entity,
     
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(triangle.vertex.position,
+        try container.encode(tile.vertex.position,
                              forKey: .vertex)
         
         try container.encode(scale,
@@ -75,14 +75,14 @@ extension TriangularEntity {
             
         case .region:
             
-            position = .init(triangle.position(scale))
+            position = .init(tile.position(scale))
             
         case .chunk:
             
-            let region = triangle.transpose(scale,
-                                            .region)
+            let region = tile.transpose(scale,
+                                        .region)
             
-            position = .init(triangle.position(scale) - region.position(.region))
+            position = .init(tile.position(scale) - region.position(.region))
             
         default:
             

@@ -11,5 +11,13 @@ public protocol DataStoreValue: Codable,
                                 Hashable,
                                 Sendable {
     
-    var vertex: Triangle.Vertex { get }
+    var coord: Coordinate { get }
+}
+
+public extension DataStoreValue {
+    
+    var vertex: Triangle.Vertex {
+        
+        .init(coord)
+    }
 }

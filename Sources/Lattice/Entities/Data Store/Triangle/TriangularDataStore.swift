@@ -119,15 +119,15 @@ public extension TriangularDataStore {
     func set(_ value: V,
              for key: Triangle) {
         
-        guard !intersects(value) else { return }
+        let tiles = value.tiles
         
-        let unique = Set(value.footprint.map {
+        for tile in value.tiles {
             
-            let triangle = Triangle($0)
-            
-            return triangle.transpose(.tile,
-                                      .region)
-        })
+            guard self.value(for: tile) == nil else { return }
+        }
+        
+        let unique = tiles.unique(.tile,
+                                  .region)
         
         for triangle in unique {
             
@@ -146,24 +146,31 @@ public extension TriangularDataStore {
      
     func remove(values keys: [Triangle]) {
         
-        let tiles = values(for: keys)
+        var accumulated = Set<Triangle>()
         
-        let unique = tiles.reduce(into: [Triangle : [Triangle]]()) { result, triangle in
+        for key in keys {
             
-            let region = triangle.transpose(.tile,
-                                            .region)
+            guard !accumulated.contains(key),
+                  let tile = value(for: key) else { continue }
             
-            var values = result[region] ?? Array()
-            
-            values.append(triangle)
-            
-            result[region] = values
+            accumulated.formUnion(tile.tiles)
         }
         
-        for (triangle, values) in unique {
+        let keys = Array(accumulated)
+        
+        let unique = keys.unique(.tile,
+                                 .region)
+        
+        for triangle in unique {
             
             guard let region = region(for: triangle,
                                       .region) else { continue }
+            
+            let values = keys.filter {
+                
+                $0.transpose(.tile,
+                             .region) == triangle
+            }
             
             region.remove(values: values)
             
@@ -181,40 +188,5 @@ public extension TriangularDataStore {
         }
         
         return .init(data: data)
-    }
-}
-
-private extension TriangularDataStore {
-    
-    func intersects(_ value: V) -> Bool {
-        
-        let footprint = Set(value.footprint + [value.vertex])
-        
-        let tiles = footprint.map {
-            
-            Triangle($0)
-        }
-        
-        return !values(for: tiles).isEmpty
-    }
-    
-    func values(for keys: [Triangle]) -> [Triangle] {
-        
-        var visited = Set<Triangle>()
-        
-        for key in keys {
-            
-            guard !visited.contains(key),
-                  let value = value(for: key) else { continue }
-            
-            let footprint = Set(value.footprint + [value.vertex])
-            
-            visited.formUnion(footprint.map {
-                
-                Triangle($0)
-            })
-        }
-        
-        return Array(visited)
     }
 }

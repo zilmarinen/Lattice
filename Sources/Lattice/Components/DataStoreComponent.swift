@@ -22,7 +22,7 @@ public class DataStoreComponent<V: DataStoreValue>: Codable {
         
         self.data = values.reduce(into: [Coordinate : V](), { result, value in
             
-            result[value.vertex.position] = value
+            result[value.coord] = value
         })
     }
 }

@@ -78,24 +78,12 @@ internal extension TriangularDataStoreRegion {
     func set(_ value: V,
              for key: Triangle) {
         
-        let unique = value.footprint.reduce(into: [Triangle : [Triangle]]()) { result, vertex in
-            
-            let tile = Triangle(vertex)
-            
-            guard tile.transpose(.tile,
-                                 .region) == tile else { return }
-            
-            let chunk = tile.transpose(.tile,
-                                       .chunk)
-            
-            var values = result[chunk] ?? Array()
-            
-            values.append(tile)
-            
-            result[chunk] = values
-        }
+        let tiles = value.tiles
         
-        for (triangle, values) in unique {
+        let unique = tiles.unique(.tile,
+                                  .chunk)
+        
+        for triangle in unique {
             
             let chunk = chunk(for: triangle,
                               .chunk) ?? C(triangle)
@@ -105,8 +93,11 @@ internal extension TriangularDataStoreRegion {
                 add(child: chunk)
             }
             
-            for tile in values {
-             
+            for tile in tiles {
+                
+                guard tile.transpose(.tile,
+                                     .chunk) == triangle else { continue }
+                
                 chunk.set(value,
                           for: tile.vertex.position)
             }
@@ -118,22 +109,20 @@ internal extension TriangularDataStoreRegion {
         let unique = keys.unique(.tile,
                                  .chunk)
         
-        var remaining = Set(keys)
-        
         for triangle in unique {
             
             guard let chunk = chunk(for: triangle,
                                     .chunk) else { continue }
             
-            let tiles = remaining.filter {
+            let values: [Coordinate] = keys.compactMap {
                 
-                $0.transpose(.tile,
-                             .chunk) == triangle
+                guard $0.transpose(.tile,
+                                   .chunk) == triangle else { return nil }
+                
+                return $0.vertex.position
             }
             
-            remaining.subtract(tiles)
-            
-            chunk.remove(values: tiles.map { $0.vertex.position })
+            chunk.remove(values: values)
             
             guard chunk.isEmpty else { continue }
             

@@ -15,7 +15,7 @@ open class DataStoreContainer<T: Tile,
     internal enum CodingKeys: CodingKey {
         
         case scale
-        case vertex
+        case coord
     }
     
     internal var parent: DataStoreContainer?
@@ -36,7 +36,7 @@ open class DataStoreContainer<T: Tile,
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         let coordinate = try container.decode(Coordinate.self,
-                                              forKey: .vertex)
+                                              forKey: .coord)
         
         self.tile = .init(coordinate)
         
@@ -49,7 +49,7 @@ open class DataStoreContainer<T: Tile,
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         try container.encode(tile.vertex.position,
-                             forKey: .vertex)
+                             forKey: .coord)
         
         try container.encode(scale,
                              forKey: .scale)

@@ -92,7 +92,7 @@ extension TriangularRegion {
         
         return chunks.first {
             
-            $0.triangle == chunk
+            $0.tile == chunk
         }
     }
     
@@ -104,7 +104,7 @@ extension TriangularRegion {
         
         return chunks.filter {
             
-            $0.triangle == chunk
+            $0.tile == chunk
         }
     }
 }

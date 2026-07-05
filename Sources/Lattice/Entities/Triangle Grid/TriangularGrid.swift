@@ -14,7 +14,7 @@ open class TriangularGrid<R: TriangularRegion<C>,
     
     internal func merge(_ region: R) {
         
-        guard let existing = self.region(for: region.triangle,
+        guard let existing = self.region(for: region.tile,
                                          .region) else {
             
             return addChild(region)
@@ -22,7 +22,7 @@ open class TriangularGrid<R: TriangularRegion<C>,
         
         for chunk in region.chunks {
             
-            guard existing.chunk(for: chunk.triangle,
+            guard existing.chunk(for: chunk.tile,
                                  .chunk) == nil else { continue }
             
             existing.addChild(chunk)
@@ -80,7 +80,7 @@ public extension TriangularGrid {
         
         return regions.first {
             
-            $0.triangle == region
+            $0.tile == region
         }
     }
     

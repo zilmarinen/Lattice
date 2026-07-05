@@ -60,7 +60,7 @@ public extension Lattice {
             
             for chunk in region.dirtyChunks {
                 
-                let sieve = chunk.triangle.sieve(for: .chunk)
+                let sieve = chunk.tile.sieve(for: .chunk)
                 let wedge = wedge(for: sieve)
                 
                 guard !wedge.isEmpty,
