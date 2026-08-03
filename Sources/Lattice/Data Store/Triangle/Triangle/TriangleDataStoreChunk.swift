@@ -1,24 +1,23 @@
 //
-//  TriangularDataStoreChunk.swift
+//  TriangleDataStoreChunk.swift
 //  Lattice
 //
-//  Created by Zack Brown on 07/03/2026.
+//  Created by Zack Brown on 03/08/2026.
 //
 
 import Deltille
-import RealityKit
 
-public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: DataStoreContainer<Triangle, Triangle.Scale>,
-                                                                   DataStoreChunk {
-
+public class TriangleDataStoreChunk<T: DataStoreTile>: DataStoreContainer<Triangle, Triangle.Scale>,
+                                                       DataStoreChunk {
+    
     internal enum CodingKeys: CodingKey {
         
         case store
     }
     
-    public let store: DataStoreComponent<V>
+    public let store: ValueStore<T>
     
-    required internal init(_ triangle: Triangle) {
+    required public init(_ triangle: Triangle) {
         
         self.store = .init()
         
@@ -26,11 +25,11 @@ public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: DataStoreCont
                    .chunk)
     }
     
-    required internal init(from decoder: any Decoder) throws {
+    required public init(from decoder: any Decoder) throws {
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        let values = try container.decode([V].self,
+        let values = try container.decode([T].self,
                                           forKey: .store)
         
         self.store = .init(values: values)
@@ -47,4 +46,9 @@ public class TriangularDataStoreChunk<V: TriangularDataStoreTile>: DataStoreCont
         try container.encode(Array(store.data.values),
                              forKey: .store)
     }
+}
+
+//TODO: REMOVE
+public class ExampleTriangleDataStoreChunk: TriangleDataStoreChunk<ExampleTriangleTile> {
+    
 }

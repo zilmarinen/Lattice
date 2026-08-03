@@ -2,37 +2,30 @@
 //  DataStoreChunk.swift
 //  Lattice
 //
-//  Created by Zack Brown on 30/05/2026.
+//  Created by Zack Brown on 03/08/2026.
 //
 
 import Deltille
-import RealityKit
 
-public protocol DataStoreChunk: Codable {
+public protocol DataStoreChunk {
     
-    associatedtype V: DataStoreValue
+    associatedtype T: DataStoreTile
     
-    var store: DataStoreComponent<V> { get }
+    var store: ValueStore<T> { get }
     
-    var data: [Coordinate : V] { get }
+    var isEmpty: Bool { get }
     
-    func merge(_ other: DataStoreComponent<V>)
+    func merge(_ other: Self)
     
-    func value(for key: Coordinate) -> V?
+    func remove(_ keys: [T.V])
     
-    func set(_ value: V,
-             for key: Coordinate)
+    func set(_ value: T)
     
-    func remove(values keys: [Coordinate])
+    func value(for key: T.V) -> T?
 }
 
 public extension DataStoreChunk {
-    
-    var data: [Coordinate : V] {
-        
-        store.data
-    }
-    
+ 
     var isEmpty: Bool {
         
         store.isEmpty
@@ -41,27 +34,29 @@ public extension DataStoreChunk {
 
 public extension DataStoreChunk {
     
-    func merge(_ other: DataStoreComponent<V>) {
+    func merge(_ other: Self) {
         
-        store.data.merge(other.data) { (current, _) in current }
+        store.data.merge(other.store.data) { (current, _) in
+            
+            current
+        }
     }
     
-    func value(for key: Coordinate) -> V? {
+    func set(_ value: T) {
         
-        data[key]
+        store.data[value.vertex] = value
     }
     
-    func set(_ value: V,
-             for key: Coordinate) {
-        
-        store.data[key] = value
-    }
-    
-    func remove(values keys: [Coordinate]) {
+    func remove(_ keys: [T.V]) {
         
         keys.forEach {
             
             store.data.removeValue(forKey: $0)
         }
+    }
+    
+    func value(for key: T.V) -> T? {
+        
+        store.data[key]
     }
 }

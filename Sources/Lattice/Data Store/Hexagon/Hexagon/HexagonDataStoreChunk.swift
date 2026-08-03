@@ -1,22 +1,21 @@
 //
-//  HexagonalDataStoreChunk.swift
+//  HexagonDataStoreChunk.swift
 //  Lattice
 //
-//  Created by Zack Brown on 08/03/2026.
+//  Created by Zack Brown on 03/08/2026.
 //
 
 import Deltille
-import RealityKit
 
-open class HexagonalDataStoreChunk<V: DataStoreValue>: DataStoreContainer<Hexagon, Hexagon.Scale>,
-                                                       DataStoreChunk {
+public class HexagonDataStoreChunk<T: DataStoreTile>: DataStoreContainer<Hexagon, Hexagon.Scale>,
+                                                      DataStoreChunk {
     
     internal enum CodingKeys: CodingKey {
         
         case store
     }
     
-    public let store: DataStoreComponent<V>
+    public let store: ValueStore<T>
     
     required public init(_ hexagon: Hexagon) {
         
@@ -30,7 +29,7 @@ open class HexagonalDataStoreChunk<V: DataStoreValue>: DataStoreContainer<Hexago
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        let values = try container.decode([V].self,
+        let values = try container.decode([T].self,
                                           forKey: .store)
         
         self.store = .init(values: values)
@@ -47,4 +46,9 @@ open class HexagonalDataStoreChunk<V: DataStoreValue>: DataStoreContainer<Hexago
         try container.encode(Array(store.data.values),
                              forKey: .store)
     }
+}
+
+//TODO: REMOVE
+public class ExampleHexagonDataStoreChunk: HexagonDataStoreChunk<ExampleHexagonTile> {
+    
 }

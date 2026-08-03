@@ -2,53 +2,28 @@
 //  DataStoreWedge.swift
 //  Lattice
 //
-//  Created by Zack Brown on 07/03/2026.
+//  Created by Zack Brown on 03/08/2026.
 //
 
 import Deltille
 
-public struct DataStoreWedge<V: DataStoreValue>: Sendable {
+public struct DataStoreWedge<T: DataStoreTile>: Sendable {
     
-    public let data: [Triangle.Vertex : V]
-    
-    public init(data: [Triangle.Vertex : V]) {
-        
-        self.data = data
-    }
+    public let values: [T.V : T]
 }
 
 public extension DataStoreWedge {
-
+    
     var isEmpty: Bool {
-
-        data.isEmpty
+    
+        values.isEmpty
     }
 }
 
 public extension DataStoreWedge {
     
-    func value(for key: Triangle.Vertex) -> V? {
+    func value(for key: T.V) -> T? {
         
-        data[key]
-    }
-
-    func weave(_ sieve: Triangle.Sieve) -> DataStoreWeave<V> {
-
-        let values = sieve.triangles.reduce(into: [Triangle : DataStoreStitch<V>]()) { result, triangle in
-                    
-            let values = triangle.vertices.reduce(into: [Triangle.Vertex : V]()) { result, vertex in
-                
-                guard let value = data[vertex] else { return }
-                
-                result[vertex] = value
-            }
-
-            guard !values.isEmpty else { return }
-
-            result[triangle] = .init(triangle: triangle,
-                                     vertices: values)
-        }
-        
-        return .init(data: values)
+        values[key]
     }
 }

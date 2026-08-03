@@ -2,28 +2,33 @@
 //  DataStore.swift
 //  Lattice
 //
-//  Created by Zack Brown on 07/03/2026.
+//  Created by Zack Brown on 03/08/2026.
 //
 
 import Deltille
-import RealityKit
 
-public protocol DataStore {
+public protocol DataStore where T.T.SI.T == T.V {
     
-    associatedtype C: DataStoreChunk
+    associatedtype T: DataStoreTile
     
-    associatedtype K = Vertex
-    associatedtype V = C.V
-    associatedtype W = DataStoreWedge<C.V>
+    func remove(_ keys: [T.V])
     
-    func merge(_ chunks: [C])
+    func set(_ value: T)
     
-    func value(for key: K) -> V?
+    func value(for key: T.V) -> T?
     
-    func set(_ value: V,
-             for key: K)
+    func wedge(for sieve: T.T.SI) -> DataStoreWedge<T>
+}
+
+public extension DataStore {
     
-    func remove(values keys: [K])
-    
-    func wedge(for sieve: Triangle.Sieve) -> W
+    func wedge(for sieve: T.T.SI) -> DataStoreWedge<T> {
+        
+        let wedge = sieve.tiles.reduce(into: [T.V : T]()) { result, tile in
+        
+            result[tile] = value(for: tile)
+        }
+        
+        return .init(values: wedge)
+    }
 }
