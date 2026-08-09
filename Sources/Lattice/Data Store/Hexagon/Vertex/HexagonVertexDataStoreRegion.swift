@@ -1,23 +1,31 @@
 //
-//  TriangleVertexDataStore.swift
+//  HexagonVertexDataStoreRegion.swift
 //  Lattice
 //
-//  Created by Zack Brown on 03/08/2026.
+//  Created by Zack Brown on 09/08/2026.
 //
 
 import Deltille
 
-public class TriangleVertexDataStore<V: DataStoreValue>: DataStore where V.V == Triangle.Vertex {
+public class HexagonVertexDataStoreRegion<V: DataStoreValue>: DataStoreContainer<Triangle, Triangle.Scale> where V.V == Hexagon.Vertex {
     
-    internal typealias C = DataStoreChunk<Hexagon, Hexagon.Scale, V>
-    
+    internal typealias C = DataStoreChunk<Triangle, Triangle.Scale, V>
+
     internal var chunks: [C] = []
 }
 
-internal extension TriangleVertexDataStore {
+internal extension HexagonVertexDataStoreRegion {
     
-    func chunk(for tile: Hexagon,
-               _ from: Hexagon.Scale) -> C? {
+    var isEmpty: Bool {
+        
+        chunks.isEmpty
+    }
+}
+
+internal extension HexagonVertexDataStoreRegion {
+    
+    func chunk(for tile: Triangle,
+               _ from: Triangle.Scale) -> C? {
         
         let transposed = tile.transpose(from,
                                         .chunk)
@@ -27,19 +35,16 @@ internal extension TriangleVertexDataStore {
             $0.tile == transposed
         }
     }
-}
-
-public extension TriangleVertexDataStore {
     
     func remove(_ keys: [V.V]) {
-        
-        let hexagons = keys.map {
+     
+        let triangles = keys.map {
             
-            Hexagon($0)
+            Triangle($0)
         }
         
-        let unique = hexagons.unique(.tile,
-                                     .chunk)
+        let unique = triangles.unique(.tile,
+                                      .chunk)
         
         for tile in unique {
             
@@ -57,10 +62,10 @@ public extension TriangleVertexDataStore {
     
     func set(_ value: V) {
         
-        let hexagon = Hexagon(value.vertex)
+        let triangle = Triangle(value.vertex)
         
-        let transposed = hexagon.transpose(.tile,
-                                           .chunk)
+        let transposed = triangle.transpose(.tile,
+                                            .chunk)
         
         let chunk = chunk(for: transposed,
                           .chunk) ?? C(transposed,
@@ -75,19 +80,9 @@ public extension TriangleVertexDataStore {
         
         chunk.set(value)
     }
-    
-    func value(for key: V.V) -> V? {
-        
-        let hexagon = Hexagon(key)
-        
-        guard let chunk = chunk(for: hexagon,
-                                .tile) else { return nil }
-        
-        return chunk.value(for: key)
-    }
 }
 
 //TODO: REMOVE
-public class ExampleTriangleVertexDataStore: TriangleVertexDataStore<ExampleTriangleVertexValue> {
+public class ExampleHexagonVertexDataStoreRegion: HexagonVertexDataStoreRegion<ExampleHexagonVertexValue> {
     
 }
