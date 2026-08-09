@@ -7,20 +7,20 @@
 
 import Deltille
 
-public class HexagonDataStore<C: HexagonDataStoreChunk<T>,
-                              T: DataStoreTile>: DataStore where T.T == Hexagon,
-                                                                 T.T == T.V {
+public class HexagonDataStore<T: DataStoreTile>: DataStore where T.T == Hexagon {
+    
+    internal typealias C = DataStoreChunk<V.T, V.T.S, V>
     
     internal var chunks: [C] = []
 }
 
 internal extension HexagonDataStore {
     
-    func chunk(for triangle: Hexagon,
+    func chunk(for tile: Hexagon,
                _ from: Hexagon.Scale) -> C? {
         
-        let transposed = triangle.transpose(from,
-                                            .chunk)
+        let transposed = tile.transpose(from,
+                                        .chunk)
         
         return chunks.first {
             
@@ -36,18 +36,12 @@ public extension HexagonDataStore {
         let unique = keys.unique(.tile,
                                  .chunk)
         
-        for triangle in unique {
+        for tile in unique {
             
-            guard let chunk = chunk(for: triangle,
+            guard let chunk = chunk(for: tile,
                                     .chunk) else { continue }
             
-            let values: [T.V] = keys.compactMap {
-                
-                $0.transpose(.tile,
-                             .chunk) == triangle ? $0 : nil
-            }
-            
-            chunk.remove(values)
+            chunk.remove(keys)
             
             guard chunk.isEmpty,
                   let index = chunks.firstIndex(of: chunk) else { continue }
@@ -63,20 +57,23 @@ public extension HexagonDataStore {
         let unique = footprint.unique(.tile,
                                       .chunk)
         
-        for triangle in unique {
+        for tile in unique {
             
-            let chunk = chunk(for: triangle,
-                              .chunk) ?? C(triangle)
+            let chunk = chunk(for: tile,
+                              .chunk) ?? C(tile,
+                                           .chunk)
             
-            if chunks.firstIndex(of: chunk) == nil {
+            if chunk.parent == nil {
                 
                 chunks.append(chunk)
+                
+                chunk.parent = .zero
             }
             
             for tile in footprint {
                 
                 guard tile.transpose(.tile,
-                                     .chunk) == triangle else { continue }
+                                     .chunk) == chunk.tile else { continue }
                 
                 chunk.set(value)
             }
@@ -93,6 +90,6 @@ public extension HexagonDataStore {
 }
 
 //TODO: REMOVE
-public class ExampleHexagonDataStore: HexagonDataStore<HexagonDataStoreChunk<ExampleHexagonTile>, ExampleHexagonTile> {
+public class ExampleHexagonDataStore: HexagonDataStore<ExampleHexagonTile> {
     
 }

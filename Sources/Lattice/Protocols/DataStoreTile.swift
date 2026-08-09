@@ -9,7 +9,7 @@ import Deltille
 
 public protocol DataStoreTile: Codable,
                                DataStoreValue,
-                               Hashable {
+                               Hashable where T == V {
     
     associatedtype T: Tile
     

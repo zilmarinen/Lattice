@@ -7,28 +7,29 @@
 
 import Deltille
 
-public protocol DataStore where T.T.SI.T == T.V {
+public protocol DataStore {
     
-    associatedtype T: DataStoreTile
+    associatedtype V: DataStoreValue
+    //associatedtype S: Sieve
     
-    func remove(_ keys: [T.V])
+    func remove(_ keys: [V.V])
     
-    func set(_ value: T)
+    func set(_ value: V)
     
-    func value(for key: T.V) -> T?
+    func value(for key: V.V) -> V?
     
-    func wedge(for sieve: T.T.SI) -> DataStoreWedge<T>
+    //func wedge(for sieve: S) -> DataStoreWedge<V>
 }
 
-public extension DataStore {
-    
-    func wedge(for sieve: T.T.SI) -> DataStoreWedge<T> {
-        
-        let wedge = sieve.tiles.reduce(into: [T.V : T]()) { result, tile in
-        
-            result[tile] = value(for: tile)
-        }
-        
-        return .init(values: wedge)
-    }
-}
+//public extension DataStore {
+//    
+//    func wedge(for sieve: S) -> DataStoreWedge<V> {
+//        
+//        let wedge = sieve.tiles.reduce(into: [V.V : V]()) { result, tile in
+//        
+//            result[tile] = value(for: tile)
+//        }
+//        
+//        return .init(values: wedge)
+//    }
+//}

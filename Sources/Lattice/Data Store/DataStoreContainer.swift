@@ -9,14 +9,15 @@ import Deltille
 
 public class DataStoreContainer<T: Tile,
                                 S: Scale>: Codable,
-                                           Hashable where T.S == S,
-                                                          T.V: Vertex {
+                                           Hashable where T.S == S {
     
     internal enum CodingKeys: CodingKey {
         
         case tile
         case scale
     }
+    
+    public internal(set) var parent: T?
     
     public let tile: T
     public let scale: S

@@ -7,22 +7,11 @@
 
 import Deltille
 
-public class TriangleDataStoreRegion<C: TriangleDataStoreChunk<T>,
-                                     T: DataStoreTile>: DataStoreContainer<Triangle, Triangle.Scale> where T.T == Triangle,
-                                                                                                           T.T == T.V {
+public class TriangleDataStoreRegion<T: DataStoreTile>: DataStoreContainer<Triangle, Triangle.Scale> where T.T == Triangle {
     
+    internal typealias C = DataStoreChunk<T.T, T.T.S, T>
+
     internal var chunks: [C] = []
-    
-    required public init(_ triangle: Triangle) {
-        
-        super.init(triangle,
-                   .region)
-    }
-    
-    required public init(from decoder: any Decoder) throws {
-        
-        try super.init(from: decoder)
-    }
 }
 
 internal extension TriangleDataStoreRegion {
@@ -35,24 +24,15 @@ internal extension TriangleDataStoreRegion {
 
 internal extension TriangleDataStoreRegion {
     
-    func chunk(for triangle: Triangle,
+    func chunk(for tile: Triangle,
                _ from: Triangle.Scale) -> C? {
         
-        let transposed = triangle.transpose(from,
-                                            .chunk)
+        let transposed = tile.transpose(from,
+                                        .chunk)
         
         return chunks.first {
             
             $0.tile == transposed
-        }
-    }
-    
-    func chunks(intersecting region: Triangle) -> [C] {
-        
-        chunks.filter {
-            
-            $0.tile.transpose(.chunk,
-                              .region) == region
         }
     }
     
@@ -61,18 +41,12 @@ internal extension TriangleDataStoreRegion {
         let unique = keys.unique(.tile,
                                  .chunk)
         
-        for triangle in unique {
+        for tile in unique {
             
-            guard let chunk = chunk(for: triangle,
+            guard let chunk = chunk(for: tile,
                                     .chunk) else { continue }
             
-            let values: [T.V] = keys.compactMap {
-                
-                $0.transpose(.tile,
-                             .chunk) == triangle ? $0 : nil
-            }
-            
-            chunk.remove(values)
+            chunk.remove(keys)
             
             guard chunk.isEmpty,
                   let index = chunks.firstIndex(of: chunk) else { continue }
@@ -88,20 +62,23 @@ internal extension TriangleDataStoreRegion {
         let unique = footprint.unique(.tile,
                                       .chunk)
         
-        for triangle in unique {
+        for tile in unique {
             
-            let chunk = chunk(for: triangle,
-                              .chunk) ?? C(triangle)
+            let chunk = chunk(for: tile,
+                              .chunk) ?? C(tile,
+                                           .chunk)
             
-            if chunks.firstIndex(of: chunk) == nil {
+            if chunk.parent == nil {
                 
                 chunks.append(chunk)
+                
+                chunk.parent = self.tile
             }
             
             for tile in footprint {
                 
                 guard tile.transpose(.tile,
-                                     .chunk) == triangle else { continue }
+                                     .chunk) == chunk.tile else { continue }
                 
                 chunk.set(value)
             }
@@ -110,6 +87,6 @@ internal extension TriangleDataStoreRegion {
 }
 
 //TODO: REMOVE
-public class ExampleTriangleDataStoreRegion: TriangleDataStoreRegion<ExampleTriangleDataStoreChunk, ExampleTriangleTile> {
+public class ExampleTriangleDataStoreRegion: TriangleDataStoreRegion<ExampleTriangleTile> {
     
 }
