@@ -51,7 +51,7 @@ public extension HexagonVertexDataStore {
         }
         
         let unique = triangles.unique(.tile,
-                                      .chunk)
+                                      .region)
         
         for tile in unique {
             
@@ -72,7 +72,7 @@ public extension HexagonVertexDataStore {
         let triangle = Triangle(value.vertex)
         
         let transposed = triangle.transpose(.tile,
-                                            .chunk)
+                                            .region)
         
         let region = region(for: transposed,
                             .region) ?? R(transposed,
