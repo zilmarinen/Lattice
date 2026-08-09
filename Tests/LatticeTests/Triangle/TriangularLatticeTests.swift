@@ -16,13 +16,13 @@ import XCTest
 //
 internal struct TriLatticeTile: DataStoreTile {
     
-    public let vertex: Triangle
+    internal let vertex: Triangle
     
-    public let footprint: [Triangle]
+    internal let footprint: [Triangle]
     
-    public let rotation: Triangle.Rotation
+    internal let rotation: Triangle.Rotation
     
-    public let value: String
+    internal let value: String
     
     internal init(vertex: Triangle,
                   value: String,
@@ -32,6 +32,20 @@ internal struct TriLatticeTile: DataStoreTile {
         self.value = value
         self.footprint = footprint ?? [vertex]
         self.rotation = .init(0)
+    }
+}
+
+internal struct TriLatticeVertex: DataStoreValue {
+    
+    internal let vertex: Triangle.Vertex
+    
+    internal let value: String
+    
+    internal init(vertex: Triangle.Vertex,
+                  value: String) {
+        
+        self.vertex = vertex
+        self.value = value
     }
 }
 //

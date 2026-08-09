@@ -14,12 +14,40 @@ import XCTest
 //
 //fileprivate class HexLatticeChunk: TriangularChunk {}
 //
-//internal struct HexLatticeVertex: DataStoreValue {
-//    
-//    internal let coord: Coordinate
-//    
-//    internal let value: String
-//}
+internal struct HexLatticeTile: DataStoreTile {
+    
+    internal let vertex: Hexagon
+    
+    internal let footprint: [Hexagon]
+    
+    internal let rotation: Hexagon.Rotation
+    
+    internal let value: String
+    
+    internal init(vertex: Hexagon,
+                  value: String,
+                  footprint: [Hexagon]? = nil) {
+        
+        self.vertex = vertex
+        self.value = value
+        self.footprint = footprint ?? [vertex]
+        self.rotation = .init(0)
+    }
+}
+
+internal struct HexLatticeVertex: DataStoreValue {
+    
+    internal let vertex: Hexagon.Vertex
+    
+    internal let value: String
+    
+    internal init(vertex: Hexagon.Vertex,
+                  value: String) {
+        
+        self.vertex = vertex
+        self.value = value
+    }
+}
 //
 //@MainActor
 //final class HexagonalLatticeTests: XCTestCase {
