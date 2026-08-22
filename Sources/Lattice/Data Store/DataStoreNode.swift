@@ -1,33 +1,34 @@
 //
-//  HexagonNode.swift
+//  DataStoreNode.swift
 //  Lattice
 //
-//  Created by Zack Brown on 18/08/2026.
+//  Created by Zack Brown on 22/08/2026.
 //
 
 import Deltille
 import SpriteKit
 
-public class HexagonNode: SKNode {
+internal class DataStoreNode<T: Tile,
+                             S: Scale>: SKShapeNode where T.S == S {
     
     internal enum CodingKeys: CodingKey {
         
-        case hexagon
+        case tile
         case scale
     }
     
-    public let hexagon: Hexagon
-    public let scale: Hexagon.Scale
+    public let tile: T
+    public let scale: S
     
-    internal init(_ hexagon: Hexagon,
-                  _ scale: Hexagon.Scale) {
+    public init(_ tile: T,
+                _ scale: S) {
      
-        self.hexagon = hexagon
+        self.tile = tile
         self.scale = scale
         
         super.init()
         
-        name = hexagon.id
+        name = tile.id
     }
     
     @available(*, unavailable)
@@ -37,23 +38,23 @@ public class HexagonNode: SKNode {
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.hexagon = try container.decode(Hexagon.self,
-                                            forKey: .hexagon)
+        self.tile = try container.decode(T.self,
+                                         forKey: .tile)
         
-        self.scale = try container.decode(Hexagon.Scale.self,
+        self.scale = try container.decode(S.self,
                                           forKey: .scale)
         
         super.init()
         
-        name = hexagon.id
+        name = tile.id
     }
     
     public func encode(to encoder: any Encoder) throws {
         
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(hexagon,
-                             forKey: .hexagon)
+        try container.encode(tile,
+                             forKey: .tile)
                 
         try container.encode(scale,
                              forKey: .scale)

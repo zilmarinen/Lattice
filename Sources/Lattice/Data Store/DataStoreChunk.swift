@@ -2,87 +2,86 @@
 //  DataStoreChunk.swift
 //  Lattice
 //
-//  Created by Zack Brown on 03/08/2026.
+//  Created by Zack Brown on 22/08/2026.
 //
 
 import Deltille
+import SpriteKit
 
-public class DataStoreChunk<T: Tile,
-                            S: Scale,
-                            V: DataStoreValue>: DataStoreContainer<T, S> where T.S == S {
-
-    internal enum CodingKeys: CodingKey {
-
-        case store
-    }
-
-    public let store: ValueStore<V>
+internal class DataStoreChunk<T: Tile,
+                              S: Scale,
+                              V: DataStoreValue>: DataStoreNode<T, S> where T.S == S {
     
-    override public init(_ tile: T,
-                         _ scale: S) {
-
-        self.store = .init()
-
+    internal enum CodingKeys: CodingKey {
+           
+        case data
+    }
+    
+    internal var data: [V.C : V]
+    
+    override required public init(_ tile: T,
+                                  _ scale: S) {
+        
+        data = [:]
+            
         super.init(tile,
                    scale)
     }
-
+    
+    @available(*, unavailable)
+    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
     required public init(from decoder: any Decoder) throws {
-
+         
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        let values = try container.decode([V].self,
-                                          forKey: .store)
-
-        self.store = .init(values: values)
-
+                
+        data = try container.decode([V.C : V].self,
+                                    forKey: .data)
+        
         try super.init(from: decoder)
     }
-
+    
     override public func encode(to encoder: any Encoder) throws {
-
+            
         try super.encode(to: encoder)
-
+        
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try container.encode(Array(store.data.values),
-                             forKey: .store)
+        
+        try container.encode(data,
+                             forKey: .data)
     }
 }
 
-public extension DataStoreChunk {
-
+internal extension DataStoreChunk {
+    
     var isEmpty: Bool {
-
-        store.isEmpty
+        
+        data.isEmpty
     }
 }
 
-public extension DataStoreChunk {
-
-    func merge(_ other: DataStoreChunk) {
-
-        store.data.merge(other.store.data) { (current, _) in
-
-            current
-        }
+internal extension DataStoreChunk {
+    
+    func merge(_ other: [V.C : V]) {
+        
+        data.merge(other) { (current, _) in current }
     }
-
-    func set(_ value: V) {
-        print("Setting: \(value.vertex.id)")
-        store.data[value.vertex] = value
-    }
-
-    func remove(_ keys: [V.V]) {
-
+    
+    func remove(_ keys: Set<V.C>) {
+        
         keys.forEach {
-
-            store.data.removeValue(forKey: $0)
+            
+            data.removeValue(forKey: $0)
         }
     }
-
-    func value(for key: V.V) -> V? {
-
-        store.data[key]
+    
+    func set(_ value: V) {
+        
+        data[value.vertex] = value
+    }
+    
+    func value(for key: V.C) -> V? {
+        
+        data[key]
     }
 }
