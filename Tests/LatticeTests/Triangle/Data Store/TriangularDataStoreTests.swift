@@ -1,8 +1,8 @@
 //
-//  TriangleVertexDataStoreTests.swift
+//  TriangularDataStoreTests.swift
 //  Lattice
 //
-//  Created by Zack Brown on 09/08/2026.
+//  Created by Zack Brown on 11/03/2026.
 //
 
 import Deltille
@@ -11,59 +11,64 @@ import XCTest
 @testable import Lattice
 
 @MainActor
-final class TriangleVertexDataStoreTests: XCTestCase {
+final class TriangularDataStoreTests: XCTestCase {
     
     // MARK: Data Store
     
     func testValueStorageAndRetrieval() throws {
         
-        let dataStore = TriangleVertexDataStore<TriLatticeVertex>()
+        let dataStore = TriangularDataStore<TriLatticeTile>()
         
         let value0 = "value0"
         let value1 = "value1"
         
-        let triangle0 = Triangle(-14, 26, -12)
-        let triangle1 = Triangle(-2, 4, -2)
+        let tile0 = Triangle(-14, 26, -12)
+        let tile1 = Triangle(-2, 4, -2)
         
-        let vertex0 = triangle0.vertex(.c0)
-        let vertex1 = triangle1.vertex(.c1)
-        
-        dataStore.set(.init(vertex: vertex0,
+        dataStore.set(.init(vertex: tile0,
                             value: value0))
         
-        dataStore.set(.init(vertex: vertex1,
+        dataStore.set(.init(vertex: tile1,
                             value: value1))
         
-        let result0 = dataStore.value(for: vertex0)
-        let result1 = dataStore.value(for: vertex1)
+        let result0 = dataStore.value(for: tile0)
+        let result1 = dataStore.value(for: tile1)
         
-        XCTAssertEqual(vertex0, result0?.vertex)
+        XCTAssertEqual(tile0, result0?.vertex)
         XCTAssertEqual(value0, result0?.value)
-        XCTAssertEqual(vertex1, result1?.vertex)
+        XCTAssertEqual(tile1, result1?.vertex)
         XCTAssertEqual(value1, result1?.value)
     }
     
     func testValueDeletion() throws {
         
-        let dataStore = TriangleVertexDataStore<TriLatticeVertex>()
+        let dataStore = TriangularDataStore<TriLatticeTile>()
         
-        let triangle = Triangle(-17, 11, 5)
+        let tile = Triangle(-17, 11, 5)
         
-        let vertex = triangle.vertex(.c0)
+        let footprint = tile.adjacent + [tile]
         
-        dataStore.set(.init(vertex: vertex,
-                            value: "lattice"))
+        dataStore.set(.init(vertex: tile,
+                            value: "lattice",
+                            footprint: footprint))
         
-        dataStore.remove([vertex])
+        dataStore.remove([tile])
         
-        XCTAssertEqual(0, dataStore.chunks.count)
+        let regions = dataStore.regions
+        let chunks = regions.flatMap {
+            
+            $0.chunks
+        }
+        
+        XCTAssertEqual(0, regions.count)
+        XCTAssertEqual(0, chunks.count)
     }
     
     // MARK: Wedge
     
 //    func testWedge() throws {
 //        
-//        let dataStore = TriangleVertexDataStore<TriLatticeVertex>()
+//        let dataStore = TriangleDataStore<TriLatticeTile>()
 //        
 //        let value = "lattice"
 //        

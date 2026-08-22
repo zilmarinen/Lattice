@@ -35,6 +35,11 @@ internal extension HexagonalDataStoreRegion {
             $0 as? C
         }
     }
+    
+    var isEmpty: Bool {
+        
+        children.isEmpty
+    }
 }
 
 internal extension HexagonalDataStoreRegion {
@@ -57,7 +62,7 @@ internal extension HexagonalDataStoreRegion {
                     
             for vertex in $0.tile.vertices(.chunk) {
                 
-                let tile = Triangle(vertex)
+                let tile = Triangle(vertex.vector)
                 
                 let match = tile.transpose(.chunk,
                                            .region)
@@ -70,7 +75,7 @@ internal extension HexagonalDataStoreRegion {
             
             for vertex in region.vertices(.region) {
                 
-                let tile = Hexagon(vertex)
+                let tile = Hexagon(vertex.vector)
                 
                 let match = tile.transpose(.region,
                                            .chunk)

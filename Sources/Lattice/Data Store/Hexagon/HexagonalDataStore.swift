@@ -39,13 +39,13 @@ internal extension HexagonalDataStore {
         }
     }
     
-    func chunk(for chunk: Hexagon,
+    func chunk(for hexagon: Hexagon,
                _ from: Hexagon.Scale) -> C? {
         
-        guard let region = region(for: chunk,
+        guard let region = region(for: hexagon,
                                   from) else { return nil }
         
-        return region.chunk(for: chunk,
+        return region.chunk(for: hexagon,
                             from)
     }
     
@@ -62,7 +62,37 @@ internal extension HexagonalDataStore {
     
     func remove(_ keys: Set<V.C>) {
         
+        let footprint = keys.reduce(into: Set<V.C>()) { result, vertex in
+            
+            guard let value = value(for: vertex) else { return }
+            
+            result.formUnion(value.footprint)
+        }
         
+        let tiles = Set(footprint.map {
+            
+            Hexagon($0.vector)
+        })
+        
+        let chunks = tiles.unique(.tile,
+                                  .chunk)
+        
+        for hexagon in chunks {
+            
+            guard let chunk = chunk(for: hexagon,
+                                    .chunk) else { continue }
+            
+            chunk.remove(footprint)
+            
+            guard chunk.isEmpty,
+                  let region = chunk.parent as? R else { continue }
+            
+            chunk.removeFromParent()
+            
+            guard region.isEmpty else { continue }
+            
+            region.removeFromParent()
+        }
     }
     
     func set(_ value: V) {
@@ -72,7 +102,7 @@ internal extension HexagonalDataStore {
     
     func value(for key: V.C) -> V? {
         
-        let tile = Hexagon(key)
+        let tile = Hexagon(key.vector)
         
         guard let chunk = chunk(for: tile,
                                 .tile) else { return nil }

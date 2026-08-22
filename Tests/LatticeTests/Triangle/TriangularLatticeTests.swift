@@ -14,13 +14,11 @@ import XCTest
 //
 //fileprivate class TriLatticeChunk: TriangularChunk {}
 //
-internal struct TriLatticeTile: DataStoreTile {
+internal struct TriLatticeTile: DataStoreValue {
     
     internal let vertex: Triangle
     
     internal let footprint: [Triangle]
-    
-    internal let rotation: Triangle.Rotation
     
     internal let value: String
     
@@ -31,23 +29,22 @@ internal struct TriLatticeTile: DataStoreTile {
         self.vertex = vertex
         self.value = value
         self.footprint = footprint ?? [vertex]
-        self.rotation = .init(0)
     }
 }
-
-internal struct TriLatticeVertex: DataStoreValue {
-    
-    internal let vertex: Triangle.Vertex
-    
-    internal let value: String
-    
-    internal init(vertex: Triangle.Vertex,
-                  value: String) {
-        
-        self.vertex = vertex
-        self.value = value
-    }
-}
+//
+//internal struct TriLatticeVertex: DataStoreValue {
+//    
+//    internal let vertex: Triangle.Vertex
+//    
+//    internal let value: String
+//    
+//    internal init(vertex: Triangle.Vertex,
+//                  value: String) {
+//        
+//        self.vertex = vertex
+//        self.value = value
+//    }
+//}
 //
 //@MainActor
 //final class TriangularLatticeTests: XCTestCase {

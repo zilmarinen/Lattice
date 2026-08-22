@@ -35,6 +35,11 @@ internal extension TriangularDataStoreRegion {
             $0 as? C
         }
     }
+    
+    var isEmpty: Bool {
+        
+        children.isEmpty
+    }
 }
 
 internal extension TriangularDataStoreRegion {

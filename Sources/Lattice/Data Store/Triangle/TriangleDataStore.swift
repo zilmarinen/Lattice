@@ -62,7 +62,32 @@ internal extension TriangularDataStore {
     
     func remove(_ keys: Set<V.C>) {
         
+        let footprint = keys.reduce(into: Set<V.C>()) { result, vertex in
+            
+            guard let value = value(for: vertex) else { return }
+            
+            result.formUnion(value.footprint)
+        }
         
+        let chunks = footprint.unique(.tile,
+                                      .chunk)
+        
+        for hexagon in chunks {
+            
+            guard let chunk = chunk(for: hexagon,
+                                    .chunk) else { continue }
+            
+            chunk.remove(footprint)
+            
+            guard chunk.isEmpty,
+                  let region = chunk.parent as? R else { continue }
+            
+            chunk.removeFromParent()
+            
+            guard region.isEmpty else { continue }
+            
+            region.removeFromParent()
+        }
     }
     
     func set(_ value: V) {

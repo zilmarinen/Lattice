@@ -14,40 +14,37 @@ import XCTest
 //
 //fileprivate class HexLatticeChunk: TriangularChunk {}
 //
-internal struct HexLatticeTile: DataStoreTile {
+internal struct HexLatticeTile: DataStoreValue {
     
-    internal let vertex: Hexagon
+    internal let vertex: Triangle.Vertex
     
-    internal let footprint: [Hexagon]
-    
-    internal let rotation: Hexagon.Rotation
+    internal let footprint: [Triangle.Vertex]
     
     internal let value: String
     
-    internal init(vertex: Hexagon,
+    internal init(vertex: Triangle.Vertex,
                   value: String,
-                  footprint: [Hexagon]? = nil) {
+                  footprint: [Triangle.Vertex]? = nil) {
         
         self.vertex = vertex
         self.value = value
         self.footprint = footprint ?? [vertex]
-        self.rotation = .init(0)
     }
 }
-
-internal struct HexLatticeVertex: DataStoreValue {
-    
-    internal let vertex: Hexagon.Vertex
-    
-    internal let value: String
-    
-    internal init(vertex: Hexagon.Vertex,
-                  value: String) {
-        
-        self.vertex = vertex
-        self.value = value
-    }
-}
+//
+//internal struct HexLatticeVertex: DataStoreValue {
+//    
+//    internal let vertex: Hexagon.Vertex
+//    
+//    internal let value: String
+//    
+//    internal init(vertex: Hexagon.Vertex,
+//                  value: String) {
+//        
+//        self.vertex = vertex
+//        self.value = value
+//    }
+//}
 //
 //@MainActor
 //final class HexagonalLatticeTests: XCTestCase {
