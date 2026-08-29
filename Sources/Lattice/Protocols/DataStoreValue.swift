@@ -15,21 +15,5 @@ public protocol DataStoreValue: Codable,
     
     var vertex: C { get }
     
-    var footprint: [C] { get }
-}
-
-//TODO: REMOVE
-public struct ExampleTriangleVertexValue: DataStoreValue {
-    
-    public let vertex: Triangle.Vertex
-    
-    public let footprint: [Triangle.Vertex]
-}
-
-//TODO: REMOVE
-public struct ExampleTriangleValue: DataStoreValue {
-    
-    public let vertex: Triangle
-    
-    public var footprint: [Triangle]
+    var footprint: Set<C> { get }
 }
