@@ -1,0 +1,66 @@
+//
+//  HexagonalRegion.swift
+//  Lattice
+//
+//  Created by Zack Brown on 28/08/2026.
+//
+
+import Deltille
+import SpriteKit
+
+public class HexagonalRegion<C: HexagonalChunk>: SKNode,
+                                                 Soilable {
+    
+    internal(set) public var isDirty: Bool = false
+    
+    public let tile: Hexagon
+    
+    public required init(tile: Hexagon) {
+        
+        self.tile = tile
+        
+        super.init()
+    }
+    
+    @available(*, unavailable)
+    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+internal extension HexagonalRegion {
+    
+    var chunks: [C] {
+        
+        children.compactMap {
+            
+            $0 as? C
+        }
+    }
+    
+    var dirtyChunks: [C] {
+        
+        chunks.filter {
+            
+            $0.isDirty
+        }
+    }
+    
+    var isEmpty: Bool {
+        
+        children.isEmpty
+    }
+}
+
+internal extension HexagonalRegion {
+    
+    func chunk(for hexagon: Hexagon,
+               _ from: Scale) -> C? {
+        
+        let chunk = hexagon.transpose(from,
+                                      .chunk)
+        
+        return chunks.first {
+            
+            $0.tile == chunk
+        }
+    }
+}
