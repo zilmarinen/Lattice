@@ -11,8 +11,9 @@ import SpriteKit
 internal class HexagonVertexDataStore<V: DataStoreValue>: SKNode,
                                                           DataStore where V.C == Hexagon.Vertex {
     
-    internal typealias C = DataStoreChunk<Triangle, V>
-    internal typealias R = TriangularDataStoreRegion<C, V>
+    internal typealias C = DataStoreChunk<T, V>
+    internal typealias R = DataStoreRegion<C, T, V>
+    internal typealias T = Triangle
 }
 
 internal extension HexagonVertexDataStore {
@@ -48,14 +49,6 @@ internal extension HexagonVertexDataStore {
         
         return region.chunk(for: triangle,
                             from)
-    }
-    
-    func chunks(intersecting region: Triangle) -> [C] {
-        
-        regions.flatMap {
-            
-            $0.chunks(intersecting: region)
-        }
     }
 }
 

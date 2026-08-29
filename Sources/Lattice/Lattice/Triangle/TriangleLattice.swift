@@ -10,7 +10,7 @@ import SpriteKit
 
 public class TriangleLattice<C: TriangularChunk,
                              V: DataStoreValue>: SKNode,
-                                                 DataStore where V.C == Triangle {
+                                                 Lattice where V.C == Triangle {
 
     internal let dataStore = TriangleDataStore<V>()
     

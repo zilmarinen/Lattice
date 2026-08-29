@@ -10,7 +10,7 @@ import SpriteKit
 
 public class HexagonVertexLattice<C: TriangularChunk,
                                   V: DataStoreValue>: SKNode,
-                                                      DataStore where V.C == Hexagon.Vertex {
+                                                      Lattice where V.C == Hexagon.Vertex {
 
     internal let dataStore = HexagonVertexDataStore<V>()
     

@@ -1,5 +1,5 @@
 //
-//  DataStore.swift
+//  Lattice.swift
 //  Lattice
 //
 //  Created by Zack Brown on 29/08/2026.
@@ -8,11 +8,8 @@
 import Deltille
 import SpriteKit
 
-internal protocol DataStore: SKNode {
+internal protocol Lattice: SKNode {
     
-    associatedtype C: DataStoreChunk<T, V>
-    associatedtype R: DataStoreRegion<C, T, V>
-    associatedtype T: Tile
     associatedtype V: DataStoreValue
     
     func remove(_ keys: Set<V.C>)
