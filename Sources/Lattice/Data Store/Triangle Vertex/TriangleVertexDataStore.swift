@@ -1,5 +1,5 @@
 //
-//  .swift
+//  TriangleVertexDataStore.swift
 //  Lattice
 //
 //  Created by Zack Brown on 28/08/2026.
@@ -8,10 +8,11 @@
 import Deltille
 import SpriteKit
 
-internal class TriangleVertexDataStore<V: DataStoreValue>: SKNode where V.C == Triangle.Vertex {
+internal class TriangleVertexDataStore<V: DataStoreValue>: SKNode,
+                                                           DataStore where V.C == Triangle.Vertex {
     
     internal typealias C = DataStoreChunk<Hexagon, V>
-    internal typealias R = TriangleVertexDataStoreRegion<C, V>
+    internal typealias R = HexagonalDataStoreRegion<C, V>
 }
 
 internal extension TriangleVertexDataStore {

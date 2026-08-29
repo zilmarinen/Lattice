@@ -1,15 +1,15 @@
 //
-//  TriangleVertexDataStoreRegion.swift
+//  HexagonalDataStoreRegion.swift
 //  Lattice
 //
-//  Created by Zack Brown on 28/08/2026.
+//  Created by Zack Brown on 22/08/2026.
 //
 
 import Deltille
 import SpriteKit
 
-internal class TriangleVertexDataStoreRegion<C: DataStoreChunk<Hexagon, V>,
-                                             V: DataStoreValue>: DataStoreNode<Hexagon> where V.C == Triangle.Vertex {
+internal class HexagonalDataStoreRegion<C: DataStoreChunk<Hexagon, V>,
+                                        V: DataStoreValue>: DataStoreNode<Hexagon> {
     
     required public init(_ tile: Hexagon) {
         
@@ -26,7 +26,7 @@ internal class TriangleVertexDataStoreRegion<C: DataStoreChunk<Hexagon, V>,
     }
 }
 
-internal extension TriangleVertexDataStoreRegion {
+internal extension HexagonalDataStoreRegion {
     
     var chunks: [C] {
         
@@ -42,7 +42,7 @@ internal extension TriangleVertexDataStoreRegion {
     }
 }
 
-internal extension TriangleVertexDataStoreRegion {
+internal extension HexagonalDataStoreRegion {
  
     func chunk(for hexagon: Hexagon,
                _ from: Scale) -> C? {

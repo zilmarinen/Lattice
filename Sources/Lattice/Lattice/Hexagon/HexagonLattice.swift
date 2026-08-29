@@ -9,7 +9,8 @@ import Deltille
 import SpriteKit
 
 public class HexagonLattice<C: HexagonalChunk,
-                            V: DataStoreValue>: SKNode where V.C == Hexagon {
+                            V: DataStoreValue>: SKNode,
+                                                DataStore where V.C == Hexagon {
     
     internal let dataStore = HexagonDataStore<V>()
     

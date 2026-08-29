@@ -8,10 +8,11 @@
 import Deltille
 import SpriteKit
 
-internal class HexagonDataStore<V: DataStoreValue>: SKNode where V.C == Hexagon {
+internal class HexagonDataStore<V: DataStoreValue>: SKNode,
+                                                    DataStore where V.C == Hexagon {
     
     internal typealias C = DataStoreChunk<Hexagon, V>
-    internal typealias R = HexagonDataStoreRegion<C, V>
+    internal typealias R = HexagonalDataStoreRegion<C, V>
 }
 
 internal extension HexagonDataStore {

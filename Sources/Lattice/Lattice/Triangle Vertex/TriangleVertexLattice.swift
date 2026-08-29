@@ -9,7 +9,8 @@ import Deltille
 import SpriteKit
 
 public class TriangleVertexLattice<C: HexagonalChunk,
-                                   V: DataStoreValue>: SKNode where V.C == Triangle.Vertex {
+                                   V: DataStoreValue>: SKNode,
+                                                       DataStore where V.C == Triangle.Vertex {
     
     internal let dataStore = TriangleVertexDataStore<V>()
     

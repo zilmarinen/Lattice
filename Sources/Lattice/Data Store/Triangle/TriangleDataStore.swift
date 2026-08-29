@@ -8,10 +8,11 @@
 import Deltille
 import SpriteKit
 
-internal class TriangleDataStore<V: DataStoreValue>: SKNode where V.C == Triangle {
+internal class TriangleDataStore<V: DataStoreValue>: SKNode,
+                                                     DataStore where V.C == Triangle {
     
     internal typealias C = DataStoreChunk<Triangle, V>
-    internal typealias R = TriangleDataStoreRegion<C, V>
+    internal typealias R = TriangularDataStoreRegion<C, V>
 }
 
 internal extension TriangleDataStore {

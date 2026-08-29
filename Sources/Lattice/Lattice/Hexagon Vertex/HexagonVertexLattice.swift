@@ -9,8 +9,9 @@ import Deltille
 import SpriteKit
 
 public class HexagonVertexLattice<C: TriangularChunk,
-                                  V: DataStoreValue>: SKNode where V.C == Hexagon.Vertex {
-    
+                                  V: DataStoreValue>: SKNode,
+                                                      DataStore where V.C == Hexagon.Vertex {
+
     internal let dataStore = HexagonVertexDataStore<V>()
     
     public let grid = TriangularGrid<TriangularRegion<C>, C>()

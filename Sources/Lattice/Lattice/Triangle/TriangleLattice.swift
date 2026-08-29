@@ -9,8 +9,9 @@ import Deltille
 import SpriteKit
 
 public class TriangleLattice<C: TriangularChunk,
-                             V: DataStoreValue>: SKNode where V.C == Triangle {
-    
+                             V: DataStoreValue>: SKNode,
+                                                 DataStore where V.C == Triangle {
+
     internal let dataStore = TriangleDataStore<V>()
     
     public let grid = TriangularGrid<TriangularRegion<C>, C>()
