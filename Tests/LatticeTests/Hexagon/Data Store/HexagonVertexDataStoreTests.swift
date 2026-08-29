@@ -1,8 +1,8 @@
 //
-//  HexagonalDataStoreTests.swift
+//  HexagonVertexDataStoreTests.swift
 //  Lattice
 //
-//  Created by Zack Brown on 11/03/2026.
+//  Created by Zack Brown on 28/08/2026.
 //
 
 import Deltille
@@ -10,44 +10,61 @@ import Euclid
 import XCTest
 @testable import Lattice
 
+fileprivate class DataStore: HexagonVertexDataStore<HexagonVertexDataStoreTile> {}
+
+fileprivate struct HexagonVertexDataStoreTile: DataStoreValue {
+    
+    internal let vertex: Hexagon.Vertex
+    
+    internal let footprint: Set<Hexagon.Vertex>
+    
+    internal let value: String
+    
+    internal init(vertex: Hexagon.Vertex,
+                  value: String,
+                  footprint: Set<Hexagon.Vertex>? = nil ) {
+        
+        self.vertex = vertex
+        self.value = value
+        self.footprint = footprint ?? [vertex]
+    }
+}
+
 @MainActor
-final class HexagonalDataStoreTests: XCTestCase {
+final class HexagonVertexDataStoreTests: XCTestCase {
     
     // MARK: Data Store
     
     func testValueStorageAndRetrieval() throws {
         
-        let dataStore = HexagonalDataStore<HexLatticeTile>()
+        let dataStore = DataStore()
         
-        let value0 = "value0"
-        let value1 = "value1"
-        
-        let vertex0 = Triangle.Vertex(-14, 26, -12)
-        let vertex1 = Triangle.Vertex(-2, 4, -2)
+        let vertex0 = Hexagon.Vertex(-6, 10, -5)
+        let vertex1 = Hexagon.Vertex(24, -13, -12)
         
         dataStore.set(.init(vertex: vertex0,
-                            value: value0))
+                            value: vertex0.id))
         
         dataStore.set(.init(vertex: vertex1,
-                            value: value1))
+                            value: vertex1.id))
         
         let result0 = dataStore.value(for: vertex0)
         let result1 = dataStore.value(for: vertex1)
         
-        XCTAssertEqual(value0, result0?.value)
-        XCTAssertEqual(value1, result1?.value)
+        XCTAssertEqual(vertex0.id, result0?.value)
+        XCTAssertEqual(vertex1.id, result1?.value)
     }
     
     func testValueDeletion() throws {
         
-        let dataStore = HexagonalDataStore<HexLatticeTile>()
+        let dataStore = DataStore()
         
-        let vertex = Triangle.Vertex(-2, 4, -2)
+        let vertex = Hexagon.Vertex(-7, -14, 20)
         
-        let footprint = vertex.adjacent + [vertex]
+        let footprint = Set(vertex.adjacent + [vertex])
         
         dataStore.set(.init(vertex: vertex,
-                            value: "lattice",
+                            value: vertex.id,
                             footprint: footprint))
         
         dataStore.remove([vertex])
@@ -65,25 +82,25 @@ final class HexagonalDataStoreTests: XCTestCase {
     // MARK: Wedge
     
 //    func testWedge() throws {
-//        
-//        let dataStore = HexagonDataStore<HexLatticeTile>()
+//
+//        let dataStore = DataStore()
 //
 //        let value = "lattice"
-//        
+//
 //        let hexagon = Hexagon(-82, 58, 23)
 //        let chunk = hexagon.transpose(.tile,
 //                                      .chunk)
-//        
+//
 //        dataStore.set(.init(vertex: hexagon,
 //                            value: value))
-//        
+//
 //        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
-//        
+//
 //        let tiles = Set(wedge.values.map {
-//            
+//
 //            $0.value.vertex
 //        })
-//        
+//
 //        XCTAssertEqual(wedge.values.count, 1)
 //        XCTAssertTrue(tiles.contains(hexagon))
 //        XCTAssertEqual(wedge.value(for: hexagon)?.value, value)
