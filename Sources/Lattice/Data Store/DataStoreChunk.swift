@@ -9,8 +9,7 @@ import Deltille
 import SpriteKit
 
 internal class DataStoreChunk<T: Tile,
-                              S: Scale,
-                              V: DataStoreValue>: DataStoreNode<T, S> where T.S == S {
+                              V: DataStoreValue>: DataStoreNode<T> {
     
     internal enum CodingKeys: CodingKey {
            
@@ -20,10 +19,10 @@ internal class DataStoreChunk<T: Tile,
     internal var data: [V.C : V]
     
     override required public init(_ tile: T,
-                                  _ scale: S) {
+                                  _ scale: Scale) {
         
         data = [:]
-            
+        
         super.init(tile,
                    scale)
     }
@@ -75,9 +74,10 @@ internal extension DataStoreChunk {
         }
     }
     
-    func set(_ value: V) {
+    func set(_ value: V,
+             for key: V.C) {
         
-        data[value.vertex] = value
+        data[key] = value
     }
     
     func value(for key: V.C) -> V? {

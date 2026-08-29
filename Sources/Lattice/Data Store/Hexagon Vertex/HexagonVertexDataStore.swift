@@ -1,20 +1,20 @@
 //
-//  TriangleDataStore.swift
+//  HexagonVertexDataStore.swift
 //  Lattice
 //
-//  Created by Zack Brown on 22/08/2026.
+//  Created by Zack Brown on 28/08/2026.
 //
 
 import Deltille
 import SpriteKit
 
-internal class TriangleDataStore<V: DataStoreValue>: SKNode where V.C == Triangle {
+internal class HexagonVertexDataStore<V: DataStoreValue>: SKNode where V.C == Hexagon.Vertex {
     
     internal typealias C = DataStoreChunk<Triangle, V>
-    internal typealias R = TriangleDataStoreRegion<C, V>
+    internal typealias R = HexagonVertexDataStoreRegion<C, V>
 }
 
-internal extension TriangleDataStore {
+internal extension HexagonVertexDataStore {
     
     var regions: [R] {
         
@@ -25,7 +25,7 @@ internal extension TriangleDataStore {
     }
 }
 
-internal extension TriangleDataStore {
+internal extension HexagonVertexDataStore {
     
     func region(for triangle: Triangle,
                 _ from: Scale) -> R? {
@@ -58,7 +58,7 @@ internal extension TriangleDataStore {
     }
 }
 
-internal extension TriangleDataStore {
+internal extension HexagonVertexDataStore {
     
     func remove(_ keys: Set<V.C>) {
         
@@ -69,8 +69,13 @@ internal extension TriangleDataStore {
             result.formUnion(value.footprint)
         }
         
-        let chunks = footprint.unique(.tile,
-                                      .chunk)
+        let tiles = Set(footprint.map {
+            
+            Triangle($0.vector)
+        })
+        
+        let chunks = tiles.unique(.tile,
+                                  .chunk)
         
         for hexagon in chunks {
             
@@ -99,8 +104,9 @@ internal extension TriangleDataStore {
         
         let partitions = value.footprint.reduce(into: [Triangle : Set<V.C>]()) { result, vertex in
         
-            let chunk = vertex.transpose(.tile,
-                                         .chunk)
+            let tile = Triangle(vertex.vector)
+            let chunk = tile.transpose(.tile,
+                                       .chunk)
             
             var partition = result[chunk] ?? []
             
@@ -147,7 +153,9 @@ internal extension TriangleDataStore {
     
     func value(for key: V.C) -> V? {
         
-        guard let chunk = chunk(for: key,
+        let tile = Triangle(key.vector)
+        
+        guard let chunk = chunk(for: tile,
                                 .tile) else { return nil }
         
         return chunk.value(for: key)

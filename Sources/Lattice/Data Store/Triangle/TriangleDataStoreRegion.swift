@@ -1,5 +1,5 @@
 //
-//  TriangularDataStoreRegion.swift
+//  TriangleDataStoreRegion.swift
 //  Lattice
 //
 //  Created by Zack Brown on 22/08/2026.
@@ -8,8 +8,8 @@
 import Deltille
 import SpriteKit
 
-internal class TriangularDataStoreRegion<C: DataStoreChunk<Triangle, Triangle.Scale, V>,
-                                         V: DataStoreValue>: DataStoreNode<Triangle, Triangle.Scale> where V.C == Triangle {
+internal class TriangleDataStoreRegion<C: DataStoreChunk<Triangle, V>,
+                                       V: DataStoreValue>: DataStoreNode<Triangle> where V.C == Triangle {
     
     required public init(_ tile: Triangle) {
         
@@ -26,7 +26,7 @@ internal class TriangularDataStoreRegion<C: DataStoreChunk<Triangle, Triangle.Sc
     }
 }
 
-internal extension TriangularDataStoreRegion {
+internal extension TriangleDataStoreRegion {
     
     var chunks: [C] {
         
@@ -42,10 +42,10 @@ internal extension TriangularDataStoreRegion {
     }
 }
 
-internal extension TriangularDataStoreRegion {
+internal extension TriangleDataStoreRegion {
  
     func chunk(for triangle: Triangle,
-               _ from: Triangle.Scale) -> C? {
+               _ from: Scale) -> C? {
         
         let chunk = triangle.transpose(from,
                                        .chunk)

@@ -8,8 +8,7 @@
 import Deltille
 import SpriteKit
 
-internal class DataStoreNode<T: Tile,
-                             S: Scale>: SKShapeNode where T.S == S {
+internal class DataStoreNode<T: Tile>: SKShapeNode {
     
     internal enum CodingKeys: CodingKey {
         
@@ -18,17 +17,17 @@ internal class DataStoreNode<T: Tile,
     }
     
     public let tile: T
-    public let scale: S
+    public let scale: Scale
     
     public init(_ tile: T,
-                _ scale: S) {
+                _ scale: Scale) {
      
         self.tile = tile
         self.scale = scale
         
         super.init()
         
-        name = tile.id
+        update()
     }
     
     @available(*, unavailable)
@@ -41,12 +40,12 @@ internal class DataStoreNode<T: Tile,
         self.tile = try container.decode(T.self,
                                          forKey: .tile)
         
-        self.scale = try container.decode(S.self,
+        self.scale = try container.decode(Scale.self,
                                           forKey: .scale)
         
         super.init()
         
-        name = tile.id
+        update()
     }
     
     public func encode(to encoder: any Encoder) throws {
@@ -58,5 +57,29 @@ internal class DataStoreNode<T: Tile,
                 
         try container.encode(scale,
                              forKey: .scale)
+    }
+}
+
+private extension DataStoreNode {
+    
+    func update() {
+        
+        name = tile.id
+        path = CGPath.tile(tile,
+                           scale)
+        
+        switch scale {
+            
+        case .chunk:
+            
+            let region = tile.transpose(scale,
+                                        .region)
+            
+            position = .init(tile.vertex - region.vertex)
+            
+        default:
+            
+            position = .init(tile.vertex)
+        }
     }
 }

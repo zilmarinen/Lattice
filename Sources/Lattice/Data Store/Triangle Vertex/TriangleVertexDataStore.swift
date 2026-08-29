@@ -1,20 +1,20 @@
 //
-//  TriangleDataStore.swift
+//  .swift
 //  Lattice
 //
-//  Created by Zack Brown on 22/08/2026.
+//  Created by Zack Brown on 28/08/2026.
 //
 
 import Deltille
 import SpriteKit
 
-internal class TriangleDataStore<V: DataStoreValue>: SKNode where V.C == Triangle {
+internal class TriangleVertexDataStore<V: DataStoreValue>: SKNode where V.C == Triangle.Vertex {
     
-    internal typealias C = DataStoreChunk<Triangle, V>
-    internal typealias R = TriangleDataStoreRegion<C, V>
+    internal typealias C = DataStoreChunk<Hexagon, V>
+    internal typealias R = TriangleVertexDataStoreRegion<C, V>
 }
 
-internal extension TriangleDataStore {
+internal extension TriangleVertexDataStore {
     
     var regions: [R] {
         
@@ -25,13 +25,13 @@ internal extension TriangleDataStore {
     }
 }
 
-internal extension TriangleDataStore {
-    
-    func region(for triangle: Triangle,
+internal extension TriangleVertexDataStore {
+ 
+    func region(for hexagon: Hexagon,
                 _ from: Scale) -> R? {
         
-        let region = triangle.transpose(from,
-                                        .region)
+        let region = hexagon.transpose(from,
+                                       .region)
         
         return regions.first {
             
@@ -39,26 +39,26 @@ internal extension TriangleDataStore {
         }
     }
     
-    func chunk(for triangle: Triangle,
+    func chunk(for hexagon: Hexagon,
                _ from: Scale) -> C? {
         
-        guard let region = self.region(for: triangle,
-                                       from) else { return nil }
+        guard let region = region(for: hexagon,
+                                  from) else { return nil }
         
-        return region.chunk(for: triangle,
+        return region.chunk(for: hexagon,
                             from)
     }
     
     func chunks(intersecting region: Triangle) -> [C] {
         
         regions.flatMap {
-            
+         
             $0.chunks(intersecting: region)
         }
     }
 }
 
-internal extension TriangleDataStore {
+internal extension TriangleVertexDataStore {
     
     func remove(_ keys: Set<V.C>) {
         
@@ -69,8 +69,13 @@ internal extension TriangleDataStore {
             result.formUnion(value.footprint)
         }
         
-        let chunks = footprint.unique(.tile,
-                                      .chunk)
+        let tiles = Set(footprint.map {
+            
+            Hexagon($0.vector)
+        })
+        
+        let chunks = tiles.unique(.tile,
+                                  .chunk)
         
         for hexagon in chunks {
             
@@ -97,10 +102,11 @@ internal extension TriangleDataStore {
             guard self.value(for: vertex) == nil else { return }
         }
         
-        let partitions = value.footprint.reduce(into: [Triangle : Set<V.C>]()) { result, vertex in
+        let partitions = value.footprint.reduce(into: [Hexagon : Set<V.C>]()) { result, vertex in
         
-            let chunk = vertex.transpose(.tile,
-                                         .chunk)
+            let tile = Hexagon(vertex.vector)
+            let chunk = tile.transpose(.tile,
+                                       .chunk)
             
             var partition = result[chunk] ?? []
             
@@ -147,7 +153,9 @@ internal extension TriangleDataStore {
     
     func value(for key: V.C) -> V? {
         
-        guard let chunk = chunk(for: key,
+        let tile = Hexagon(key.vector)
+        
+        guard let chunk = chunk(for: tile,
                                 .tile) else { return nil }
         
         return chunk.value(for: key)

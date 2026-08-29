@@ -1,5 +1,5 @@
 //
-//  TriangleDataStore.swift
+//  HexagonDataStore.swift
 //  Lattice
 //
 //  Created by Zack Brown on 22/08/2026.
@@ -8,13 +8,13 @@
 import Deltille
 import SpriteKit
 
-internal class TriangleDataStore<V: DataStoreValue>: SKNode where V.C == Triangle {
+internal class HexagonDataStore<V: DataStoreValue>: SKNode where V.C == Hexagon {
     
-    internal typealias C = DataStoreChunk<Triangle, V>
-    internal typealias R = TriangleDataStoreRegion<C, V>
+    internal typealias C = DataStoreChunk<Hexagon, V>
+    internal typealias R = HexagonDataStoreRegion<C, V>
 }
 
-internal extension TriangleDataStore {
+internal extension HexagonDataStore {
     
     var regions: [R] {
         
@@ -25,13 +25,13 @@ internal extension TriangleDataStore {
     }
 }
 
-internal extension TriangleDataStore {
-    
-    func region(for triangle: Triangle,
+internal extension HexagonDataStore {
+ 
+    func region(for hexagon: Hexagon,
                 _ from: Scale) -> R? {
         
-        let region = triangle.transpose(from,
-                                        .region)
+        let region = hexagon.transpose(from,
+                                       .region)
         
         return regions.first {
             
@@ -39,26 +39,26 @@ internal extension TriangleDataStore {
         }
     }
     
-    func chunk(for triangle: Triangle,
+    func chunk(for hexagon: Hexagon,
                _ from: Scale) -> C? {
         
-        guard let region = self.region(for: triangle,
-                                       from) else { return nil }
+        guard let region = region(for: hexagon,
+                                  from) else { return nil }
         
-        return region.chunk(for: triangle,
+        return region.chunk(for: hexagon,
                             from)
     }
     
     func chunks(intersecting region: Triangle) -> [C] {
         
         regions.flatMap {
-            
+         
             $0.chunks(intersecting: region)
         }
     }
 }
 
-internal extension TriangleDataStore {
+internal extension HexagonDataStore {
     
     func remove(_ keys: Set<V.C>) {
         
@@ -97,7 +97,7 @@ internal extension TriangleDataStore {
             guard self.value(for: vertex) == nil else { return }
         }
         
-        let partitions = value.footprint.reduce(into: [Triangle : Set<V.C>]()) { result, vertex in
+        let partitions = value.footprint.reduce(into: [Hexagon : Set<V.C>]()) { result, vertex in
         
             let chunk = vertex.transpose(.tile,
                                          .chunk)
