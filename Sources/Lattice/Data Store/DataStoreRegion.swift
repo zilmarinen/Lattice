@@ -12,7 +12,7 @@ internal class DataStoreRegion<C: DataStoreChunk<T, V>,
                                T: Tile,
                                V: DataStoreValue>: DataStoreNode<T> {
     
-    required public init(_ tile: T) {
+    required internal init(_ tile: T) {
         
         super.init(tile,
                    .region)

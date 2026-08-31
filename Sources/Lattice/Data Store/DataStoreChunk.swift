@@ -18,8 +18,8 @@ internal class DataStoreChunk<T: Tile,
     
     internal var data: [V.C : V]
     
-    override required public init(_ tile: T,
-                                  _ scale: Scale) {
+    override required internal init(_ tile: T,
+                                    _ scale: Scale) {
         
         data = [:]
         
@@ -28,9 +28,9 @@ internal class DataStoreChunk<T: Tile,
     }
     
     @available(*, unavailable)
-    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    required internal init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    required public init(from decoder: any Decoder) throws {
+    required internal init(from decoder: any Decoder) throws {
          
         let container = try decoder.container(keyedBy: CodingKeys.self)
                 
@@ -40,7 +40,7 @@ internal class DataStoreChunk<T: Tile,
         try super.init(from: decoder)
     }
     
-    override public func encode(to encoder: any Encoder) throws {
+    override internal func encode(to encoder: any Encoder) throws {
             
         try super.encode(to: encoder)
         

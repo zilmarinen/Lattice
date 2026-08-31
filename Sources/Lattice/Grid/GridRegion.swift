@@ -1,32 +1,33 @@
 //
-//  TriangularRegion.swift
+//  GridRegion.swift
 //  Lattice
 //
-//  Created by Zack Brown on 28/08/2026.
+//  Created by Zack Brown on 31/08/2026.
 //
 
 import Deltille
 import SpriteKit
 
-public class TriangularRegion<C: TriangularChunk>: SKNode,
-                                                   Soilable {
-    
+public class GridRegion<C: GridChunk<T>,
+                        T: Tile>: SKNode,
+                                  Soilable {
+       
     internal(set) public var isDirty: Bool = false
-    
-    public let tile: Triangle
-    
-    public required init(tile: Triangle) {
-        
+
+    public let tile: T
+
+    public required init(tile: T) {
+
         self.tile = tile
-        
+
         super.init()
     }
-    
+
     @available(*, unavailable)
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-internal extension TriangularRegion {
+internal extension GridRegion {
     
     var chunks: [C] {
         
@@ -50,13 +51,13 @@ internal extension TriangularRegion {
     }
 }
 
-internal extension TriangularRegion {
- 
-    func chunk(for triangle: Triangle,
+internal extension GridRegion {
+    
+    func chunk(for tile: T,
                _ from: Scale) -> C? {
         
-        let chunk = triangle.transpose(from,
-                                       .chunk)
+        let chunk = tile.transpose(from,
+                                   .chunk)
         
         return chunks.first {
             

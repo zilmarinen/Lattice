@@ -1,17 +1,21 @@
 //
-//  TriangularGrid.swift
+//  Grid.swift
 //  Lattice
 //
-//  Created by Zack Brown on 28/08/2026.
+//  Created by Zack Brown on 31/08/2026.
 //
 
 import Deltille
 import SpriteKit
 
-public class TriangularGrid<R: TriangularRegion<C>,
-                            C: TriangularChunk>: SKNode {}
+public class Grid<R: GridRegion<C, T>,
+                  C: GridChunk<T>,
+                  T: Tile>: SKNode {
+    
+    
+}
 
-internal extension TriangularGrid {
+internal extension Grid {
     
     var regions: [R] {
         
@@ -30,27 +34,37 @@ internal extension TriangularGrid {
     }
 }
 
-internal extension TriangularGrid {
+internal extension Grid {
     
-    func region(for triangle: Triangle,
+    func region(for tile: T,
                 _ from: Scale) -> R? {
         
-        let region = triangle.transpose(from,
-                                        .region)
+        let region = tile.transpose(from,
+                                    .region)
         
         return regions.first {
             
             $0.tile == region
         }
     }
+    
+    func chunk(for tile: T,
+               _ from: Scale) -> C? {
+        
+        guard let region = region(for: tile,
+                                  from) else { return nil }
+        
+        return region.chunk(for: tile,
+                            from)
+    }
 }
 
-internal extension TriangularGrid {
- 
-    func propagate(_ keys: Set<Triangle>,
+internal extension Grid {
+    
+    func propagate(_ keys: Set<T>,
                    _ insertion: Bool = false) {
         
-        let partitions = keys.reduce(into: [Triangle : Set<Triangle>]()) { result, vertex in
+        let partitions = keys.reduce(into: [T : Set<T>]()) { result, vertex in
         
             let chunk = vertex.transpose(.tile,
                                          .chunk)

@@ -8,20 +8,23 @@
 import Deltille
 import SpriteKit
 
-public class TriangleVertexLattice<C: HexagonalChunk,
+public class TriangleVertexLattice<C: GridChunk<Hexagon>,
                                    V: DataStoreValue>: SKNode,
                                                        Lattice where V.C == Triangle.Vertex {
     
-    internal let dataStore = TriangleVertexDataStore<V>()
+    public typealias R = GridRegion<C, T>
+    public typealias T = Hexagon
     
-    public let grid = HexagonalGrid<HexagonalRegion<C>, C>()
+    public let grid = Grid<R, C, T>()
+    
+    public let store = TriangleVertexDataStore<V>()
     
     required override public init() {
         
         super.init()
         
-        addChild(dataStore)
         addChild(grid)
+        addChild(store)
     }
     
     @available(*, unavailable)
@@ -32,16 +35,21 @@ public extension TriangleVertexLattice {
     
     func remove(_ keys: Set<V.C>) {
         
-        dataStore.remove(keys)
+        store.remove(keys)
+        
+        //grid.propagate(keys)
     }
     
     func set(_ value: V) {
         
-        dataStore.set(value)
+        store.set(value)
+        
+//        grid.propagate(value.footprint,
+//                       true)
     }
     
     func value(for key: V.C) -> V? {
      
-        dataStore.value(for: key)
+        store.value(for: key)
     }
 }

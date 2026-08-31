@@ -19,8 +19,8 @@ internal class DataStoreNode<T: Tile>: SKShapeNode {
     public let tile: T
     public let scale: Scale
     
-    public init(_ tile: T,
-                _ scale: Scale) {
+    internal init(_ tile: T,
+                  _ scale: Scale) {
      
         self.tile = tile
         self.scale = scale
@@ -31,9 +31,9 @@ internal class DataStoreNode<T: Tile>: SKShapeNode {
     }
     
     @available(*, unavailable)
-    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    required internal init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    required public init(from decoder: any Decoder) throws {
+    required internal init(from decoder: any Decoder) throws {
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -48,7 +48,7 @@ internal class DataStoreNode<T: Tile>: SKShapeNode {
         update()
     }
     
-    public func encode(to encoder: any Encoder) throws {
+    internal func encode(to encoder: any Encoder) throws {
         
         var container = encoder.container(keyedBy: CodingKeys.self)
         

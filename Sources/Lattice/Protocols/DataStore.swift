@@ -15,6 +15,14 @@ internal protocol DataStore: SKNode {
     associatedtype T: Tile
     associatedtype V: DataStoreValue
     
+    var regions: [R] { get }
+    
+    func region(for tile: T,
+                _ from: Scale) -> R?
+    
+    func chunk(for tile: T,
+               _ from: Scale) -> C?
+    
     func remove(_ keys: Set<V.C>)
     
     func set(_ value: V)

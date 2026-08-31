@@ -8,8 +8,8 @@
 import Deltille
 import SpriteKit
 
-internal class HexagonDataStore<V: DataStoreValue>: SKNode,
-                                                    DataStore where V.C == Hexagon {
+public class HexagonDataStore<V: DataStoreValue>: SKNode,
+                                                  DataStore where V.C == Hexagon {
     
     internal typealias C = DataStoreChunk<T, V>
     internal typealias R = DataStoreRegion<C, T, V>
@@ -29,11 +29,11 @@ internal extension HexagonDataStore {
 
 internal extension HexagonDataStore {
  
-    func region(for hexagon: Hexagon,
+    func region(for tile: Hexagon,
                 _ from: Scale) -> R? {
         
-        let region = hexagon.transpose(from,
-                                       .region)
+        let region = tile.transpose(from,
+                                    .region)
         
         return regions.first {
             
@@ -41,13 +41,13 @@ internal extension HexagonDataStore {
         }
     }
     
-    func chunk(for hexagon: Hexagon,
+    func chunk(for tile: Hexagon,
                _ from: Scale) -> C? {
         
-        guard let region = region(for: hexagon,
+        guard let region = region(for: tile,
                                   from) else { return nil }
         
-        return region.chunk(for: hexagon,
+        return region.chunk(for: tile,
                             from)
     }
 }
