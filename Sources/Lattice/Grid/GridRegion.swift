@@ -21,6 +21,8 @@ public class GridRegion<C: GridChunk<T>,
         self.tile = tile
 
         super.init()
+        
+        update()
     }
 
     @available(*, unavailable)
@@ -63,5 +65,15 @@ internal extension GridRegion {
             
             $0.tile == chunk
         }
+    }
+}
+
+private extension GridRegion {
+    
+    func update() {
+        
+        name = tile.id
+        
+        position = .init(tile.vertex)
     }
 }

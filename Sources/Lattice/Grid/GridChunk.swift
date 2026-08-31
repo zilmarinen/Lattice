@@ -20,8 +20,23 @@ public class GridChunk<T: Tile>: SKShapeNode,
         self.tile = tile
 
         super.init()
+        
+        update()
     }
 
     @available(*, unavailable)
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+private extension GridChunk {
+    
+    func update() {
+        
+        name = tile.id
+        
+        let region = tile.transpose(.chunk,
+                                    .region)
+        
+        position = .init(tile.vertex - region.vertex)
+    }
 }

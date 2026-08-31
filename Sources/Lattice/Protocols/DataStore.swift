@@ -187,7 +187,7 @@ internal extension DataStore where V.C == T.D.V {
         let tiles = Set(footprint.map {
         
             T($0.vector,
-              1.0)
+              2.0)
         })
         
         let chunks = tiles.unique(.tile,
@@ -224,7 +224,7 @@ internal extension DataStore where V.C == T.D.V {
         let partitions = value.footprint.reduce(into: [T : Set<V.C>]()) { result, vertex in
         
             let tile = T(vertex.vector,
-                         1.0)
+                         2.0)
             
             let chunk = tile.transpose(.tile,
                                        .chunk)
@@ -277,7 +277,7 @@ internal extension DataStore where V.C == T.D.V {
     func value(for key: V.C) -> V? {
         
         let tile = T(key.vector,
-                     1.0)
+                     2.0)
         
         guard let chunk = chunk(for: tile,
                                 .tile) else { return nil }

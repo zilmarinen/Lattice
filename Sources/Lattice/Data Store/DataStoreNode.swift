@@ -67,6 +67,8 @@ private extension DataStoreNode {
         name = tile.id
         path = CGPath.tile(tile,
                            scale)
+        lineWidth = 2.0
+        strokeColor = .black
         
         switch scale {
             

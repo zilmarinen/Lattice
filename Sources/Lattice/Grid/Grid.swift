@@ -63,15 +63,12 @@ internal extension Grid {
         
         let partitions = keys.reduce(into: [T : Set<T>]()) { result, vertex in
         
-            let chunk = vertex.transpose(.tile,
-                                         .chunk)
-            
-            let region = chunk.transpose(.chunk,
-                                         .region)
+            let region = vertex.transpose(.chunk,
+                                          .region)
             
             var partition = result[region] ?? []
             
-            partition.insert(chunk)
+            partition.insert(vertex)
             
             result[region] = partition
         }
