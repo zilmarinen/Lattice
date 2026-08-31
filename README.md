@@ -16,7 +16,7 @@ Lattice provides a structured way to represent grid-based data using either tria
 
  - Efficient spatial partitioning via chunking
  - Hierarchical invalidation to minimize unnecessary computation (dirty propagation)
- - Unified triangular representation across both lattice types
+ - Unified tile representations across both lattice types
  - Interoperability between coordinate systems
 
 Built with performance and extensibility in mind, Lattice enables you to build custom behaviors on top of a consistent and efficient core.
