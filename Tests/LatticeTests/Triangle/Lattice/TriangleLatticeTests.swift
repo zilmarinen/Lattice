@@ -10,11 +10,11 @@ import Euclid
 import XCTest
 @testable import Lattice
 
-fileprivate class Lattice: TriangleLattice<TriangularLatticeChunk, TriangleDataStoreTile> {}
+fileprivate class Lattice: TileLattice<Chunk, Triangle, Tile> {}
 
-fileprivate class TriangularLatticeChunk: TriangularChunk {}
+fileprivate class Chunk: GridChunk<Triangle> {}
 
-fileprivate struct TriangleDataStoreTile: DataStoreValue {
+fileprivate struct Tile: DataStoreValue {
     
     internal let vertex: Triangle
     
@@ -73,38 +73,26 @@ final class TriangleLatticeTests: XCTestCase {
         
         lattice.remove([tile])
         
-        let regions = lattice.dataStore.regions
-        let chunks = regions.flatMap { $0.chunks }
+        let regions = lattice.store.regions
+        let chunks = regions.flatMap {
+            
+            $0.chunks
+        }
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.tile } })
+        let dirtyChunks = Set(dirtyRegions.flatMap {
+            
+            $0.dirtyChunks.map {
+                
+                $0.tile
+            }
+        })
         
         XCTAssertEqual(0, regions.count)
         XCTAssertEqual(0, chunks.count)
         
         XCTAssertEqual(1, dirtyRegions.count)
         XCTAssertEqual(1, dirtyChunks.count)
-    }
-    
-    func testFootprint() throws {
-        
-        let lattice = Lattice()
-        
-        let tile = Triangle(-21, 11, 10)
-        
-        let footprint = Set(tile.adjacent + [tile])
-        
-        lattice.set(.init(vertex: tile,
-                          value: tile.id,
-                          footprint: footprint))
-        
-        lattice.remove([tile])
-        
-        let regions = lattice.dataStore.regions
-        let chunks = regions.flatMap { $0.chunks }
-        
-        XCTAssertEqual(0, regions.count)
-        XCTAssertEqual(0, chunks.count)
     }
     
     func testSoilablePropagation() throws {
@@ -121,13 +109,40 @@ final class TriangleLatticeTests: XCTestCase {
                           value: tile.id))
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
+        let dirtyChunks = dirtyRegions.flatMap {
+            
+            $0.dirtyChunks
+        }
         
         XCTAssertEqual(1, dirtyRegions.count)
         XCTAssertEqual(region, dirtyRegions.first?.tile)
         
         XCTAssertEqual(1, dirtyChunks.count)
         XCTAssertEqual(chunk, dirtyChunks.first?.tile)
+    }
+    
+    func testFootprint() throws {
+        
+        let lattice = Lattice()
+        
+        let tile = Triangle(-21, 11, 10)
+        
+        let footprint = Set(tile.adjacent + [tile])
+        
+        lattice.set(.init(vertex: tile,
+                          value: tile.id,
+                          footprint: footprint))
+        
+        lattice.remove([tile])
+        
+        let regions = lattice.store.regions
+        let chunks = regions.flatMap {
+            
+            $0.chunks
+        }
+        
+        XCTAssertEqual(0, regions.count)
+        XCTAssertEqual(0, chunks.count)
     }
     
     // MARK: Lattice Slice

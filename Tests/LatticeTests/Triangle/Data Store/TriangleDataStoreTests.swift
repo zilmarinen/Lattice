@@ -10,9 +10,9 @@ import Euclid
 import XCTest
 @testable import Lattice
 
-fileprivate class DataStore: TriangleDataStore<TriangleDataStoreTile> {}
+fileprivate class DataStore: TileDataStore<Triangle, Tile> {}
 
-fileprivate struct TriangleDataStoreTile: DataStoreValue {
+fileprivate struct Tile: DataStoreValue {
     
     internal let vertex: Triangle
     

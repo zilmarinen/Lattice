@@ -10,10 +10,7 @@ import SpriteKit
 
 public class Grid<R: GridRegion<C, T>,
                   C: GridChunk<T>,
-                  T: Tile>: SKNode {
-    
-    
-}
+                  T: Tile>: SKNode {}
 
 internal extension Grid {
     

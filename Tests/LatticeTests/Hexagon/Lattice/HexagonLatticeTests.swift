@@ -10,11 +10,11 @@ import Euclid
 import XCTest
 @testable import Lattice
 
-fileprivate class Lattice: HexagonLattice<HexagonalLatticeChunk, HexagonDataStoreTile> {}
+fileprivate class Lattice: TileLattice<Chunk, Hexagon, Tile> {}
 
-fileprivate class HexagonalLatticeChunk: HexagonalChunk {}
+fileprivate class Chunk: GridChunk<Hexagon> {}
 
-fileprivate struct HexagonDataStoreTile: DataStoreValue {
+fileprivate struct Tile: DataStoreValue {
     
     internal let vertex: Hexagon
     
@@ -70,11 +70,20 @@ final class HexagonLatticeTests: XCTestCase {
         
         lattice.remove([tile])
         
-        let regions = lattice.dataStore.regions
-        let chunks = regions.flatMap { $0.chunks }
+        let regions = lattice.store.regions
+        let chunks = regions.flatMap {
+            
+            $0.chunks
+        }
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = Set(dirtyRegions.flatMap { $0.dirtyChunks.map { $0.tile } })
+        let dirtyChunks = Set(dirtyRegions.flatMap {
+            
+            $0.dirtyChunks.map {
+                
+                $0.tile
+            }
+        })
         
         XCTAssertEqual(0, regions.count)
         XCTAssertEqual(0, chunks.count)
@@ -97,7 +106,10 @@ final class HexagonLatticeTests: XCTestCase {
                           value: tile.id))
         
         let dirtyRegions = lattice.grid.dirtyRegions
-        let dirtyChunks = dirtyRegions.flatMap { $0.dirtyChunks }
+        let dirtyChunks = dirtyRegions.flatMap {
+            
+            $0.dirtyChunks
+        }
         
         XCTAssertEqual(1, dirtyRegions.count)
         XCTAssertEqual(region, dirtyRegions.first?.tile)
@@ -120,8 +132,11 @@ final class HexagonLatticeTests: XCTestCase {
         
         lattice.remove([tile])
         
-        let regions = lattice.dataStore.regions
-        let chunks = regions.flatMap { $0.chunks }
+        let regions = lattice.store.regions
+        let chunks = regions.flatMap {
+            
+            $0.chunks
+        }
         
         XCTAssertEqual(0, regions.count)
         XCTAssertEqual(0, chunks.count)
