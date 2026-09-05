@@ -10,7 +10,20 @@ import SpriteKit
 
 public class Grid<R: GridRegion<C, T>,
                   C: GridChunk<T>,
-                  T: Tile>: SKNode {}
+                  T: Tile>: SKNode {
+    
+    public let lattice: Double
+    
+    required public init(_ lattice: Double) {
+        
+        self.lattice = lattice
+        
+        super.init()
+    }
+    
+    @available(*, unavailable)
+    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
 
 internal extension Grid {
     
@@ -92,10 +105,12 @@ internal extension Grid {
                     return
                 }
                 
-                let region = region ?? R(tile: partition)
+                let region = region ?? R(partition,
+                                         lattice)
                 
                 let chunk = region.chunk(for: triangle,
-                                         .chunk) ?? C(tile: triangle)
+                                         .chunk) ?? C(triangle,
+                                                      lattice)
                 
                 if region.parent == nil {
                     

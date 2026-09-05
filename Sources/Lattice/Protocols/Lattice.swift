@@ -8,8 +8,8 @@
 import Deltille
 import SpriteKit
 
-internal protocol Lattice: SKNode where S.T == T,
-                                        S.V == V {
+public protocol Lattice: SKNode where S.T == T,
+                                      S.V == V {
     
     associatedtype C: GridChunk<T>
     associatedtype G: Grid<R, C, T>
@@ -26,9 +26,11 @@ internal protocol Lattice: SKNode where S.T == T,
     func set(_ value: V)
     
     func value(for key: V.C) -> V?
+    
+    func slice(for tile: T) -> DataStoreSlice<C, T, V>?
 }
 
-internal extension Lattice {
+public extension Lattice {
     
     func remove(_ keys: Set<V.C>) {
         
@@ -43,6 +45,17 @@ internal extension Lattice {
         
         grid.propagate(chunks,
                        true)
+    }
+    
+    func slice(for tile: T) -> DataStoreSlice<C, T, V>? {
+        
+        guard let region = grid.region(for: tile,
+                                       .region) else { return nil }
+        
+        let chunks = store.chunks(intersecting: tile)
+        
+        return .init(chunks: chunks,
+                     region: region)
     }
     
     func value(for key: V.C) -> V? {

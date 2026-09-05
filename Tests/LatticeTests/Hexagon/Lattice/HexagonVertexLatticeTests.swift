@@ -65,7 +65,7 @@ final class HexagonVertexLatticeTests: XCTestCase {
         
         let vertex = Hexagon.Vertex(-7, -14, 20)
         
-        let footprint = Set(vertex.adjacent + [vertex])
+        let footprint = Set(vertex.vertices + [vertex])
         
         lattice.set(.init(vertex: vertex,
                           value: vertex.id,
@@ -97,19 +97,37 @@ final class HexagonVertexLatticeTests: XCTestCase {
     
     // MARK: Lattice Slice
     
-//    func testLatticeSlice() throws {
-//
-//        let lattice = Lattice()
-//
-//        let tile = Triangle(-17, 11, 5)
-//        let region = tile.transpose(.tile,
-//                                    .region)
-//
-//        lattice.set(.init(vertex: tile,
-//                          value: tile.id)
-//
-//        let slice = lattice.slice(region: region)
-//
-//        slice?.remove(values: [triangle])
-//    }
+    func testLatticeSlice() throws {
+        
+        let lattice = Lattice()
+        
+        let vertex = Hexagon.Vertex(15, -6, -10)
+        
+        let tile = Triangle(vertex.vector())
+        let region = tile.transpose(.tile,
+                                    .region)
+        
+        let footprint = Set(vertex.vertices + [vertex])
+        
+        lattice.set(.init(vertex: vertex,
+                          value: vertex.id,
+                          footprint: footprint))
+        
+        let slice = lattice.slice(for: region)
+        
+        let tiles = slice?.chunks.flatMap {
+            
+            $0.data.keys
+            
+        } ?? []
+        
+        let values = slice?.chunks.flatMap {
+            
+            $0.data.values
+            
+        } ?? []
+        
+        XCTAssertEqual(values.count, footprint.count)
+        //XCTAssertTrue(tiles.contains(tile))
+    }
 }

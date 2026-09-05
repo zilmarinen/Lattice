@@ -8,8 +8,8 @@
 import Deltille
 import SpriteKit
 
-internal class DataStoreChunk<T: Tile,
-                              V: DataStoreValue>: DataStoreNode<T> {
+public class DataStoreChunk<T: Tile,
+                            V: DataStoreValue>: DataStoreNode<T> {
     
     internal enum CodingKeys: CodingKey {
            
@@ -18,13 +18,14 @@ internal class DataStoreChunk<T: Tile,
     
     internal var data: [V.C : V]
     
-    override required internal init(_ tile: T,
-                                    _ scale: Scale) {
+    required internal init(_ tile: T,
+                           _ lattice: Double = 1.0) {
         
         data = [:]
         
         super.init(tile,
-                   scale)
+                   .chunk,
+                   lattice)
     }
     
     @available(*, unavailable)

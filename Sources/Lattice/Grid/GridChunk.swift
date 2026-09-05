@@ -8,16 +8,19 @@
 import Deltille
 import SpriteKit
 
-public class GridChunk<T: Tile>: SKShapeNode,
-                                 Soilable {
+open class GridChunk<T: Tile>: SKShapeNode,
+                               Soilable {
        
     internal(set) public var isDirty: Bool = false
 
     public let tile: T
+    public let lattice: Double
 
-    public required init(tile: T) {
+    required public init(_ tile: T,
+                         _ lattice: Double) {
 
         self.tile = tile
+        self.lattice = lattice
 
         super.init()
         
@@ -37,6 +40,7 @@ private extension GridChunk {
         let region = tile.transpose(.chunk,
                                     .region)
         
-        position = .init(tile.vertex - region.vertex)
+        position = .init(tile.vertex - region.vertex,
+                         lattice)
     }
 }

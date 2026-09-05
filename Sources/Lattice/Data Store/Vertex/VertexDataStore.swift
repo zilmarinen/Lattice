@@ -10,15 +10,26 @@ import SpriteKit
 
 public class VertexDataStore<T: Tile,
                              V: DataStoreValue>: SKNode,
-                                                 DataStore where V.C == T.D.V {
+                                                 DataStore where V.C == T.D.V,
+                                                                 V.C == T.D.SI.V {
     
-    internal let scale = 2.0
+    public typealias C = DataStoreChunk<T, V>
+    public typealias R = DataStoreRegion<C, T, V>
     
-    internal typealias C = DataStoreChunk<T, V>
-    internal typealias R = DataStoreRegion<C, T, V>
+    public let lattice: Double
+    
+    public init(_ lattice: Double = 1.0) {
+        
+        self.lattice = lattice
+        
+        super.init()
+    }
+    
+    @available(*, unavailable)
+    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-internal extension VertexDataStore {
+public extension VertexDataStore {
     
     @discardableResult
     func remove(_ keys: Set<V.C>) -> Set<T> {
@@ -32,8 +43,8 @@ internal extension VertexDataStore {
         
         let tiles = Set(footprint.map {
         
-            T($0.vector,
-              scale)
+            T($0.vector(lattice),
+              lattice * 2.0)
         })
         
         let chunks = tiles.unique(.tile,
@@ -69,8 +80,8 @@ internal extension VertexDataStore {
         
         let partitions = value.footprint.reduce(into: [T : Set<V.C>]()) { result, vertex in
         
-            let tile = T(vertex.vector,
-                         scale)
+            let tile = T(vertex.vector(lattice),
+                         lattice * 2.0)
             
             let chunk = tile.transpose(.tile,
                                        .chunk)
@@ -88,7 +99,8 @@ internal extension VertexDataStore {
         for hexagon in regions {
             
             let region = region(for: hexagon,
-                                .region) ?? R(hexagon)
+                                .region) ?? R(hexagon,
+                                              lattice * 2.0)
             
             if region.parent == nil {
                 
@@ -102,7 +114,7 @@ internal extension VertexDataStore {
                 
                 let chunk = region.chunk(for: partition,
                                          .chunk) ?? C(partition,
-                                                      .chunk)
+                                                      lattice * 2.0)
                 
                 if chunk.parent == nil {
                     
@@ -111,6 +123,7 @@ internal extension VertexDataStore {
                 
                 for vertex in vertices {
                     
+                    print("Setting vertex: \(vertex.id)")
                     chunk.set(value,
                               for: vertex)
                 }
@@ -122,12 +135,22 @@ internal extension VertexDataStore {
     
     func value(for key: V.C) -> V? {
         
-        let tile = T(key.vector,
-                     scale)
+        let tile = T(key.vector(lattice),
+                     lattice * 2.0)
         
         guard let chunk = chunk(for: tile,
                                 .tile) else { return nil }
         
         return chunk.value(for: key)
+    }
+    
+    func wedge(for sieve: T.D.SI) -> DataStoreWedge<V.C, V> {
+        
+        let data = sieve.vertices.reduce(into: [V.C : V]()) { result, vertex in
+                    
+            result[vertex] = value(for: vertex)
+        }
+        
+        return .init(data: data)
     }
 }

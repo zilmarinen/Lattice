@@ -8,12 +8,16 @@
 import Deltille
 import SpriteKit
 
-internal protocol DataStore: SKNode {
+public protocol DataStore: SKNode {
     
     associatedtype C: DataStoreChunk<T, V>
     associatedtype R: DataStoreRegion<C, T, V>
+    associatedtype S: Sieve
     associatedtype T: Tile
     associatedtype V: DataStoreValue
+    associatedtype W: Wedge
+    
+    var lattice: Double { get }
     
     var regions: [R] { get }
     
@@ -28,9 +32,11 @@ internal protocol DataStore: SKNode {
     func set(_ value: V) -> Set<T>
     
     func value(for key: V.C) -> V?
+    
+    func wedge(for sieve: S) -> W
 }
 
-internal extension DataStore {
+public extension DataStore {
     
     var regions: [R] {
         
@@ -41,7 +47,7 @@ internal extension DataStore {
     }
 }
 
-internal extension DataStore {
+public extension DataStore {
  
     func region(for tile: T,
                 _ from: Scale) -> R? {
@@ -63,5 +69,13 @@ internal extension DataStore {
         
         return region.chunk(for: tile,
                             from)
+    }
+    
+    func chunks(intersecting tile: T) -> [C] {
+     
+        regions.flatMap {
+            
+            $0.chunks(intersecting: tile)
+        }
     }
 }

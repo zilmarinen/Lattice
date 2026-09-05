@@ -63,9 +63,9 @@ final class TriangleVertexLatticeTests: XCTestCase {
         
         let lattice = Lattice()
         
-        let vertex = Triangle.Vertex(6, -12, 7)
+        let vertex = Triangle.Vertex(13, 6, -18)
         
-        let footprint = Set(vertex.adjacent + [vertex])
+        let footprint = Set(vertex.vertices + [vertex])
         
         lattice.set(.init(vertex: vertex,
                           value: vertex.id,
@@ -97,19 +97,19 @@ final class TriangleVertexLatticeTests: XCTestCase {
     
     // MARK: Lattice Slice
     
-//    func testLatticeSlice() throws {
-//
-//        let lattice = Lattice()
-//
-//        let tile = Triangle(-17, 11, 5)
-//        let region = tile.transpose(.tile,
-//                                    .region)
-//
-//        lattice.set(.init(vertex: tile,
-//                          value: tile.id)
-//
-//        let slice = lattice.slice(region: region)
-//
-//        slice?.remove(values: [triangle])
-//    }
+    func testLatticeSlice() throws {
+
+        let lattice = Lattice()
+
+        let tile = Triangle(-17, 11, 5)
+        let region = tile.transpose(.tile,
+                                    .region)
+
+        lattice.set(.init(vertex: tile,
+                          value: tile.id)
+
+        let slice = lattice.slice(region: region)
+
+        slice?.remove(values: [triangle])
+    }
 }

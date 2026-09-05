@@ -61,7 +61,7 @@ final class HexagonVertexDataStoreTests: XCTestCase {
         
         let vertex = Hexagon.Vertex(-7, -14, 20)
         
-        let footprint = Set(vertex.adjacent + [vertex])
+        let footprint = Set(vertex.vertices + [vertex])
         
         dataStore.set(.init(vertex: vertex,
                             value: vertex.id,
@@ -81,28 +81,30 @@ final class HexagonVertexDataStoreTests: XCTestCase {
     
     // MARK: Wedge
     
-//    func testWedge() throws {
-//
-//        let dataStore = DataStore()
-//
-//        let value = "lattice"
-//
-//        let hexagon = Hexagon(-82, 58, 23)
-//        let chunk = hexagon.transpose(.tile,
-//                                      .chunk)
-//
-//        dataStore.set(.init(vertex: hexagon,
-//                            value: value))
-//
-//        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
-//
-//        let tiles = Set(wedge.values.map {
-//
-//            $0.value.vertex
-//        })
-//
-//        XCTAssertEqual(wedge.values.count, 1)
-//        XCTAssertTrue(tiles.contains(hexagon))
-//        XCTAssertEqual(wedge.value(for: hexagon)?.value, value)
-//    }
+    func testWedge() throws {
+
+        let dataStore = DataStore()
+
+        let tile = Hexagon(15, -6, -9)
+        let vertex = Hexagon.Vertex(15, -6, -10)
+        let chunk = tile.transpose(.tile,
+                                   .chunk)
+        
+        let footprint = Set(vertex.vertices + [vertex])
+        
+        dataStore.set(.init(vertex: vertex,
+                            value: vertex.id,
+                            footprint: footprint))
+
+        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
+
+        let tiles = Set(wedge.data.map {
+
+            $0.value.vertex
+        })
+
+        XCTAssertEqual(wedge.data.count, footprint.count)
+        XCTAssertTrue(tiles.contains(vertex))
+        XCTAssertEqual(wedge.value(for: vertex)?.value, vertex.id)
+    }
 }

@@ -10,9 +10,10 @@ import Deltille
 
 public extension CGPoint {
     
-    init(_ vertex: any Vertex) {
+    init(_ vertex: any Vertex,
+         _ lattice: Double = 1.0) {
         
-        let vector = vertex.vector
+        let vector = vertex.vector(lattice)
         
         self.init(x: vector.x,
                   y: vector.z)

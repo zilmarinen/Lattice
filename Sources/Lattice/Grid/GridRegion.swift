@@ -15,10 +15,13 @@ public class GridRegion<C: GridChunk<T>,
     internal(set) public var isDirty: Bool = false
 
     public let tile: T
+    public let lattice: Double
 
-    public required init(tile: T) {
+    required public init(_ tile: T,
+                         _ lattice: Double) {
 
         self.tile = tile
+        self.lattice = lattice
 
         super.init()
         
@@ -74,6 +77,7 @@ private extension GridRegion {
         
         name = tile.id
         
-        position = .init(tile.vertex)
+        position = .init(tile.vertex,
+                         lattice)
     }
 }

@@ -83,31 +83,29 @@ final class TriangleDataStoreTests: XCTestCase {
     
     // MARK: Wedge
     
-//    func testWedge() throws {
-//        
-//        let dataStore = DataStore()
-//
-//        let value = "lattice"
-//        
-//        let triangle = Triangle(-82, 58, 23)
-//        let chunk = triangle.transpose(.tile,
-//                                       .chunk)
-//        
-//        let footprint = triangle.adjacent + [triangle]
-//        
-//        dataStore.set(.init(vertex: triangle,
-//                            value: value,
-//                            footprint: footprint))
-//        
-//        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
-//        
-//        let tiles = wedge.values.map {
-//            
-//            $0.value.vertex
-//        }
-//        
-//        XCTAssertEqual(wedge.values.count, footprint.count)
-//        XCTAssertTrue(tiles.contains(triangle))
-//        XCTAssertEqual(wedge.value(for: triangle)?.value, value)
-//    }
+    func testWedge() throws {
+        
+        let dataStore = DataStore()
+        
+        let tile = Triangle(8, -16, 8)
+        let chunk = tile.transpose(.tile,
+                                   .chunk)
+        
+        let footprint = Set(tile.adjacent + [tile])
+        
+        dataStore.set(.init(vertex: tile,
+                            value: tile.id,
+                            footprint: footprint))
+        
+        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
+        
+        let tiles = wedge.data.map {
+            
+            $0.value.vertex
+        }
+        
+        XCTAssertEqual(wedge.data.count, footprint.count)
+        XCTAssertTrue(tiles.contains(tile))
+        XCTAssertEqual(wedge.value(for: tile)?.value, tile.id)
+    }
 }

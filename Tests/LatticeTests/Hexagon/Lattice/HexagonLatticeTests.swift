@@ -144,21 +144,35 @@ final class HexagonLatticeTests: XCTestCase {
     
     // MARK: Lattice Slice
     
-//    func testLatticeSlice() throws {
-//        
-//        let lattice = HexLattice()
-//        
-//        let vertex = Triangle.Vertex(-16, 12, 5)
-//        
-//        let triangle = vertex.tiles.first!
-//        
-//        lattice.set(.init(coord: vertex.position,
-//                          value: "lattice"),
-//                    for: vertex)
-//        
-//        let slice = lattice.slice(region: triangle.transpose(.tile,
-//                                                             .region))
-//        
-//        slice?.remove(values: [vertex])
-//    }
+    func testLatticeSlice() throws {
+        
+        let lattice = Lattice()
+        
+        let tile = Hexagon(15, -6, -9)
+        let region = tile.transpose(.tile,
+                                    .region)
+        
+        let footprint = Set(tile.adjacent + [tile])
+        
+        lattice.set(.init(vertex: tile,
+                          value: tile.id,
+                          footprint: footprint))
+        
+        let slice = lattice.slice(for: region)
+        
+        let tiles = slice?.chunks.flatMap {
+            
+            $0.data.keys
+            
+        } ?? []
+        
+        let values = slice?.chunks.flatMap {
+            
+            $0.data.values
+            
+        } ?? []
+        
+        XCTAssertEqual(values.count, footprint.count)
+        XCTAssertTrue(tiles.contains(tile))
+    }
 }

@@ -10,13 +10,26 @@ import SpriteKit
 
 public class TileDataStore<T: Tile,
                            V: DataStoreValue>: SKNode,
-                                               DataStore where V.C == T {
+                                               DataStore where V.C == T,
+                                                               V.C == T.SI.T {
     
-    internal typealias C = DataStoreChunk<T, V>
-    internal typealias R = DataStoreRegion<C, T, V>
+    public typealias C = DataStoreChunk<T, V>
+    public typealias R = DataStoreRegion<C, T, V>
+    
+    public let lattice: Double
+    
+    public init(_ lattice: Double = 1.0) {
+        
+        self.lattice = lattice
+        
+        super.init()
+    }
+    
+    @available(*, unavailable)
+    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-internal extension TileDataStore {
+public extension TileDataStore {
     
     @discardableResult
     func remove(_ keys: Set<V.C>) -> Set<T> {
@@ -77,7 +90,8 @@ internal extension TileDataStore {
         for hexagon in regions {
             
             let region = region(for: hexagon,
-                                .region) ?? R(hexagon)
+                                .region) ?? R(hexagon,
+                                              lattice)
             
             if region.parent == nil {
                 
@@ -91,7 +105,7 @@ internal extension TileDataStore {
                 
                 let chunk = region.chunk(for: partition,
                                          .chunk) ?? C(partition,
-                                                      .chunk)
+                                                      lattice)
                 
                 if chunk.parent == nil {
                     
@@ -115,5 +129,15 @@ internal extension TileDataStore {
                                 .tile) else { return nil }
         
         return chunk.value(for: key)
+    }
+    
+    func wedge(for sieve: T.SI) -> DataStoreWedge<V.C, V> {
+        
+        let data = sieve.tiles.reduce(into: [V.C : V]()) { result, tile in
+            
+            result[tile] = value(for: tile)
+        }
+        
+        return .init(data: data)
     }
 }

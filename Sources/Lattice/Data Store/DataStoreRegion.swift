@@ -8,14 +8,16 @@
 import Deltille
 import SpriteKit
 
-internal class DataStoreRegion<C: DataStoreChunk<T, V>,
-                               T: Tile,
-                               V: DataStoreValue>: DataStoreNode<T> {
+public class DataStoreRegion<C: DataStoreChunk<T, V>,
+                             T: Tile,
+                             V: DataStoreValue>: DataStoreNode<T> {
     
-    required internal init(_ tile: T) {
+    required internal init(_ tile: T,
+                           _ lattice: Double = 1.0) {
         
         super.init(tile,
-                   .region)
+                   .region,
+                   lattice)
     }
     
     @available(*, unavailable)
@@ -54,6 +56,15 @@ internal extension DataStoreRegion {
         return chunks.first {
             
             $0.tile == chunk
+        }
+    }
+    
+    func chunks(intersecting tile: T) -> [C] {
+        
+        chunks.filter {
+            
+            $0.tile.transpose(.chunk,
+                              .region) == tile
         }
     }
 }

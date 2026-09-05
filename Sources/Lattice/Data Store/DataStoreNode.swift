@@ -8,22 +8,26 @@
 import Deltille
 import SpriteKit
 
-internal class DataStoreNode<T: Tile>: SKShapeNode {
+public class DataStoreNode<T: Tile>: SKShapeNode {
     
     internal enum CodingKeys: CodingKey {
         
+        case lattice
         case tile
         case scale
     }
     
     public let tile: T
     public let scale: Scale
+    public let lattice: Double
     
     internal init(_ tile: T,
-                  _ scale: Scale) {
+                  _ scale: Scale,
+                  _ lattice: Double) {
      
         self.tile = tile
         self.scale = scale
+        self.lattice = lattice
         
         super.init()
         
@@ -43,6 +47,9 @@ internal class DataStoreNode<T: Tile>: SKShapeNode {
         self.scale = try container.decode(Scale.self,
                                           forKey: .scale)
         
+        self.lattice = try container.decode(Double.self,
+                                            forKey: .lattice)
+        
         super.init()
         
         update()
@@ -57,6 +64,9 @@ internal class DataStoreNode<T: Tile>: SKShapeNode {
                 
         try container.encode(scale,
                              forKey: .scale)
+        
+        try container.encode(lattice,
+                             forKey: .lattice)
     }
 }
 
@@ -66,9 +76,10 @@ private extension DataStoreNode {
         
         name = tile.id
         path = CGPath.tile(tile,
-                           scale)
+                           scale,
+                           lattice)
         lineWidth = 2.0
-        strokeColor = .black
+        strokeColor = scale == .chunk ? .black : .white
         
         switch scale {
             
@@ -77,11 +88,22 @@ private extension DataStoreNode {
             let region = tile.transpose(scale,
                                         .region)
             
-            position = .init(tile.vertex - region.vertex)
+            let origin = region.transpose(.region,
+                                          .tile)
+            
+            let offset = tile.transpose(scale,
+                                        .tile)
+            
+            position = .init((offset - origin).vertex,
+                             lattice)
             
         default:
             
-            position = .init(tile.vertex)
+            let origin = tile.transpose(scale,
+                                        .tile)
+            
+            position = .init(origin.vertex,
+                             lattice)
         }
     }
 }
