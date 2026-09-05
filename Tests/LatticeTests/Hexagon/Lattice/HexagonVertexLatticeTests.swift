@@ -102,8 +102,8 @@ final class HexagonVertexLatticeTests: XCTestCase {
         let lattice = Lattice()
         
         let vertex = Hexagon.Vertex(15, -6, -10)
-        
-        let tile = Triangle(vertex.vector())
+        let tile = Triangle(vertex.vector(),
+                            2.0)
         let region = tile.transpose(.tile,
                                     .region)
         
@@ -115,7 +115,7 @@ final class HexagonVertexLatticeTests: XCTestCase {
         
         let slice = lattice.slice(for: region)
         
-        let tiles = slice?.chunks.flatMap {
+        let vertices = slice?.chunks.flatMap {
             
             $0.data.keys
             
@@ -127,7 +127,8 @@ final class HexagonVertexLatticeTests: XCTestCase {
             
         } ?? []
         
+        XCTAssertEqual(slice?.region.tile, region)
         XCTAssertEqual(values.count, footprint.count)
-        //XCTAssertTrue(tiles.contains(tile))
+        XCTAssertTrue(vertices.contains(vertex))
     }
 }

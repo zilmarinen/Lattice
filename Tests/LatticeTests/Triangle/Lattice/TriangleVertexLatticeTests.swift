@@ -98,18 +98,37 @@ final class TriangleVertexLatticeTests: XCTestCase {
     // MARK: Lattice Slice
     
     func testLatticeSlice() throws {
-
+        
         let lattice = Lattice()
-
-        let tile = Triangle(-17, 11, 5)
+        
+        let vertex = Triangle.Vertex(8, -15, 8)
+        let tile = Hexagon(vertex.vector(),
+                           2.0)
         let region = tile.transpose(.tile,
                                     .region)
-
-        lattice.set(.init(vertex: tile,
-                          value: tile.id)
-
-        let slice = lattice.slice(region: region)
-
-        slice?.remove(values: [triangle])
+        
+        let footprint = Set(vertex.vertices + [vertex])
+        
+        lattice.set(.init(vertex: vertex,
+                          value: vertex.id,
+                          footprint: footprint))
+        
+        let slice = lattice.slice(for: region)
+        
+        let vertices = slice?.chunks.flatMap {
+            
+            $0.data.keys
+            
+        } ?? []
+        
+        let values = slice?.chunks.flatMap {
+            
+            $0.data.values
+            
+        } ?? []
+        
+        XCTAssertEqual(slice?.region.tile, region)
+        XCTAssertEqual(values.count, footprint.count)
+        XCTAssertTrue(vertices.contains(vertex))
     }
 }

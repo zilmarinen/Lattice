@@ -98,13 +98,13 @@ final class TriangleVertexDataStoreTests: XCTestCase {
         
         let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
 
-        let tiles = Set(wedge.data.map {
+        let vertices = Set(wedge.data.map {
 
             $0.value.vertex
         })
 
         XCTAssertEqual(wedge.data.count, footprint.count)
-        XCTAssertTrue(tiles.contains(vertex))
+        XCTAssertTrue(vertices.contains(vertex))
         XCTAssertEqual(wedge.value(for: vertex)?.value, vertex.id)
     }
 }

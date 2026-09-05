@@ -175,6 +175,7 @@ final class TriangleLatticeTests: XCTestCase {
             
         } ?? []
         
+        XCTAssertEqual(slice?.region.tile, region)
         XCTAssertEqual(values.count, footprint.count)
         XCTAssertTrue(tiles.contains(tile))
     }
