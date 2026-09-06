@@ -10,7 +10,7 @@ import Euclid
 import XCTest
 @testable import Lattice
 
-fileprivate class DataStore: VertexDataStore<Triangle, Tile> {}
+fileprivate class DataStore: VertexDataStore<Hexagon, Tile> {}
 
 fileprivate struct Tile: DataStoreValue {
     

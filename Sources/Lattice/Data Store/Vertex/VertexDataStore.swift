@@ -8,13 +8,15 @@
 import Deltille
 import SpriteKit
 
-public class VertexDataStore<T: Tile,
+public class VertexDataStore<G: Tile,
                              V: DataStoreValue>: SKNode,
-                                                 DataStore where V.C == T.D.V,
-                                                                 V.C == T.D.SI.V {
+                                                 DataStore where V.C == G.V,
+                                                                 V.C == G.SI.V,
+                                                                 V.C.T == G {
     
-    public typealias C = DataStoreChunk<T, V>
-    public typealias R = DataStoreRegion<C, T, V>
+    public typealias C = DataStoreChunk<P, V>
+    public typealias P = G.D
+    public typealias R = DataStoreRegion<C, P, V>
     
     public let lattice: Double
     
@@ -32,7 +34,7 @@ public class VertexDataStore<T: Tile,
 public extension VertexDataStore {
     
     @discardableResult
-    func remove(_ keys: Set<V.C>) -> Set<T> {
+    func remove(_ keys: Set<V.C>) -> Set<G> {
         
         let footprint = keys.reduce(into: Set<V.C>()) { result, vertex in
             
@@ -41,13 +43,13 @@ public extension VertexDataStore {
             result.formUnion(value.footprint)
         }
         
-        let tiles = Set(footprint.map {
+        let transposed = Set(footprint.map {
         
-            T($0.vector(lattice),
+            P($0.vector(lattice),
               lattice * 2.0)
         })
         
-        let chunks = tiles.unique(.tile,
+        let chunks = transposed.unique(.tile,
                                   .chunk)
         
         for hexagon in chunks {
@@ -67,20 +69,26 @@ public extension VertexDataStore {
             region.removeFromParent()
         }
         
-        return chunks
+        let tiles = footprint.flatMap {
+            
+            $0.tiles
+        }
+        
+        return tiles.unique(.tile,
+                            .chunk)
     }
     
     @discardableResult
-    func set(_ value: V) -> Set<T> {
+    func set(_ value: V) -> Set<G> {
         
         for vertex in value.footprint {
             
             guard self.value(for: vertex) == nil else { return [] }
         }
         
-        let partitions = value.footprint.reduce(into: [T : Set<V.C>]()) { result, vertex in
+        let partitions = value.footprint.reduce(into: [P : Set<V.C>]()) { result, vertex in
         
-            let tile = T(vertex.vector(lattice),
+            let tile = P(vertex.vector(lattice),
                          lattice * 2.0)
             
             let chunk = tile.transpose(.tile,
@@ -122,20 +130,25 @@ public extension VertexDataStore {
                 }
                 
                 for vertex in vertices {
-                    
-                    print("Setting vertex: \(vertex.id)")
+
                     chunk.set(value,
                               for: vertex)
                 }
             }
         }
         
-        return Set(partitions.keys)
+        let tiles = value.footprint.flatMap {
+            
+            $0.tiles
+        }
+        
+        return tiles.unique(.tile,
+                            .chunk)
     }
     
     func value(for key: V.C) -> V? {
         
-        let tile = T(key.vector(lattice),
+        let tile = P(key.vector(lattice),
                      lattice * 2.0)
         
         guard let chunk = chunk(for: tile,
@@ -144,7 +157,7 @@ public extension VertexDataStore {
         return chunk.value(for: key)
     }
     
-    func wedge(for sieve: T.D.SI) -> DataStoreWedge<V.C, V> {
+    func wedge(for sieve: G.SI) -> DataStoreWedge<V.C, V> {
         
         let data = sieve.vertices.reduce(into: [V.C : V]()) { result, vertex in
                     

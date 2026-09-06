@@ -10,9 +10,9 @@ import Euclid
 import XCTest
 @testable import Lattice
 
-fileprivate class Lattice: VertexLattice<Chunk, Triangle, Tile> {}
+fileprivate class Lattice: VertexLattice<Chunk, Hexagon, Tile> {}
 
-fileprivate class Chunk: GridChunk<Triangle> {}
+fileprivate class Chunk: GridChunk<Hexagon> {}
 
 fileprivate struct Tile: DataStoreValue {
     
@@ -102,8 +102,7 @@ final class HexagonVertexLatticeTests: XCTestCase {
         let lattice = Lattice()
         
         let vertex = Hexagon.Vertex(15, -6, -10)
-        let tile = Triangle(vertex.vector(),
-                            2.0)
+        let tile = Hexagon(15, -6, -9)
         let region = tile.transpose(.tile,
                                     .region)
         

@@ -8,7 +8,7 @@
 import Deltille
 import SpriteKit
 
-public protocol Lattice: SKNode where S.T == T,
+public protocol Lattice: SKNode where S.G == T,
                                       S.V == V {
     
     associatedtype C: GridChunk<T>
@@ -17,12 +17,18 @@ public protocol Lattice: SKNode where S.T == T,
     associatedtype S: DataStore
     associatedtype T: Tile
     associatedtype V: DataStoreValue
+                                          
+    typealias Cleaner = ((_ chunk: C,
+                          _ sieve: T.SI,
+                          _ wedge: S.W) -> Bool)
     
     var grid: G { get }
     var store: S { get }
+
+    func clean(_ cleaner: Cleaner)
     
-    func remove(_ keys: Set<S.V.C>)
-    
+    func remove(_ keys: Set<V.C>)
+
     func set(_ value: V)
     
     func value(for key: V.C) -> V?
@@ -31,6 +37,50 @@ public protocol Lattice: SKNode where S.T == T,
 }
 
 public extension Lattice {
+    
+    func clean(_ cleaner: Cleaner) {
+        
+        var emptyRegions: [R] = []
+        
+        for region in grid.dirtyRegions {
+            
+            var emptyChunks: [C] = []
+            
+            for chunk in region.dirtyChunks {
+                
+                let sieve = chunk.tile.sieve(.chunk)
+                let wedge = store.wedge(for: sieve)
+                
+                guard !wedge.isEmpty,
+                      cleaner(chunk,
+                              sieve,
+                              wedge) else {
+                    
+                    emptyChunks.append(chunk)
+                    
+                    continue
+                }
+                
+                chunk.isDirty = false
+            }
+            
+            emptyChunks.forEach {
+                
+                $0.removeFromParent()
+            }
+            
+            region.isDirty = false
+            
+            guard region.isEmpty else { continue }
+            
+            emptyRegions.append(region)
+        }
+        
+        emptyRegions.forEach {
+            
+            $0.removeFromParent()
+        }
+    }
     
     func remove(_ keys: Set<V.C>) {
         
@@ -48,14 +98,14 @@ public extension Lattice {
     }
     
     func slice(for tile: T) -> DataStoreSlice<C, T, V>? {
-        
-        guard let region = grid.region(for: tile,
-                                       .region) else { return nil }
-        
-        let chunks = store.chunks(intersecting: tile)
-        
-        return .init(chunks: chunks,
-                     region: region)
+        return nil
+//        guard let region = grid.region(for: tile,
+//                                       .region) else { return nil }
+//        
+//        let chunks = store.chunks(intersecting: tile)
+//        
+//        return .init(chunks: chunks,
+//                     region: region)
     }
     
     func value(for key: V.C) -> V? {

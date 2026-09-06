@@ -11,13 +11,13 @@ import SpriteKit
 open class VertexLattice<C: GridChunk<T>,
                          T: Tile,
                          V: DataStoreValue>: SKNode,
-                                             Lattice where V.C == T.D.V,
-                                                           V.C == T.D.SI.V {
+                                             Lattice where V.C == T.V,
+                                                           V.C == T.SI.V,
+                                                           V.C.T == T {
 
     public typealias R = GridRegion<C, T>
     
     public let grid: Grid<R, C, T>
-    
     public let store: VertexDataStore<T, V>
     
     required public init(_ lattice: Double = 1.0) {

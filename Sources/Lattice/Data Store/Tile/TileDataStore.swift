@@ -8,13 +8,14 @@
 import Deltille
 import SpriteKit
 
-public class TileDataStore<T: Tile,
+public class TileDataStore<G: Tile,
                            V: DataStoreValue>: SKNode,
-                                               DataStore where V.C == T,
-                                                               V.C == T.SI.T {
+                                               DataStore where V.C == G,
+                                                               V.C == G.SI.T {
     
-    public typealias C = DataStoreChunk<T, V>
-    public typealias R = DataStoreRegion<C, T, V>
+    public typealias C = DataStoreChunk<P, V>
+    public typealias P = G
+    public typealias R = DataStoreRegion<C, P, V>
     
     public let lattice: Double
     
@@ -32,7 +33,7 @@ public class TileDataStore<T: Tile,
 public extension TileDataStore {
     
     @discardableResult
-    func remove(_ keys: Set<V.C>) -> Set<T> {
+    func remove(_ keys: Set<V.C>) -> Set<G> {
         
         let footprint = keys.reduce(into: Set<V.C>()) { result, vertex in
             
@@ -65,14 +66,14 @@ public extension TileDataStore {
     }
     
     @discardableResult
-    func set(_ value: V) -> Set<T> {
+    func set(_ value: V) -> Set<G> {
         
         for vertex in value.footprint {
             
             guard self.value(for: vertex) == nil else { return [] }
         }
         
-        let partitions = value.footprint.reduce(into: [T : Set<V.C>]()) { result, vertex in
+        let partitions = value.footprint.reduce(into: [P : Set<V.C>]()) { result, vertex in
         
             let chunk = vertex.transpose(.tile,
                                          .chunk)
@@ -131,7 +132,7 @@ public extension TileDataStore {
         return chunk.value(for: key)
     }
     
-    func wedge(for sieve: T.SI) -> DataStoreWedge<V.C, V> {
+    func wedge(for sieve: G.SI) -> DataStoreWedge<V.C, V> {
         
         let data = sieve.tiles.reduce(into: [V.C : V]()) { result, tile in
             
