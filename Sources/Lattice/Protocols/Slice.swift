@@ -9,10 +9,11 @@ import Deltille
 
 public protocol Slice {
     
-    associatedtype C: GridChunk<T>
+    associatedtype C: TileChunk<T>
+    associatedtype P: Tile
     associatedtype T: Tile
     associatedtype V: DataStoreValue
     
-    var chunks: [DataStoreChunk<T, V>] { get }
-    var region: GridRegion<C, T> { get }
+    var chunks: [DataStoreChunk<P, V>] { get }
+    var region: TileRegion<C, T> { get }
 }

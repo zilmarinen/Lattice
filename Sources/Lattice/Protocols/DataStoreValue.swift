@@ -11,9 +11,10 @@ public protocol DataStoreValue: Codable,
                                 Hashable,
                                 Sendable {
     
-    associatedtype C: Coordinate
+    associatedtype K: Coordinate
+    associatedtype T: Tile
     
-    var vertex: C { get }
+    var vertex: K { get }
     
-    var footprint: Set<C> { get }
+    var footprint: Set<K> { get }
 }

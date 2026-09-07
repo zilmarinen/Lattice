@@ -1,5 +1,5 @@
 //
-//  GridChunk.swift
+//  TileChunk.swift
 //  Lattice
 //
 //  Created by Zack Brown on 31/08/2026.
@@ -8,7 +8,7 @@
 import Deltille
 import SpriteKit
 
-open class GridChunk<T: Tile>: SKShapeNode,
+open class TileChunk<T: Tile>: SKShapeNode,
                                Soilable {
        
     internal(set) public var isDirty: Bool = false
@@ -31,7 +31,7 @@ open class GridChunk<T: Tile>: SKShapeNode,
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-private extension GridChunk {
+private extension TileChunk {
     
     func update() {
         

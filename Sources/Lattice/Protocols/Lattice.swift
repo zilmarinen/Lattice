@@ -8,48 +8,55 @@
 import Deltille
 import SpriteKit
 
-public protocol Lattice: SKNode where S.G == T,
-                                      S.V == V {
-    
-    associatedtype C: GridChunk<T>
-    associatedtype G: Grid<R, C, T>
-    associatedtype R: GridRegion<C, T>
+public protocol Lattice: SKNode where SI == G.T.SI,
+                                      V == S.V {
+
+    associatedtype G: Grid
     associatedtype S: DataStore
-    associatedtype T: Tile
+    associatedtype SI: Sieve
+//    associatedtype SL: Slice
     associatedtype V: DataStoreValue
+    associatedtype W: Wedge
                                           
-    typealias Cleaner = ((_ chunk: C,
-                          _ sieve: T.SI,
-                          _ wedge: S.W) -> Bool)
+    typealias Cleaner = ((_ chunk: G.C,
+                          _ sieve: SI,
+                          _ wedge: W) -> Bool)
     
     var grid: G { get }
     var store: S { get }
+    
+    func chunks(intersecting tile: G.T) -> [G.C]
 
     func clean(_ cleaner: Cleaner)
     
-    func remove(_ keys: Set<V.C>)
+    func propagate(_ keys: Set<V.K>,
+                   _ insertion: Bool)
+    
+    func remove(_ keys: Set<V.K>)
 
     func set(_ value: V)
     
-    func value(for key: V.C) -> V?
+//    func slice(for tile: G.T) -> SL?
     
-    func slice(for tile: T) -> DataStoreSlice<C, T, V>?
+    func value(for key: V.K) -> V?
+    
+    func wedge(for sieve: SI) -> W
 }
 
 public extension Lattice {
     
     func clean(_ cleaner: Cleaner) {
-        
-        var emptyRegions: [R] = []
+
+        var emptyRegions: [G.R] = []
         
         for region in grid.dirtyRegions {
             
-            var emptyChunks: [C] = []
+            var emptyChunks: [G.C] = []
             
             for chunk in region.dirtyChunks {
                 
                 let sieve = chunk.tile.sieve(.chunk)
-                let wedge = store.wedge(for: sieve)
+                let wedge = wedge(for: sieve)
                 
                 guard !wedge.isEmpty,
                       cleaner(chunk,
@@ -82,33 +89,23 @@ public extension Lattice {
         }
     }
     
-    func remove(_ keys: Set<V.C>) {
+    func remove(_ keys: Set<V.K>) {
         
-        let chunks = store.remove(keys)
+        store.remove(keys)
         
-        grid.propagate(chunks)
+        propagate(keys,
+                  false)
     }
     
     func set(_ value: V) {
         
-        let chunks = store.set(value)
+        store.set(value)
         
-        grid.propagate(chunks,
-                       true)
+        propagate(value.footprint,
+                  true)
     }
     
-    func slice(for tile: T) -> DataStoreSlice<C, T, V>? {
-        return nil
-//        guard let region = grid.region(for: tile,
-//                                       .region) else { return nil }
-//        
-//        let chunks = store.chunks(intersecting: tile)
-//        
-//        return .init(chunks: chunks,
-//                     region: region)
-    }
-    
-    func value(for key: V.C) -> V? {
+    func value(for key: V.K) -> V? {
     
         store.value(for: key)
     }

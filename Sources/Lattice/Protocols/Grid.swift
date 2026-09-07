@@ -2,30 +2,35 @@
 //  Grid.swift
 //  Lattice
 //
-//  Created by Zack Brown on 31/08/2026.
+//  Created by Zack Brown on 07/09/2026.
 //
 
 import Deltille
 import SpriteKit
 
-public class Grid<R: GridRegion<C, T>,
-                  C: GridChunk<T>,
-                  T: Tile>: SKNode {
+public protocol Grid: SKNode {
     
-    public let lattice: Double
+    associatedtype C: TileChunk<T>
+    associatedtype R: TileRegion<C, T>
+    associatedtype T: Tile
     
-    required public init(_ lattice: Double) {
-        
-        self.lattice = lattice
-        
-        super.init()
-    }
+    var lattice: Double { get }
     
-    @available(*, unavailable)
-    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    var regions: [R] { get }
+    
+    var dirtyRegions: [R] { get }
+    
+    func region(for tile: T,
+                _ from: Scale) -> R?
+    
+    func chunk(for tile: T,
+               _ from: Scale) -> C?
+    
+    func propagate(_ keys: Set<T>,
+                   _ insertion: Bool)
 }
 
-internal extension Grid {
+public extension Grid {
     
     var regions: [R] {
         
@@ -44,7 +49,7 @@ internal extension Grid {
     }
 }
 
-internal extension Grid {
+public extension Grid {
     
     func region(for tile: T,
                 _ from: Scale) -> R? {
@@ -69,19 +74,19 @@ internal extension Grid {
     }
 }
 
-internal extension Grid {
+public extension Grid {
     
     func propagate(_ keys: Set<T>,
                    _ insertion: Bool = false) {
         
-        let partitions = keys.reduce(into: [T : Set<T>]()) { result, vertex in
+        let partitions = keys.reduce(into: [T : Set<T>]()) { result, tile in
         
-            let region = vertex.transpose(.chunk,
-                                          .region)
+            let region = tile.transpose(.chunk,
+                                        .region)
             
             var partition = result[region] ?? []
             
-            partition.insert(vertex)
+            partition.insert(tile)
             
             result[region] = partition
         }

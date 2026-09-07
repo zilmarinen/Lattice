@@ -8,14 +8,12 @@
 import Deltille
 import SpriteKit
 
-public class TileDataStore<G: Tile,
-                           V: DataStoreValue>: SKNode,
-                                               DataStore where V.C == G,
-                                                               V.C == G.SI.T {
+public class TileDataStore<V: DataStoreValue>: SKNode,
+                                               DataStore where V.K == V.T {
     
-    public typealias C = DataStoreChunk<P, V>
-    public typealias P = G
-    public typealias R = DataStoreRegion<C, P, V>
+    public typealias C = DataStoreChunk<V.T, V>
+    public typealias R = DataStoreRegion<C, V.T, V>
+    public typealias T = V.T
     
     public let lattice: Double
     
@@ -32,10 +30,9 @@ public class TileDataStore<G: Tile,
 
 public extension TileDataStore {
     
-    @discardableResult
-    func remove(_ keys: Set<V.C>) -> Set<G> {
+    func remove(_ keys: Set<V.K>) {
         
-        let footprint = keys.reduce(into: Set<V.C>()) { result, vertex in
+        let footprint = keys.reduce(into: Set<V.K>()) { result, vertex in
             
             guard let value = value(for: vertex) else { return }
             
@@ -61,19 +58,16 @@ public extension TileDataStore {
             
             region.removeFromParent()
         }
-        
-        return chunks
     }
     
-    @discardableResult
-    func set(_ value: V) -> Set<G> {
+    func set(_ value: V) {
         
         for vertex in value.footprint {
             
-            guard self.value(for: vertex) == nil else { return [] }
+            guard self.value(for: vertex) == nil else { return }
         }
         
-        let partitions = value.footprint.reduce(into: [P : Set<V.C>]()) { result, vertex in
+        let partitions = value.footprint.reduce(into: [T : Set<V.K>]()) { result, vertex in
         
             let chunk = vertex.transpose(.tile,
                                          .chunk)
@@ -120,25 +114,13 @@ public extension TileDataStore {
                 }
             }
         }
-        
-        return Set(partitions.keys)
     }
     
-    func value(for key: V.C) -> V? {
+    func value(for key: V.K) -> V? {
         
         guard let chunk = chunk(for: key,
                                 .tile) else { return nil }
         
         return chunk.value(for: key)
-    }
-    
-    func wedge(for sieve: G.SI) -> DataStoreWedge<V.C, V> {
-        
-        let data = sieve.tiles.reduce(into: [V.C : V]()) { result, tile in
-            
-            result[tile] = value(for: tile)
-        }
-        
-        return .init(data: data)
     }
 }

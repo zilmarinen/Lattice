@@ -10,32 +10,26 @@ import SpriteKit
 
 public protocol DataStore: SKNode {
     
-    associatedtype C: DataStoreChunk<P, V>
-    associatedtype G: Tile
-    associatedtype R: DataStoreRegion<C, P, V>
-    associatedtype P: Tile
+    associatedtype C: DataStoreChunk<T, V>
+    associatedtype R: DataStoreRegion<C, T, V>
+    associatedtype T: Tile
     associatedtype V: DataStoreValue
-    associatedtype W: Wedge
     
     var lattice: Double { get }
     
     var regions: [R] { get }
     
-    func region(for tile: P,
+    func region(for tile: T,
                 _ from: Scale) -> R?
     
-    func chunk(for tile: P,
+    func chunk(for tile: T,
                _ from: Scale) -> C?
     
-    func chunks(intersecting tile: P) -> [C]
+    func remove(_ keys: Set<V.K>)
     
-    func remove(_ keys: Set<V.C>) -> Set<G>
+    func set(_ value: V)
     
-    func set(_ value: V) -> Set<G>
-    
-    func value(for key: V.C) -> V?
-    
-    func wedge(for sieve: G.SI) -> W
+    func value(for key: V.K) -> V?
 }
 
 public extension DataStore {
@@ -51,7 +45,7 @@ public extension DataStore {
 
 public extension DataStore {
  
-    func region(for tile: P,
+    func region(for tile: T,
                 _ from: Scale) -> R? {
         
         let region = tile.transpose(from,
@@ -63,7 +57,7 @@ public extension DataStore {
         }
     }
     
-    func chunk(for tile: P,
+    func chunk(for tile: T,
                _ from: Scale) -> C? {
         
         guard let region = region(for: tile,
@@ -71,13 +65,5 @@ public extension DataStore {
         
         return region.chunk(for: tile,
                             from)
-    }
-    
-    func chunks(intersecting tile: P) -> [C] {
-     
-        regions.flatMap {
-            
-            $0.chunks(intersecting: tile)
-        }
     }
 }

@@ -16,7 +16,7 @@ public class DataStoreChunk<T: Tile,
         case data
     }
     
-    internal var data: [V.C : V]
+    internal var data: [V.K : V]
     
     required internal init(_ tile: T,
                            _ lattice: Double = 1.0) {
@@ -35,7 +35,7 @@ public class DataStoreChunk<T: Tile,
          
         let container = try decoder.container(keyedBy: CodingKeys.self)
                 
-        data = try container.decode([V.C : V].self,
+        data = try container.decode([V.K : V].self,
                                     forKey: .data)
         
         try super.init(from: decoder)
@@ -62,12 +62,12 @@ internal extension DataStoreChunk {
 
 internal extension DataStoreChunk {
     
-    func merge(_ other: [V.C : V]) {
+    func merge(_ other: [V.K : V]) {
         
         data.merge(other) { (current, _) in current }
     }
     
-    func remove(_ keys: Set<V.C>) {
+    func remove(_ keys: Set<V.K>) {
         
         keys.forEach {
             
@@ -76,12 +76,12 @@ internal extension DataStoreChunk {
     }
     
     func set(_ value: V,
-             for key: V.C) {
+             for key: V.K) {
         
         data[key] = value
     }
     
-    func value(for key: V.C) -> V? {
+    func value(for key: V.K) -> V? {
         
         data[key]
     }

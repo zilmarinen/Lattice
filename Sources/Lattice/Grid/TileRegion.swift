@@ -1,5 +1,5 @@
 //
-//  GridRegion.swift
+//  TileRegion.swift
 //  Lattice
 //
 //  Created by Zack Brown on 31/08/2026.
@@ -8,7 +8,7 @@
 import Deltille
 import SpriteKit
 
-public class GridRegion<C: GridChunk<T>,
+public class TileRegion<C: TileChunk<T>,
                         T: Tile>: SKNode,
                                   Soilable {
        
@@ -32,7 +32,7 @@ public class GridRegion<C: GridChunk<T>,
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-internal extension GridRegion {
+internal extension TileRegion {
     
     var chunks: [C] {
         
@@ -56,7 +56,7 @@ internal extension GridRegion {
     }
 }
 
-internal extension GridRegion {
+internal extension TileRegion {
     
     func chunk(for tile: T,
                _ from: Scale) -> C? {
@@ -71,7 +71,7 @@ internal extension GridRegion {
     }
 }
 
-private extension GridRegion {
+private extension TileRegion {
     
     func update() {
         
