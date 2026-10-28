@@ -61,7 +61,7 @@ final class HexagonVertexDataStoreTests: XCTestCase {
         
         let dataStore = DataStore()
         
-        let vertex = Hexagon.Vertex(-7, -14, 20)
+        let vertex = Hexagon.Vertex(15, -6, -10)
         
         let footprint = Set(vertex.vertices + [vertex])
         
@@ -83,30 +83,30 @@ final class HexagonVertexDataStoreTests: XCTestCase {
     
     // MARK: Wedge
     
-//    func testWedge() throws {
-//
-//        let dataStore = DataStore()
-//
-//        let tile = Hexagon(15, -6, -9)
-//        let vertex = Hexagon.Vertex(15, -6, -10)
-//        let chunk = tile.transpose(.tile,
-//                                   .chunk)
-//        
-//        let footprint = Set(vertex.vertices + [vertex])
-//        
-//        dataStore.set(.init(vertex: vertex,
-//                            value: vertex.id,
-//                            footprint: footprint))
-//
-//        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
-//
-//        let vertices = Set(wedge.data.map {
-//
-//            $0.value.vertex
-//        })
-//
-//        XCTAssertEqual(wedge.data.count, footprint.count)
-//        XCTAssertTrue(vertices.contains(vertex))
-//        XCTAssertEqual(wedge.value(for: vertex)?.value, vertex.id)
-//    }
+    func testWedge() throws {
+
+        let dataStore = DataStore()
+
+        let tile = Hexagon(15, -6, -9)
+        let vertex = Hexagon.Vertex(15, -6, -10)
+        let chunk = tile.transpose(.tile,
+                                   .chunk)
+        
+        let footprint = Set(vertex.vertices + [vertex])
+        
+        dataStore.set(.init(vertex: vertex,
+                            value: vertex.id,
+                            footprint: footprint))
+
+        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
+
+        let vertices = Set(wedge.data.map {
+
+            $0.value.vertex
+        })
+
+        XCTAssertEqual(wedge.data.count, footprint.count)
+        XCTAssertTrue(vertices.contains(vertex))
+        XCTAssertEqual(wedge.value(for: vertex)?.value, vertex.id)
+    }
 }

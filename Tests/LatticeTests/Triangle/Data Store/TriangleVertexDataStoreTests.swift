@@ -61,7 +61,7 @@ final class TriangleVertexDataStoreTests: XCTestCase {
         
         let dataStore = DataStore()
         
-        let vertex = Triangle.Vertex(13, 6, -18)
+        let vertex = Triangle.Vertex(8, -15, 8)
         
         let footprint = Set(vertex.vertices + [vertex])
         
@@ -83,30 +83,30 @@ final class TriangleVertexDataStoreTests: XCTestCase {
     
     // MARK: Wedge
     
-//    func testWedge() throws {
-//
-//        let dataStore = DataStore()
-//
-//        let tile = Triangle(8, -16, 8)
-//        let vertex = Triangle.Vertex(8, -15, 8)
-//        let chunk = tile.transpose(.tile,
-//                                   .chunk)
-//        
-//        let footprint = Set(vertex.vertices + [vertex])
-//        
-//        dataStore.set(.init(vertex: vertex,
-//                            value: vertex.id,
-//                            footprint: footprint))
-//        
-//        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
-//
-//        let vertices = Set(wedge.data.map {
-//
-//            $0.value.vertex
-//        })
-//
-//        XCTAssertEqual(wedge.data.count, footprint.count)
-//        XCTAssertTrue(vertices.contains(vertex))
-//        XCTAssertEqual(wedge.value(for: vertex)?.value, vertex.id)
-//    }
+    func testWedge() throws {
+
+        let dataStore = DataStore()
+
+        let tile = Triangle(8, -16, 8)
+        let vertex = Triangle.Vertex(8, -15, 8)
+        let chunk = tile.transpose(.tile,
+                                   .chunk)
+        
+        let footprint = Set(vertex.vertices + [vertex])
+        
+        dataStore.set(.init(vertex: vertex,
+                            value: vertex.id,
+                            footprint: footprint))
+        
+        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
+
+        let vertices = Set(wedge.data.map {
+
+            $0.value.vertex
+        })
+
+        XCTAssertEqual(wedge.data.count, footprint.count)
+        XCTAssertTrue(vertices.contains(vertex))
+        XCTAssertEqual(wedge.value(for: vertex)?.value, vertex.id)
+    }
 }
