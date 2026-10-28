@@ -11,9 +11,12 @@ import SpriteKit
 public protocol DataStore: SKNode {
     
     associatedtype C: DataStoreChunk<T, V>
+    associatedtype I: Tile
     associatedtype R: DataStoreRegion<C, T, V>
+    associatedtype SI: Sieve
     associatedtype T: Tile
     associatedtype V: DataStoreValue
+    associatedtype W: Wedge
     
     var lattice: Double { get }
     
@@ -25,11 +28,15 @@ public protocol DataStore: SKNode {
     func chunk(for tile: T,
                _ from: Scale) -> C?
     
+    func chunks(intersecting tile: I) -> [C]
+    
     func remove(_ keys: Set<V.K>)
     
     func set(_ value: V)
     
     func value(for key: V.K) -> V?
+    
+    func wedge(for sieve: SI) -> W
 }
 
 public extension DataStore {

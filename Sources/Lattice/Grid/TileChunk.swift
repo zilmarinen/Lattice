@@ -36,11 +36,23 @@ private extension TileChunk {
     func update() {
         
         name = tile.id
+        path = CGPath.tile(tile,
+                           .chunk,
+                           lattice)
+        
+        lineWidth = 2.0
+        fillColor = .systemPink
         
         let region = tile.transpose(.chunk,
                                     .region)
         
-        position = .init(tile.vertex - region.vertex,
+        let origin = region.transpose(.region,
+                                      .tile)
+        
+        let offset = tile.transpose(.chunk,
+                                    .tile)
+        
+        position = .init((offset - origin).vertex,
                          lattice)
     }
 }

@@ -33,11 +33,6 @@ open class TileLattice<C: TileChunk<V.T>,
 
 public extension TileLattice {
     
-    func chunks(intersecting tile: G.T) -> [C] {
-        
-        []
-    }
-    
     func propagate(_ keys: Set<V.K>,
                    _ insertion: Bool = false) {
         
@@ -46,26 +41,5 @@ public extension TileLattice {
         
         grid.propagate(chunks,
                        insertion)
-    }
-    
-    func slice(for tile: G.T) -> LatticeSlice<G.C, G.T, G.T, V>? {
-        
-        guard let region = grid.region(for: tile,
-                                       .region) else { return nil }
-        
-        let chunks = chunks(intersecting: tile)
-        return nil
-//        return .init(chunks: chunks,
-//                     region: region)
-    }
-    
-    func wedge(for sieve: V.T.SI) -> DataStoreWedge<V.K, V> {
-        
-        let data = sieve.tiles.reduce(into: [V.K : V]()) { result, tile in
-            
-            result[tile] = value(for: tile)
-        }
-        
-        return .init(data: data)
     }
 }

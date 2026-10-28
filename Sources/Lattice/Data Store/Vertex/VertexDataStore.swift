@@ -9,7 +9,8 @@ import Deltille
 import SpriteKit
 
 public class VertexDataStore<V: DataStoreValue>: SKNode,
-                                                 DataStore where V.K == V.T.D.V {
+                                                 DataStore where V.K == V.T.D.V,
+                                                                 V.K == V.T.D.SI.V {
     
     public typealias C = DataStoreChunk<V.T, V>
     public typealias R = DataStoreRegion<C, V.T, V>
@@ -29,6 +30,33 @@ public class VertexDataStore<V: DataStoreValue>: SKNode,
 }
 
 public extension VertexDataStore {
+    
+    func chunks(intersecting tile: V.T.D) -> [C] {
+        
+        regions.flatMap { region in
+            
+            guard region.contains(.zero) else { return [C]() }
+            
+            return region.chunks.filter { chunk in
+            
+                for vertex in chunk.tile.vertices(.chunk) {
+                    
+                    let dual = V.T.D(vertex.vector(lattice * 2.0),
+                                     lattice)
+                    
+                    let region = dual.transpose(.tile,
+                                                .region)
+                    
+                    if region == tile {
+                        
+                        return true
+                    }
+                }
+                
+                return false
+            }
+        }
+    }
     
     func remove(_ keys: Set<V.K>) {
         
@@ -134,5 +162,15 @@ public extension VertexDataStore {
                                 .tile) else { return nil }
         
         return chunk.value(for: key)
+    }
+    
+    func wedge(for sieve: T.D.SI) -> DataStoreWedge<V.K, V> {
+        
+        let data = sieve.vertices.reduce(into: [V.K : V]()) { result, vertex in
+                    
+            result[vertex] = value(for: vertex)
+        }
+        
+        return .init(data: data)
     }
 }

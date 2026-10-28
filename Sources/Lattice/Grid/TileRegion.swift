@@ -77,7 +77,10 @@ private extension TileRegion {
         
         name = tile.id
         
-        position = .init(tile.vertex,
+        let origin = tile.transpose(.region,
+                                    .tile)
+        
+        position = .init(origin.vertex,
                          lattice)
     }
 }

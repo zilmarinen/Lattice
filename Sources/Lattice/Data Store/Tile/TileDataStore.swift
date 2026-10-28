@@ -9,7 +9,8 @@ import Deltille
 import SpriteKit
 
 public class TileDataStore<V: DataStoreValue>: SKNode,
-                                               DataStore where V.K == V.T {
+                                               DataStore where V.K == V.T,
+                                                               V.K == V.T.SI.T {
     
     public typealias C = DataStoreChunk<V.T, V>
     public typealias R = DataStoreRegion<C, V.T, V>
@@ -29,6 +30,18 @@ public class TileDataStore<V: DataStoreValue>: SKNode,
 }
 
 public extension TileDataStore {
+    
+    func chunks(intersecting tile: V.T) -> [C] {
+        
+        regions.flatMap { region in
+            
+            region.chunks.filter { chunk in
+                
+                chunk.tile.transpose(.chunk,
+                                     .region) == tile
+            }
+        }
+    }
     
     func remove(_ keys: Set<V.K>) {
         
@@ -122,5 +135,15 @@ public extension TileDataStore {
                                 .tile) else { return nil }
         
         return chunk.value(for: key)
+    }
+    
+    func wedge(for sieve: T.SI) -> DataStoreWedge<V.K, V> {
+        
+        let data = sieve.tiles.reduce(into: [V.K : V]()) { result, tile in
+            
+            result[tile] = value(for: tile)
+        }
+        
+        return .init(data: data)
     }
 }

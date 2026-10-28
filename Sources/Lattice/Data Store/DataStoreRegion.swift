@@ -58,13 +58,4 @@ internal extension DataStoreRegion {
             $0.tile == chunk
         }
     }
-    
-    func chunks(intersecting tile: T) -> [C] {
-        
-        chunks.filter {
-            
-            $0.tile.transpose(.chunk,
-                              .region) == tile
-        }
-    }
 }
