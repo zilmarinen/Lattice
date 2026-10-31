@@ -6,6 +6,7 @@
 //
 
 import Deltille
+import Euclid
 import SpriteKit
 
 open class VertexLattice<C: TileChunk<V.T.D>,
@@ -30,6 +31,13 @@ open class VertexLattice<C: TileChunk<V.T.D>,
     
     @available(*, unavailable)
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    open func clean(_ chunk: C,
+                    _ sieve: V.T.D.SI,
+                    _ wedge: DataStoreWedge<V.K, V>) -> Bool {
+        
+        fatalError("clean(chunk:sieve:wedge:) has not been implemented")
+    }
 }
 
 public extension VertexLattice {
@@ -37,10 +45,14 @@ public extension VertexLattice {
     func propagate(_ keys: Set<V.K>,
                    _ insertion: Bool = false) {
     
-        let tiles = keys.flatMap {
+        let tiles = Set(keys.flatMap {
             
-            $0.tiles
-        }
+            $0.tiles.map { tile in
+                
+                V.K.T(tile.vertex.vector(store.lattice),
+                      grid.lattice)
+            }
+        })
         
         let chunks = tiles.unique(.tile,
                                   .chunk)

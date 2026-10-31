@@ -29,6 +29,13 @@ open class TileLattice<C: TileChunk<V.T>,
     
     @available(*, unavailable)
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    open func clean(_ chunk: C,
+                    _ sieve: V.T.SI,
+                    _ wedge: DataStoreWedge<V.K, V>) -> Bool {
+        
+        fatalError("clean(chunk:sieve:wedge:) has not been implemented")
+    }
 }
 
 public extension TileLattice {

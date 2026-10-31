@@ -83,13 +83,6 @@ public extension Lattice {
         }
     }
     
-    func clean(_ chunk: G.C,
-               _ sieve: S.SI,
-               _ wedge: S.W) -> Bool {
-        
-        false
-    }
-    
     func remove(_ keys: Set<V.K>) {
         
         store.remove(keys)

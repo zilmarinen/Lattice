@@ -35,9 +35,7 @@ public extension VertexDataStore {
         
         regions.flatMap { region in
             
-            guard region.contains(.zero) else { return [C]() }
-            
-            return region.chunks.filter { chunk in
+            region.chunks.filter { chunk in
             
                 for vertex in chunk.tile.vertices(.chunk) {
                     

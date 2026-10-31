@@ -93,7 +93,7 @@ public extension Grid {
         
         for (partition, chunks) in partitions {
             
-            let region = region(for: partition,
+            var region = region(for: partition,
                                 .region)
             
             for triangle in chunks {
@@ -101,17 +101,19 @@ public extension Grid {
                 guard insertion else {
                     
                     guard let chunk = region?.chunk(for: triangle,
-                                                    .chunk) else { return }
+                                                    .chunk) else { continue }
                     
                     chunk.becomeDirty()
                     
                     region?.becomeDirty()
                     
-                    return
+                    continue
                 }
                 
-                let region = region ?? R(partition,
-                                         lattice)
+                region = region ?? R(partition,
+                                     lattice)
+                
+                guard let region else { continue }
                 
                 let chunk = region.chunk(for: triangle,
                                          .chunk) ?? C(triangle,
