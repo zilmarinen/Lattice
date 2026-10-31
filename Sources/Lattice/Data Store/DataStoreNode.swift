@@ -8,7 +8,7 @@
 import Deltille
 import SpriteKit
 
-public class DataStoreNode<T: Tile>: SKShapeNode {
+public class DataStoreNode<T: Tile>: SKShapeNode, @MainActor Codable {
     
     internal enum CodingKeys: CodingKey {
         
@@ -37,7 +37,7 @@ public class DataStoreNode<T: Tile>: SKShapeNode {
     @available(*, unavailable)
     required internal init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    required internal init(from decoder: any Decoder) throws {
+    required public init(from decoder: any Decoder) throws {
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -55,7 +55,7 @@ public class DataStoreNode<T: Tile>: SKShapeNode {
         update()
     }
     
-    internal func encode(to encoder: any Encoder) throws {
+    public func encode(to encoder: any Encoder) throws {
         
         var container = encoder.container(keyedBy: CodingKeys.self)
         

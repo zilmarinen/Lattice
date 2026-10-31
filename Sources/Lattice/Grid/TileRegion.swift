@@ -10,6 +10,7 @@ import SpriteKit
 
 public class TileRegion<C: TileChunk<T>,
                         T: Tile>: SKNode,
+                                  @MainActor Codable,
                                   Soilable {
        
     internal(set) public var isDirty: Bool = false
