@@ -26,7 +26,7 @@ fileprivate struct Value: DataStoreValue {
     
     internal init(vertex: Triangle.Vertex,
                   value: String,
-                  footprint: Set<Triangle.Vertex>? = nil ) {
+                  footprint: Set<Triangle.Vertex>? = nil) {
         
         self.vertex = vertex
         self.value = value
@@ -65,7 +65,7 @@ final class TriangleVertexLatticeTests: XCTestCase {
         
         let lattice = Lattice()
         
-        let vertex = Triangle.Vertex(8, -15, 8)
+        let vertex = Triangle.Vertex(9, 4, -12)
         
         let footprint = Set(vertex.vertices + [vertex])
         
@@ -94,7 +94,7 @@ final class TriangleVertexLatticeTests: XCTestCase {
         XCTAssertEqual(0, chunks.count)
         
         XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(1, dirtyChunks.count)
+        XCTAssertEqual(3, dirtyChunks.count)
     }
     
     // MARK: Lattice Slice
@@ -103,8 +103,8 @@ final class TriangleVertexLatticeTests: XCTestCase {
         
         let lattice = Lattice()
         
-        let vertex = Triangle.Vertex(8, -15, 8)
-        let tile = Triangle(8, -16, 8)
+        let vertex = Triangle.Vertex(9, 4, -12)
+        let tile = Triangle(8, 4, -12)
         let region = tile.transpose(.tile,
                                     .region)
         

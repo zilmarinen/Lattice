@@ -7,12 +7,12 @@
 
 import Deltille
 import Euclid
-import XCTest
+import Testing
 @testable import Lattice
 
-fileprivate class DataStore: TileDataStore<Value> {}
+private class DataStore: TileDataStore<Value> {}
 
-fileprivate struct Value: DataStoreValue {
+private struct Value: DataStoreValue {
     
     internal typealias T = Triangle
     
@@ -24,7 +24,7 @@ fileprivate struct Value: DataStoreValue {
     
     internal init(vertex: Triangle,
                   value: String,
-                  footprint: Set<Triangle>? = nil ) {
+                  footprint: Set<Triangle>? = nil) {
         
         self.vertex = vertex
         self.value = value
@@ -32,12 +32,13 @@ fileprivate struct Value: DataStoreValue {
     }
 }
 
-@MainActor
-final class TriangleDataStoreTests: XCTestCase {
+@MainActor @Suite
+struct TriangleDataStoreTests {
     
     // MARK: Data Store
     
-    func testValueStorageAndRetrieval() throws {
+    @Test
+    func testValueStorageAndRetrieval() async {
         
         let dataStore = DataStore()
         
@@ -53,13 +54,14 @@ final class TriangleDataStoreTests: XCTestCase {
         let result0 = dataStore.value(for: tile0)
         let result1 = dataStore.value(for: tile1)
         
-        XCTAssertEqual(tile0, result0?.vertex)
-        XCTAssertEqual(tile0.id, result0?.value)
-        XCTAssertEqual(tile1, result1?.vertex)
-        XCTAssertEqual(tile1.id, result1?.value)
+        #expect(tile0 == result0?.vertex)
+        #expect(tile0.id == result0?.value)
+        #expect(tile1 == result1?.vertex)
+        #expect(tile1.id == result1?.value)
     }
     
-    func testValueDeletion() throws {
+    @Test
+    func testValueDeletion() async {
         
         let dataStore = DataStore()
         
@@ -79,13 +81,14 @@ final class TriangleDataStoreTests: XCTestCase {
             $0.chunks
         }
         
-        XCTAssertEqual(0, regions.count)
-        XCTAssertEqual(0, chunks.count)
+        #expect(0 == regions.count)
+        #expect(0 == chunks.count)
     }
     
     // MARK: Wedge
     
-    func testWedge() throws {
+    @Test
+    func testWedge() async {
         
         let dataStore = DataStore()
         
@@ -106,8 +109,8 @@ final class TriangleDataStoreTests: XCTestCase {
             $0.value.vertex
         }
         
-        XCTAssertEqual(wedge.data.count, footprint.count)
-        XCTAssertTrue(tiles.contains(tile))
-        XCTAssertEqual(wedge.value(for: tile)?.value, tile.id)
+        #expect(wedge.data.count == footprint.count)
+        #expect(tiles.contains(tile))
+        #expect(wedge.value(for: tile)?.value == tile.id)
     }
 }

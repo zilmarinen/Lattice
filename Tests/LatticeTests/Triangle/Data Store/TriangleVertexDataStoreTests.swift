@@ -7,12 +7,12 @@
 
 import Deltille
 import Euclid
-import XCTest
+import Testing
 @testable import Lattice
 
-fileprivate class DataStore: VertexDataStore<Value> {}
+private class DataStore: VertexDataStore<Value> {}
 
-fileprivate struct Value: DataStoreValue {
+private struct Value: DataStoreValue {
     
     internal typealias T = Hexagon
     
@@ -24,7 +24,7 @@ fileprivate struct Value: DataStoreValue {
     
     internal init(vertex: Triangle.Vertex,
                   value: String,
-                  footprint: Set<Triangle.Vertex>? = nil ) {
+                  footprint: Set<Triangle.Vertex>? = nil) {
         
         self.vertex = vertex
         self.value = value
@@ -32,12 +32,13 @@ fileprivate struct Value: DataStoreValue {
     }
 }
 
-@MainActor
-final class TriangleVertexDataStoreTests: XCTestCase {
+@MainActor @Suite
+struct TriangleVertexDataStoreTests {
     
     // MARK: Data Store
     
-    func testValueStorageAndRetrieval() throws {
+    @Test
+    func testValueStorageAndRetrieval() async {
         
         let dataStore = DataStore()
         
@@ -53,11 +54,12 @@ final class TriangleVertexDataStoreTests: XCTestCase {
         let result0 = dataStore.value(for: vertex0)
         let result1 = dataStore.value(for: vertex1)
         
-        XCTAssertEqual(vertex0.id, result0?.value)
-        XCTAssertEqual(vertex1.id, result1?.value)
+        #expect(vertex0.id == result0?.value)
+        #expect(vertex1.id == result1?.value)
     }
     
-    func testValueDeletion() throws {
+    @Test
+    func testValueDeletion() async {
         
         let dataStore = DataStore()
         
@@ -77,13 +79,14 @@ final class TriangleVertexDataStoreTests: XCTestCase {
             $0.chunks
         }
         
-        XCTAssertEqual(0, regions.count)
-        XCTAssertEqual(0, chunks.count)
+        #expect(0 == regions.count)
+        #expect(0 == chunks.count)
     }
     
     // MARK: Wedge
     
-    func testWedge() throws {
+    @Test
+    func testWedge() async {
 
         let dataStore = DataStore()
 
@@ -105,8 +108,8 @@ final class TriangleVertexDataStoreTests: XCTestCase {
             $0.value.vertex
         })
 
-        XCTAssertEqual(wedge.data.count, footprint.count)
-        XCTAssertTrue(vertices.contains(vertex))
-        XCTAssertEqual(wedge.value(for: vertex)?.value, vertex.id)
+        #expect(wedge.data.count == footprint.count)
+        #expect(vertices.contains(vertex))
+        #expect(wedge.value(for: vertex)?.value == vertex.id)
     }
 }

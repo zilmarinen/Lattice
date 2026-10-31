@@ -7,14 +7,14 @@
 
 import Deltille
 import Euclid
-import XCTest
+import Testing
 @testable import Lattice
 
-fileprivate class Lattice: VertexLattice<Chunk, Value> {}
+private class Lattice: VertexLattice<Chunk, Value> {}
 
-fileprivate class Chunk: TileChunk<Hexagon> {}
+private class Chunk: TileChunk<Hexagon> {}
 
-fileprivate struct Value: DataStoreValue {
+private struct Value: DataStoreValue {
     
     internal typealias T = Triangle
     
@@ -26,7 +26,7 @@ fileprivate struct Value: DataStoreValue {
     
     internal init(vertex: Hexagon.Vertex,
                   value: String,
-                  footprint: Set<Hexagon.Vertex>? = nil ) {
+                  footprint: Set<Hexagon.Vertex>? = nil) {
         
         self.vertex = vertex
         self.value = value
@@ -34,12 +34,13 @@ fileprivate struct Value: DataStoreValue {
     }
 }
 
-@MainActor
-final class HexagonVertexLatticeTests: XCTestCase {
+@MainActor @Suite
+struct HexagonVertexLatticeTests {
     
     // MARK: Data Store
     
-    func testValueStorageAndRetrieval() throws {
+    @Test
+    func testValueStorageAndRetrieval() async {
         
         let lattice = Lattice()
         
@@ -55,17 +56,18 @@ final class HexagonVertexLatticeTests: XCTestCase {
         let result0 = lattice.value(for: vertex0)
         let result1 = lattice.value(for: vertex1)
         
-        XCTAssertEqual(vertex0, result0?.vertex)
-        XCTAssertEqual(vertex0.id, result0?.value)
-        XCTAssertEqual(vertex1, result1?.vertex)
-        XCTAssertEqual(vertex1.id, result1?.value)
+        #expect(vertex0 == result0?.vertex)
+        #expect(vertex0.id == result0?.value)
+        #expect(vertex1 == result1?.vertex)
+        #expect(vertex1.id == result1?.value)
     }
     
-    func testValueDeletion() throws {
+    @Test
+    func testValueDeletion() async {
         
         let lattice = Lattice()
         
-        let vertex = Hexagon.Vertex(15, -6, -10)
+        let vertex = Hexagon.Vertex(-13, 10, 4)
         
         let footprint = Set(vertex.vertices + [vertex])
         
@@ -90,21 +92,22 @@ final class HexagonVertexLatticeTests: XCTestCase {
             }
         })
         
-        XCTAssertEqual(0, regions.count)
-        XCTAssertEqual(0, chunks.count)
+        #expect(0 == regions.count)
+        #expect(0 == chunks.count)
         
-        XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(1, dirtyChunks.count)
+        #expect(1 == dirtyRegions.count)
+        #expect(1 == dirtyChunks.count)
     }
     
     // MARK: Lattice Slice
     
-    func testLatticeSlice() throws {
+    @Test
+    func testLatticeSlice() async {
         
         let lattice = Lattice()
         
-        let vertex = Hexagon.Vertex(15, -6, -10)
-        let tile = Hexagon(15, -6, -9)
+        let vertex = Hexagon.Vertex(-13, 10, 4)
+        let tile = Hexagon(-13, 9, 4)
         let region = tile.transpose(.tile,
                                     .region)
         
@@ -128,8 +131,8 @@ final class HexagonVertexLatticeTests: XCTestCase {
             
         } ?? []
         
-        XCTAssertEqual(slice?.region.tile, region)
-        XCTAssertEqual(values.count, footprint.count)
-        XCTAssertTrue(vertices.contains(vertex))
+        #expect(slice?.region.tile == region)
+        #expect(values.count == footprint.count)
+        #expect(vertices.contains(vertex))
     }
 }

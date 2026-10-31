@@ -7,14 +7,14 @@
 
 import Deltille
 import Euclid
-import XCTest
+import Testing
 @testable import Lattice
 
-fileprivate class Lattice: TileLattice<Chunk, Value> {}
+private class Lattice: TileLattice<Chunk, Value> {}
 
-fileprivate class Chunk: TileChunk<Hexagon> {}
+private class Chunk: TileChunk<Hexagon> {}
 
-fileprivate struct Value: DataStoreValue {
+private struct Value: DataStoreValue {
     
     internal typealias T = Hexagon
     
@@ -26,7 +26,7 @@ fileprivate struct Value: DataStoreValue {
     
     internal init(vertex: Hexagon,
                   value: String,
-                  footprint: Set<Hexagon>? = nil ) {
+                  footprint: Set<Hexagon>? = nil) {
         
         self.vertex = vertex
         self.value = value
@@ -34,12 +34,13 @@ fileprivate struct Value: DataStoreValue {
     }
 }
 
-@MainActor
-final class HexagonLatticeTests: XCTestCase {
+@MainActor @Suite
+struct HexagonLatticeTests {
 
     // MARK: Lattice
     
-    func testValueStorageAndRetrieval() throws {
+    @Test
+    func testValueStorageAndRetrieval() async {
         
         let lattice = Lattice()
         
@@ -55,13 +56,14 @@ final class HexagonLatticeTests: XCTestCase {
         let result0 = lattice.value(for: tile0)
         let result1 = lattice.value(for: tile1)
         
-        XCTAssertEqual(tile0, result0?.vertex)
-        XCTAssertEqual(tile0.id, result0?.value)
-        XCTAssertEqual(tile1, result1?.vertex)
-        XCTAssertEqual(tile1.id, result1?.value)
+        #expect(tile0 == result0?.vertex)
+        #expect(tile0.id == result0?.value)
+        #expect(tile1 == result1?.vertex)
+        #expect(tile1.id == result1?.value)
     }
     
-    func testValueDeletion() throws {
+    @Test
+    func testValueDeletion() async {
         
         let lattice = Lattice()
         
@@ -87,14 +89,15 @@ final class HexagonLatticeTests: XCTestCase {
             }
         })
         
-        XCTAssertEqual(0, regions.count)
-        XCTAssertEqual(0, chunks.count)
+        #expect(0 == regions.count)
+        #expect(0 == chunks.count)
         
-        XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(1, dirtyChunks.count)
+        #expect(1 == dirtyRegions.count)
+        #expect(1 == dirtyChunks.count)
     }
     
-    func testSoilablePropagation() throws {
+    @Test
+    func testSoilablePropagation() async {
         
         let lattice = Lattice()
         
@@ -113,14 +116,15 @@ final class HexagonLatticeTests: XCTestCase {
             $0.dirtyChunks
         }
         
-        XCTAssertEqual(1, dirtyRegions.count)
-        XCTAssertEqual(region, dirtyRegions.first?.tile)
+        #expect(1 == dirtyRegions.count)
+        #expect(region == dirtyRegions.first?.tile)
         
-        XCTAssertEqual(1, dirtyChunks.count)
-        XCTAssertEqual(chunk, dirtyChunks.first?.tile)
+        #expect(1 == dirtyChunks.count)
+        #expect(chunk == dirtyChunks.first?.tile)
     }
     
-    func testFootprint() throws {
+    @Test
+    func testFootprint() async {
         
         let lattice = Lattice()
         
@@ -140,13 +144,14 @@ final class HexagonLatticeTests: XCTestCase {
             $0.chunks
         }
         
-        XCTAssertEqual(0, regions.count)
-        XCTAssertEqual(0, chunks.count)
+        #expect(0 == regions.count)
+        #expect(0 == chunks.count)
     }
     
     // MARK: Lattice Slice
     
-    func testLatticeSlice() throws {
+    @Test
+    func testLatticeSlice() async {
         
         let lattice = Lattice()
         
@@ -174,8 +179,8 @@ final class HexagonLatticeTests: XCTestCase {
             
         } ?? []
         
-        XCTAssertEqual(slice?.region.tile, region)
-        XCTAssertEqual(values.count, footprint.count)
-        XCTAssertTrue(tiles.contains(tile))
+        #expect(slice?.region.tile == region)
+        #expect(values.count == footprint.count)
+        #expect(tiles.contains(tile))
     }
 }
