@@ -1,0 +1,86 @@
+//
+//  TileRegion.swift
+//  Lattice
+//
+//  Created by Zack Brown on 31/08/2026.
+//
+
+import Deltille
+import SpriteKit
+
+public class TileRegion<C: TileChunk<T>,
+                        T: Tile>: SKNode,
+                                  Soilable {
+       
+    internal(set) public var isDirty: Bool = false
+
+    public let tile: T
+    public let lattice: Double
+
+    required public init(_ tile: T,
+                         _ lattice: Double) {
+
+        self.tile = tile
+        self.lattice = lattice
+
+        super.init()
+        
+        update()
+    }
+
+    @available(*, unavailable)
+    required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+internal extension TileRegion {
+    
+    var chunks: [C] {
+        
+        children.compactMap {
+            
+            $0 as? C
+        }
+    }
+    
+    var dirtyChunks: [C] {
+        
+        chunks.filter {
+            
+            $0.isDirty
+        }
+    }
+    
+    var isEmpty: Bool {
+        
+        children.isEmpty
+    }
+}
+
+internal extension TileRegion {
+    
+    func chunk(for tile: T,
+               _ from: Scale) -> C? {
+        
+        let chunk = tile.transpose(from,
+                                   .chunk)
+        
+        return chunks.first {
+            
+            $0.tile == chunk
+        }
+    }
+}
+
+private extension TileRegion {
+    
+    func update() {
+        
+        name = tile.id
+        
+        let origin = tile.transpose(.region,
+                                    .tile)
+        
+        position = .init(origin.vertex,
+                         lattice)
+    }
+}

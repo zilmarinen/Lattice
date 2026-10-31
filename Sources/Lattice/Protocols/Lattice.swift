@@ -2,71 +2,60 @@
 //  Lattice.swift
 //  Lattice
 //
-//  Created by Zack Brown on 10/03/2026.
+//  Created by Zack Brown on 29/08/2026.
 //
 
 import Deltille
-import RealityKit
+import SpriteKit
 
-public protocol Lattice: Entity,
-                         PropagatesChanges {
-    
-    associatedtype G: TriangularGrid<TriangularRegion<S.C>, S.C>
-    associatedtype DS: DataStore
-    associatedtype S: LatticeSlice
+public protocol Lattice: SKNode where G.T.SI == S.SI,
+                                      G.T == S.I,
+                                      V == S.V {
 
-    typealias Cleaner = ((_ chunk: S.C,
-                          _ sieve: Triangle.Sieve,
-                          _ wedge: DataStoreWedge<DS.C.V>) -> Bool)
+    associatedtype G: Grid
+    associatedtype S: DataStore
+    associatedtype SL: Slice
+    associatedtype V: DataStoreValue
     
     var grid: G { get }
-    var dataStore: DS { get }
+    var store: S { get }
+
+    func clean()
+    func clean(_ chunk: G.C,
+               _ sieve: S.SI,
+               _ wedge: S.W) -> Bool
     
-    func value(for key: DS.K) -> DS.V?
+    func propagate(_ keys: Set<V.K>,
+                   _ insertion: Bool)
     
-    func set(_ value: DS.V,
-             for key: DS.K)
+    func remove(_ keys: Set<V.K>)
+
+    func set(_ value: V)
     
-    func remove(values keys: [DS.K])
+    func slice(for tile: G.T) -> SL?
     
-    func wedge(for sieve: Triangle.Sieve) -> DataStoreWedge<DS.C.V>
-    
-    func merge(_ slice: S)
-    
-    func slice(region triangle: Triangle) -> S?
-    
-    func clean(_ cleaner: Cleaner)
+    func value(for key: V.K) -> V?
 }
 
 public extension Lattice {
     
-    func value(for key: DS.K) -> DS.V? {
-        
-        dataStore.value(for: key)
-    }
-    
-    func wedge(for sieve: Triangle.Sieve) -> DS.W {
-    
-        dataStore.wedge(for: sieve)
-    }
-    
-    func clean(_ cleaner: Cleaner) {
-        
-        var emptyRegions: [TriangularRegion<S.C>] = []
+    func clean() {
+
+        var emptyRegions: [G.R] = []
         
         for region in grid.dirtyRegions {
             
-            var emptyChunks: [S.C] = []
+            var emptyChunks: [G.C] = []
             
             for chunk in region.dirtyChunks {
                 
-                let sieve = chunk.tile.sieve(for: .chunk)
-                let wedge = wedge(for: sieve)
+                let sieve = chunk.tile.sieve(.chunk)
+                let wedge = store.wedge(for: sieve)
                 
                 guard !wedge.isEmpty,
-                      cleaner(chunk,
-                              sieve,
-                              wedge) else {
+                      clean(chunk,
+                            sieve,
+                            wedge) else {
                     
                     emptyChunks.append(chunk)
                     
@@ -83,7 +72,7 @@ public extension Lattice {
             
             region.isDirty = false
             
-            guard region.children.isEmpty else { continue }
+            guard region.isEmpty else { continue }
             
             emptyRegions.append(region)
         }
@@ -92,5 +81,37 @@ public extension Lattice {
             
             $0.removeFromParent()
         }
+    }
+    
+    func remove(_ keys: Set<V.K>) {
+        
+        store.remove(keys)
+        
+        propagate(keys,
+                  false)
+    }
+    
+    func set(_ value: V) {
+        
+        store.set(value)
+        
+        propagate(value.footprint,
+                  true)
+    }
+    
+    func slice(for tile: G.T) -> LatticeSlice<G.C, S.T, G.T, V>? {
+        
+        guard let region = grid.region(for: tile,
+                                       .region) else { return nil }
+        
+        let chunks = store.chunks(intersecting: tile)
+        
+        return .init(chunks: chunks,
+                     region: region)
+    }
+    
+    func value(for key: V.K) -> V? {
+    
+        store.value(for: key)
     }
 }

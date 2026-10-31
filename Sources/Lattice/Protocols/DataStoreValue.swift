@@ -2,7 +2,7 @@
 //  DataStoreValue.swift
 //  Lattice
 //
-//  Created by Zack Brown on 08/03/2026.
+//  Created by Zack Brown on 22/08/2026.
 //
 
 import Deltille
@@ -11,13 +11,10 @@ public protocol DataStoreValue: Codable,
                                 Hashable,
                                 Sendable {
     
-    var coord: Coordinate { get }
-}
-
-public extension DataStoreValue {
+    associatedtype K: Coordinate
+    associatedtype T: Tile
     
-    var vertex: Triangle.Vertex {
-        
-        .init(coord)
-    }
+    var vertex: K { get }
+    
+    var footprint: Set<K> { get }
 }
