@@ -102,7 +102,7 @@ struct HexagonVertexDataStoreTests {
                             footprint: footprint))
 
         let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
-
+        
         let vertices = Set(wedge.data.map {
 
             $0.value.vertex
@@ -111,5 +111,32 @@ struct HexagonVertexDataStoreTests {
         #expect(wedge.data.count == footprint.count)
         #expect(vertices.contains(vertex))
         #expect(wedge.value(for: vertex)?.value == vertex.id)
+    }
+    
+    // MARK: Weave
+    
+    @Test
+    func testWeave() async {
+        
+        let dataStore = DataStore()
+
+        let tile = Hexagon(15, -6, -9)
+        let vertex = Hexagon.Vertex(15, -6, -10)
+        let chunk = tile.transpose(.tile,
+                                   .chunk)
+        
+        let footprint = Set(vertex.vertices + [vertex])
+        
+        dataStore.set(.init(vertex: vertex,
+                            value: vertex.id,
+                            footprint: footprint))
+
+        let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
+        let weave = wedge.weave(chunk.sieve(.chunk))
+        
+        #expect(wedge.data.count == footprint.count)
+        #expect(weave.data.keys.contains(tile))
+        #expect(wedge.value(for: vertex)?.value == vertex.id)
+        #expect(weave.value(for: tile)?.values[vertex]?.value == vertex.id)
     }
 }

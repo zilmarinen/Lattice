@@ -103,7 +103,7 @@ struct HexagonDataStoreTests {
                             footprint: footprint))
 
         let wedge = dataStore.wedge(for: chunk.sieve(.chunk))
-
+        
         let tiles = wedge.data.map {
             
             $0.value.vertex
