@@ -16,7 +16,18 @@ public class TileRegion<C: TileChunk<T>,
     internal(set) public var isDirty: Bool = false
 
     public let tile: T
-    public let lattice: Double
+    internal(set) public var lattice: Double {
+        
+        didSet {
+        
+            chunks.forEach {
+                
+                $0.lattice = lattice
+            }
+            
+            becomeDirty()
+        }
+    }
 
     required public init(_ tile: T,
                          _ lattice: Double) {

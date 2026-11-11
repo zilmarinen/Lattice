@@ -18,7 +18,18 @@ open class VertexLattice<C: TileChunk<V.T.D>,
     public let grid: TileGrid<C, V.T.D>
     public let store: VertexDataStore<V>
     
+    public var lattice: Double {
+        
+        didSet {
+            
+            grid.lattice = lattice
+            store.lattice = lattice
+        }
+    }
+    
     required public init(_ lattice: Double = 1.0) {
+        
+        self.lattice = lattice
         
         self.grid = .init(lattice)
         self.store = .init(lattice)

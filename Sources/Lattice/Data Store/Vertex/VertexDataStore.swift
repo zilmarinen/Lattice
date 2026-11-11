@@ -16,7 +16,21 @@ public class VertexDataStore<V: DataStoreValue>: SKNode,
     public typealias R = DataStoreRegion<C, V.T, V>
     public typealias T = V.T
     
-    public let lattice: Double
+    internal(set) public var lattice: Double {
+        
+        didSet {
+            
+            regions.forEach {
+                
+                $0.lattice = lattice
+                
+                $0.chunks.forEach {
+                    
+                    $0.lattice = lattice
+                }
+            }
+        }
+    }
     
     public init(_ lattice: Double = 1.0) {
         

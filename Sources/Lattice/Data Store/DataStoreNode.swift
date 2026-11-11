@@ -19,7 +19,7 @@ public class DataStoreNode<T: Tile>: SKShapeNode, @MainActor Codable {
     
     public let tile: T
     public let scale: Scale
-    public let lattice: Double
+    internal(set) public var lattice: Double
     
     internal init(_ tile: T,
                   _ scale: Scale,

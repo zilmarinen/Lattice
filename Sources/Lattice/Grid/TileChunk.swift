@@ -14,7 +14,13 @@ open class TileChunk<T: Tile>: SKShapeNode,
     internal(set) public var isDirty: Bool = false
 
     public let tile: T
-    public let lattice: Double
+    internal(set) public var lattice: Double {
+        
+        didSet {
+            
+            becomeDirty()
+        }
+    }
 
     required public init(_ tile: T,
                          _ lattice: Double) {

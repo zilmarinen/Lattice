@@ -14,7 +14,16 @@ public class TileGrid<C: TileChunk<T>,
     
     public typealias R = TileRegion<C, T>
     
-    public let lattice: Double
+    internal(set) public var lattice: Double {
+        
+        didSet {
+            
+            regions.forEach {
+                
+                $0.lattice = lattice
+            }
+        }
+    }
     
     required public init(_ lattice: Double) {
         
@@ -22,7 +31,7 @@ public class TileGrid<C: TileChunk<T>,
         
         super.init()
     }
-    
+ 
     @available(*, unavailable)
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
